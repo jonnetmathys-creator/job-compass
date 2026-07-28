@@ -13,14 +13,17 @@ export function sortByDateDesc(offres: OffreRow[]): OffreRow[] {
 export async function getRecherche(client: SupabaseClient, id: string) {
   const { data, error } = await client
     .from('recherches')
-    .select('id, intitule, localisation, rayon_km, type_contrat')
+    .select('id, intitule, localisation, rayon_km, type_contrat, latitude, longitude')
     .eq('id', id)
     .single()
   // PGRST116 = aucune ligne (recherche introuvable) : on renvoie null. Toute autre
   // erreur (réseau, RLS...) est relancée pour ne pas la confondre avec un 404.
   if (error && error.code !== 'PGRST116') throw error
   return (data as
-    | { id: string; intitule: string; localisation: string | null; rayon_km: number | null; type_contrat: string | null }
+    | {
+        id: string; intitule: string; localisation: string | null; rayon_km: number | null
+        type_contrat: string | null; latitude: number | null; longitude: number | null
+      }
     | null) ?? null
 }
 
