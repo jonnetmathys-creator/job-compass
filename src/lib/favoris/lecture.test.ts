@@ -8,9 +8,9 @@ test('getFavoriIds renvoie la liste des offre_id likées', async () => {
   expect(await getFavoriIds(client, 'user-1')).toEqual(['a', 'b'])
 })
 
-test('getFavoriIds renvoie [] en cas d’erreur', async () => {
+test('getFavoriIds relance l’erreur au lieu de la masquer', async () => {
   const client = {
     from: () => ({ select: () => ({ eq: async () => ({ data: null, error: { message: 'x' } }) }) }),
   } as unknown as import('@supabase/supabase-js').SupabaseClient
-  expect(await getFavoriIds(client, 'user-1')).toEqual([])
+  await expect(getFavoriIds(client, 'user-1')).rejects.toEqual({ message: 'x' })
 })

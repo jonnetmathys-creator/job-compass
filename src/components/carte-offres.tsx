@@ -7,6 +7,17 @@ import type { OffreRow } from '@/lib/offres/types'
 
 const PIN_SVG = '<svg width="28" height="38" viewBox="0 0 30 40" fill="currentColor"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 12.4 22.7 14.2 24.5a1.1 1.1 0 0 0 1.6 0C17.6 37.7 30 25.5 30 15 30 6.7 23.3 0 15 0Z" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="5.4" fill="#fff"/></svg>'
 
+// Échappe une valeur avant interpolation dans du HTML (les données proviennent de France
+// Travail, source tierce non fiable, et sont injectées via bindPopup(string)).
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 export function pointsFor(offres: OffreRow[]) {
   return offres
     .map((o) => {
@@ -54,9 +65,9 @@ export default function CarteOffres(props: {
         const icon = L.divIcon({ className: '', html: `<div class="pin">${PIN_SVG}</div>`, iconSize: [28, 38], iconAnchor: [14, 38] })
         const m = L.marker([pt.lat, pt.lng], { icon })
         const o = pt.offre
-        const sal = o.salaire ? `<span class="mp-s">${o.salaire}</span>` : '<span></span>'
+        const sal = o.salaire ? `<span class="mp-s">${escapeHtml(o.salaire)}</span>` : '<span></span>'
         m.bindPopup(
-          `<div class="mp-link"><div class="mp-t">${o.titre}</div><div class="mp-e">${o.entreprise ?? ''}${o.ville ? ' · ' + o.ville : ''}</div><div class="mp-foot">${sal}<span class="mp-go">Voir l'offre <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></div></div>`,
+          `<div class="mp-link"><div class="mp-t">${escapeHtml(o.titre)}</div><div class="mp-e">${escapeHtml(o.entreprise ?? '')}${o.ville ? ' · ' + escapeHtml(o.ville) : ''}</div><div class="mp-foot">${sal}<span class="mp-go">Voir l'offre <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></div></div>`,
           { closeButton: false, offset: [0, -30] },
         )
         m.on('popupopen', (e: any) => {

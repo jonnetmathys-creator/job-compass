@@ -29,7 +29,8 @@ export async function getOffresForRecherche(client: SupabaseClient, rechercheId:
     .from('resultats')
     .select(`offres:offre_id (${OFFRE_COLUMNS})`)
     .eq('recherche_id', rechercheId)
-  if (error || !data) return []
+  if (error) throw error
+  if (!data) return []
   const offres = data.map((r: { offres: OffreRow | OffreRow[] }) => (Array.isArray(r.offres) ? r.offres[0] : r.offres)).filter(Boolean) as OffreRow[]
   return sortByDateDesc(offres)
 }

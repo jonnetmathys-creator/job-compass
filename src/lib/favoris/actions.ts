@@ -13,7 +13,9 @@ export async function toggleFavori(offreId: string): Promise<{ liked: boolean }>
   if (already) {
     await supabase.from('favoris').delete().eq('user_id', user.id).eq('offre_id', offreId)
   } else {
-    await supabase.from('favoris').insert({ user_id: user.id, offre_id: offreId })
+    await supabase
+      .from('favoris')
+      .upsert({ user_id: user.id, offre_id: offreId }, { onConflict: 'user_id,offre_id', ignoreDuplicates: true })
   }
   revalidatePath('/profil')
   return { liked: !already }
