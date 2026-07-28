@@ -37,7 +37,6 @@ export default function VilleAutocomplete(props: {
     props.onChange(c.label)
     props.onSelect?.(c)
     setOuvert(false)
-    props.onValider()
   }
 
   return (
