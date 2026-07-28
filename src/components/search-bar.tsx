@@ -30,12 +30,13 @@ export default function SearchBar() {
         el.querySelectorAll('.word').forEach((s) => s.classList.add('show'))))
     }
     render(PHRASES[0])
+    let swap: ReturnType<typeof setTimeout>
     const id = setInterval(() => {
       const words = el.querySelectorAll('.word')
       words.forEach((s, i) => { (s as HTMLElement).style.transitionDelay = `${i * 35}ms`; s.classList.remove('show'); s.classList.add('out') })
-      setTimeout(() => { pi = (pi + 1) % PHRASES.length; render(PHRASES[pi]) }, 300 + words.length * 35)
+      swap = setTimeout(() => { pi = (pi + 1) % PHRASES.length; render(PHRASES[pi]) }, 300 + words.length * 35)
     }, 4400)
-    return () => clearInterval(id)
+    return () => { clearInterval(id); clearTimeout(swap) }
   }, [])
 
   // placeholder machine à écrire
