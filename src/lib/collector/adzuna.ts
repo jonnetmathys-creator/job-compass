@@ -17,7 +17,7 @@ export function buildAdzunaUrl(params: SearchParams, mot: string, page: number):
 
 export function normalizeAdzunaOffre(raw: any): NormalizedOffer {
   const min = raw.salary_min, max = raw.salary_max
-  const salaire = min && max ? `${min} - ${max}` : min ? String(min) : null
+  const salaire = min != null && max != null ? `${min} - ${max}` : min != null ? String(min) : null
   return {
     source: 'adzuna',
     source_id: String(raw.id),
@@ -56,5 +56,5 @@ export async function searchAdzuna(params: SearchParams, deps: Deps = {}): Promi
       page += 1
     }
   }
-  return [...bySourceId.values()]
+  return [...bySourceId.values()].slice(0, MAX_OFFRES)
 }

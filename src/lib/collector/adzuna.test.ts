@@ -1,5 +1,5 @@
 import { expect, test, beforeEach } from 'vitest'
-import { buildAdzunaUrl, normalizeAdzunaOffre } from './adzuna'
+import { buildAdzunaUrl, normalizeAdzunaOffre, searchAdzuna } from './adzuna'
 
 beforeEach(() => {
   process.env.ADZUNA_APP_ID = 'id123'
@@ -40,4 +40,36 @@ test('normalizeAdzunaOffre mappe les champs et pose source adzuna', () => {
   expect(o.url_postuler).toContain('AZ789')
   expect(o.email_contact).toBeNull() // Adzuna n'expose pas d'email
   expect(o.date_publication).toBe('2026-07-21T09:00:00Z')
+})
+
+test('searchAdzuna applique un plafond strict de 300 offres', async () => {
+  let pageCount = 0
+  const mockFetch = async (url: string) => {
+    pageCount++
+    // Return 50 unique offers per page (simulating full pages)
+    const results = Array.from({ length: 50 }, (_, i) => ({
+      id: `AZ${pageCount}-${i}`,
+      title: `Job ${pageCount}-${i}`,
+      company: { display_name: 'Company' },
+      description: 'Desc',
+      contract_time: 'full_time',
+      salary_min: 30000,
+      salary_max: 40000,
+      latitude: 48,
+      longitude: 2,
+      location: { display_name: 'Paris' },
+      redirect_url: `https://adzuna.fr/${pageCount}-${i}`,
+      created: '2026-07-21T09:00:00Z',
+    }))
+    return new Response(JSON.stringify({ results }), { status: 200 })
+  }
+
+  const offers = await searchAdzuna(
+    { motsCles: ['test'], codeRome: 'J1402' },
+    { fetchImpl: mockFetch as any }
+  )
+
+  expect(offers.length).toBeLessThanOrEqual(300)
+  expect(offers.length).toBe(300)
+  expect(offers.every(o => o.source === 'adzuna')).toBe(true)
 })
