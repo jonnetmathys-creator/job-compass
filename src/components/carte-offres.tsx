@@ -88,5 +88,15 @@ export default function CarteOffres(props: {
     }
   }, [props.hoveredId])
 
+  // nettoyage au démontage : détruit la carte Leaflet (listeners window, tuiles, timers)
+  useEffect(() => {
+    return () => {
+      mapRef.current?.remove()
+      mapRef.current = null
+      clusterRef.current = null
+      markersRef.current = {}
+    }
+  }, [])
+
   return <div ref={elRef} id="map" style={{ position: 'absolute', inset: 0 }} />
 }
