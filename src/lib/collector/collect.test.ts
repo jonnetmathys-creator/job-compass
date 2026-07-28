@@ -22,11 +22,12 @@ test('collecte des deux sources, dédoublonne, écrit et relie', async () => {
     searchAdzuna: vi.fn().mockResolvedValue([o('adzuna', '9')]),
     storeOffres,
     linkResultats,
+    scoreNouvellesOffres: vi.fn().mockResolvedValue(2),
   })
   expect(storeOffres).toHaveBeenCalledOnce()
   expect(storeOffres.mock.calls[0][1]).toHaveLength(2) // 2 offres dédoublonnées
   expect(linkResultats).toHaveBeenCalledWith(expect.anything(), 'rech-1', expect.any(Array))
-  expect(res).toEqual({ collected: 2, linked: 2 })
+  expect(res).toMatchObject({ collected: 2, linked: 2, scored: 2 })
 })
 
 test('une source qui échoue n’empêche pas l’autre', async () => {
@@ -36,6 +37,7 @@ test('une source qui échoue n’empêche pas l’autre', async () => {
     searchAdzuna: vi.fn().mockResolvedValue([o('adzuna', '9')]),
     storeOffres: vi.fn().mockResolvedValue([{ id: 'u2', source: 'adzuna', source_id: '9', was_new: true }]),
     linkResultats: vi.fn().mockResolvedValue(undefined),
+    scoreNouvellesOffres: vi.fn().mockResolvedValue(2),
   })
   expect(res.collected).toBe(1)
 })
