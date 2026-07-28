@@ -84,7 +84,7 @@ Décisions de conception :
 Vit entièrement côté serveur.
 
 - **Authentification** : OAuth2 pour France Travail (inscription sur francetravail.io, `client_id` + `client_secret` en variables d'environnement Vercel), clé API pour Adzuna. Jeton France Travail mis en cache et renouvelé à expiration.
-- **Traduction recherche → requête** : chaque recherche est convertie en appels API avec mots-clés, code métier (J1402 injecté automatiquement au MVP), commune + rayon, type de contrat. Pagination jusqu'à un plafond (ex. 300 offres par recherche et par source) pour respecter les limites de débit.
+- **Traduction recherche → requête** : chaque recherche est convertie en **plusieurs appels API par mots-clés** (ex. « diététicien », « diététique », « nutrition ») et par code métier (J1402), puis les résultats sont fusionnés et dédoublonnés. Ce choix vient d'un test de volume réel (voir section 11) : la recherche par mots-clés multiples récupère 3 à 4 fois plus d'offres locales que le code métier strict. Chaque appel ajoute commune + rayon et type de contrat. Pagination jusqu'à un plafond (ex. 300 offres par recherche et par source) pour respecter les limites de débit.
 - **Multi-sources** : chaque source normalise ses résultats vers le schéma commun `offres`. Ajouter une source = ajouter un adaptateur, sans toucher au reste.
 - **Dédoublonnage** : si (`source`, `source_id`) existe, on met à jour `date_collecte` ; sinon on insère. Puis on crée/rafraîchit la ligne `resultats`. Les offres identiques trouvées sur plusieurs sources sont fusionnées.
 - **Tri IA** : pour chaque **nouvelle** offre, l'API Claude (Haiku) note la pertinence de 0 à 100 vs l'intitulé de la recherche et le titre recherché du profil. Score stocké dans `resultats`. On ne re-score jamais une offre déjà notée (maîtrise du coût).
@@ -132,3 +132,21 @@ Dans l'ordre pressenti, chacune avec sa propre spec :
 4. **Sources supplémentaires** : Jooble, flux RSS.
 5. **Ouverture à d'autres métiers** : sélection du code ROME au lieu du préréglage diététique.
 6. **Passe de polish visuel** : icônes personnalisées, raffinement de la direction artistique.
+
+La priorité n°1 (marché caché) est renforcée par le test de volume ci-dessous : le nombre d'offres publiées localement en diététique est faible, donc les entreprises qui recrutent sans publier constituent la principale réserve d'opportunités.
+
+## 11. Test de volume réel (2026-07-28)
+
+Mesure effectuée sur l'API France Travail (script `scripts/ft-count.sh`) pour cadrer les attentes :
+
+| Recherche | France | Dept 44 | Nantes 100 km |
+|---|---|---|---|
+| Code métier strict J1402 | 159 | 2 | 6 |
+| Mot-clé « diététicien » | 217 | — | — |
+| Mot-clé « nutrition » | 143 | 9 | 21 |
+
+Conclusions :
+- Le marché des offres **publiées** en diététique est modeste, surtout localement. C'est une contrainte du marché du travail, pas de la source de données. Scraper davantage de sites ne créerait pas d'offres inexistantes.
+- La **recherche par mots-clés multiples** récupère nettement plus que le code métier strict → adoptée dans le collecteur (section 7).
+- Le **marché caché** (La Bonne Boîte) et l'**élargissement géographique** sont les vrais leviers de volume → priorisés en post-MVP.
+- Ordre de grandeur à viser pour un utilisateur : quelques dizaines d'offres actives sur une zone large, renouvelées au fil des semaines par le collecteur.
