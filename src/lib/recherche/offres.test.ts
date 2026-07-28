@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { sortByDateDesc } from './offres'
 import type { OffreRow } from '@/lib/offres/types'
 
