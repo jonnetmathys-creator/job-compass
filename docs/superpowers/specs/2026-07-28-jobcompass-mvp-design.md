@@ -110,7 +110,7 @@ Login email + mot de passe (Supabase Auth). Pas d'inscription publique : comptes
 
 **Gestion des erreurs**
 - Source indisponible / quota atteint : log, on passe à la recherche ou source suivante, réessai au prochain cron. Les offres déjà en base restent consultables.
-- Échec du tri IA : l'offre est stockée sans score (ou score neutre), jamais de plantage ; nouvel essai au prochain passage.
+- Échec du tri IA : l'offre est stockée sans score, affichée en bas de liste, et le tri est réessayé au prochain passage du cron. Jamais de plantage.
 - Aucune offre trouvée : écran vide soigné suggérant d'élargir le rayon ou d'assouplir les critères.
 
 Principe : l'app reste utilisable même quand une brique externe tombe.
