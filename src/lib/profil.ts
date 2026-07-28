@@ -27,3 +27,13 @@ export async function upsertProfil(
   if (error) throw error
   return data as Profil
 }
+
+export async function uploadCv(client: SupabaseClient, userId: string, file: File): Promise<string> {
+  const path = `${userId}/cv.pdf`
+  const { error } = await client.storage.from('cv').upload(path, file, {
+    upsert: true, contentType: 'application/pdf',
+  })
+  if (error) throw error
+  await upsertProfil(client, userId, { cv_url: path })
+  return path
+}

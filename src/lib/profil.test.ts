@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest'
-import { getProfil, upsertProfil } from './profil'
+import { getProfil, upsertProfil, uploadCv } from './profil'
 
 function createMockClient(row: unknown, error: unknown = null) {
   const single = vi.fn().mockResolvedValue({ data: row, error })
@@ -84,4 +84,19 @@ test('upsertProfil returns the full updated profil row', async () => {
   expect(profil.titre_recherche).toBe('QA')
   expect(profil.cv_url).toBe('https://example.com/cv.pdf')
   expect(profil.lettre_base).toBe('Dear Hiring Manager...')
+})
+
+// Happy path: uploadCv uploads under the user-scoped path and persists cv_url
+test('uploadCv téléverse sous le préfixe user et renvoie le chemin', async () => {
+  const upload = vi.fn().mockResolvedValue({ data: { path: 'u1/cv.pdf' }, error: null })
+  const single = vi.fn().mockResolvedValue({ data: { user_id: 'u1', cv_url: 'u1/cv.pdf' }, error: null })
+  const client = {
+    storage: { from: vi.fn(() => ({ upload })) },
+    from: vi.fn(() => ({ upsert: () => ({ select: () => ({ single }) }) })),
+  } as any
+  const file = new File(['%PDF-'], 'cv.pdf', { type: 'application/pdf' })
+  const path = await uploadCv(client, 'u1', file)
+  expect(path).toBe('u1/cv.pdf')
+  expect(client.storage.from).toHaveBeenCalledWith('cv')
+  expect(upload).toHaveBeenCalledWith('u1/cv.pdf', file, expect.objectContaining({ upsert: true }))
 })
