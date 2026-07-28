@@ -99,6 +99,23 @@ export default function CarteOffres(props: {
     }
   }, [props.hoveredId])
 
+  // clic sur une offre à gauche -> zoom carte + épingle en évidence
+  useEffect(() => {
+    const id = props.expandedId
+    if (!id) return
+    const m = markersRef.current[id]
+    if (!m || !mapRef.current) return
+    try {
+      const ll = m.getLatLng()
+      mapRef.current.setView(ll, 12, { animate: true })
+      if (clusterRef.current?.zoomToShowLayer) clusterRef.current.zoomToShowLayer(m, () => m.openPopup())
+      else m.openPopup()
+      m._icon?.querySelector('.pin')?.classList.add('active')
+    } catch {
+      // jsdom ou marqueur pas encore prêt : on ignore
+    }
+  }, [props.expandedId])
+
   // nettoyage au démontage : détruit la carte Leaflet (listeners window, tuiles, timers)
   useEffect(() => {
     return () => {
