@@ -101,11 +101,14 @@ export default function CarteOffres(props: {
 
   // clic sur une offre à gauche -> zoom carte + épingle en évidence
   useEffect(() => {
-    const id = props.expandedId
-    if (!id) return
-    const m = markersRef.current[id]
-    if (!m || !mapRef.current) return
     try {
+      for (const m of Object.values(markersRef.current)) {
+        ;(m as any)._icon?.querySelector('.pin')?.classList.remove('active')
+      }
+      const id = props.expandedId
+      if (!id) return
+      const m = markersRef.current[id]
+      if (!m || !mapRef.current) return
       const ll = m.getLatLng()
       mapRef.current.setView(ll, 12, { animate: true })
       if (clusterRef.current?.zoomToShowLayer) clusterRef.current.zoomToShowLayer(m, () => m.openPopup())

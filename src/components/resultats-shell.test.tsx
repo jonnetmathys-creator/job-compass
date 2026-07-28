@@ -15,7 +15,7 @@ const o = (id: string, contrat: string): OffreRow => ({
 })
 
 test('le filtre contrat masque les offres non concernées', async () => {
-  render(<ResultatsShell recherche={{ id: 'r1', intitule: 'Diét', localisation: null, rayon_km: null }}
+  render(<ResultatsShell recherche={{ id: 'r1', intitule: 'Diét', localisation: null, rayon_km: null, lieu_label: null }}
     offres={[o('1', 'CDI'), o('2', 'CDD')]} favoriIds={[]} />)
   expect(screen.getByText('Offre 1')).toBeInTheDocument()
   expect(screen.getByText('Offre 2')).toBeInTheDocument()

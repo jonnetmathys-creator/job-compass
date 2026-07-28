@@ -20,7 +20,7 @@ export default function CompteMenu() {
     let annule = false
     getBrowserClient().auth.getUser().then(({ data }) => {
       if (!annule) setEmail(data.user?.email ?? '')
-    })
+    }).catch(() => {})
     return () => { annule = true }
   }, [])
 

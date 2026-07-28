@@ -39,7 +39,13 @@ export async function affinerLieu(
   if (ville.trim() && !geo) return { ok: false, erreur: 'Lieu introuvable, précisez la commune.' }
   const { data: rech } = await supabase
     .from('recherches')
-    .update({ localisation: geo ? geo.insee : null, rayon_km: rayonKm, latitude: geo ? geo.lat : null, longitude: geo ? geo.lng : null })
+    .update({
+      localisation: geo ? geo.insee : null,
+      rayon_km: rayonKm,
+      latitude: geo ? geo.lat : null,
+      longitude: geo ? geo.lng : null,
+      lieu_label: geo ? geo.label : null,
+    })
     .eq('id', rechercheId)
     .select('id, mots_cles, localisation, rayon_km, type_contrat')
     .single()

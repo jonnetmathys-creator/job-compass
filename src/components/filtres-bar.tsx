@@ -14,9 +14,11 @@ export default function FiltresBar(props: {
   contrat: string
   onContrat: (c: string) => void
   rechercheId: string
+  initialLieu?: string
+  initialRayon?: number | null
 }) {
-  const [ville, setVille] = useState('')
-  const [rayon, setRayon] = useState<number | null>(null)
+  const [ville, setVille] = useState(props.initialLieu ?? '')
+  const [rayon, setRayon] = useState<number | null>(props.initialRayon ?? null)
   const [pending, startTransition] = useTransition()
   const [erreur, setErreur] = useState<string | null>(null)
 
