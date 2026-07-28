@@ -6,14 +6,20 @@ import { upsertProfil, uploadCv, type Profil } from '@/lib/profil'
 export default function ProfilForm({ initial }: { initial: Profil }) {
   const [form, setForm] = useState(initial)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function save(e: React.FormEvent) {
     e.preventDefault()
-    const supabase = getBrowserClient()
-    await upsertProfil(supabase, initial.user_id, {
-      nom: form.nom, titre_recherche: form.titre_recherche, lettre_base: form.lettre_base,
-    })
-    setSaved(true)
+    setError(null)
+    try {
+      const supabase = getBrowserClient()
+      await upsertProfil(supabase, initial.user_id, {
+        nom: form.nom, titre_recherche: form.titre_recherche, lettre_base: form.lettre_base,
+      })
+      setSaved(true)
+    } catch {
+      setError("Échec de l'enregistrement, réessayez.")
+    }
   }
 
   return (
@@ -39,9 +45,15 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
           onChange={async (e) => {
             const file = e.target.files?.[0]
             if (!file) return
-            const supabase = getBrowserClient()
-            await uploadCv(supabase, initial.user_id, file)
-            setSaved(true)
+            setError(null)
+            try {
+              const supabase = getBrowserClient()
+              const path = await uploadCv(supabase, initial.user_id, file)
+              setForm((prev) => ({ ...prev, cv_url: path }))
+              setSaved(true)
+            } catch {
+              setError("Échec de l'envoi du CV, réessayez.")
+            }
           }}
           className="w-full text-sm" />
         {form.cv_url && <p className="text-xs mt-1 text-gray-500">CV actuel : {form.cv_url}</p>}
@@ -50,6 +62,7 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
         Enregistrer
       </button>
       {saved && <span className="ml-3 text-sm" style={{ color: 'var(--accent)' }}>Enregistré ✓</span>}
+      {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
     </form>
   )
 }

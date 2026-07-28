@@ -5,7 +5,13 @@ import { readFileSync } from 'node:fs'
 // Charge .env.local sans dépendance externe
 for (const line of readFileSync('.env.local', 'utf8').split('\n')) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/)
-  if (m) process.env[m[1]] ??= m[2]
+  if (m) {
+    let value = m[2]
+    // Retire les guillemets simples/doubles englobants s'ils correspondent
+    const quoted = value.match(/^(['"])(.*)\1$/)
+    if (quoted) value = quoted[2]
+    process.env[m[1]] ??= value
+  }
 }
 
 const [email, password] = process.argv.slice(2)

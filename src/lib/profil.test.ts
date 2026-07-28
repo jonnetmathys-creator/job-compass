@@ -90,13 +90,20 @@ test('upsertProfil returns the full updated profil row', async () => {
 test('uploadCv téléverse sous le préfixe user et renvoie le chemin', async () => {
   const upload = vi.fn().mockResolvedValue({ data: { path: 'u1/cv.pdf' }, error: null })
   const single = vi.fn().mockResolvedValue({ data: { user_id: 'u1', cv_url: 'u1/cv.pdf' }, error: null })
+  const upsert = vi.fn(() => ({ select: () => ({ single }) }))
   const client = {
     storage: { from: vi.fn(() => ({ upload })) },
-    from: vi.fn(() => ({ upsert: () => ({ select: () => ({ single }) }) })),
+    from: vi.fn(() => ({ upsert })),
   } as any
   const file = new File(['%PDF-'], 'cv.pdf', { type: 'application/pdf' })
   const path = await uploadCv(client, 'u1', file)
   expect(path).toBe('u1/cv.pdf')
   expect(client.storage.from).toHaveBeenCalledWith('cv')
   expect(upload).toHaveBeenCalledWith('u1/cv.pdf', file, expect.objectContaining({ upsert: true }))
+
+  // Vérifie que le path renvoyé par le storage est bien persisté sur le profil
+  expect(client.from).toHaveBeenCalledWith('profils')
+  expect(upsert).toHaveBeenCalledWith(
+    expect.objectContaining({ user_id: 'u1', cv_url: 'u1/cv.pdf' }),
+  )
 })
