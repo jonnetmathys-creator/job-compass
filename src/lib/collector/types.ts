@@ -24,7 +24,6 @@ export type SearchParams = {
 
 // Sous-ensemble des colonnes de `recherches` utilisées par le collecteur
 export type RechercheRow = {
-  intitule: string
   mots_cles: string[]
   localisation: string | null
   rayon_km: number | null

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   const client = getServiceClient()
   const { data: recherche, error } = await client
     .from('recherches')
-    .select('id, intitule, mots_cles, localisation, rayon_km, type_contrat')
+    .select('id, mots_cles, localisation, rayon_km, type_contrat')
     .eq('id', recherche_id)
     .single()
   if (error || !recherche) {
