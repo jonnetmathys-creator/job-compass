@@ -4,7 +4,7 @@ import type { NormalizedOffer } from './types'
 
 function offer(id: string): NormalizedOffer {
   return {
-    source: 'france_travail', source_id: id, titre: 'T', entreprise: null, description: null,
+    source: 'france_travail', source_id: id, titre: 'T', entreprise: null, entreprise_logo: null, description: null,
     contrat: null, salaire: null, latitude: null, longitude: null, ville: null,
     url_postuler: null, email_contact: null, date_publication: null,
   }
