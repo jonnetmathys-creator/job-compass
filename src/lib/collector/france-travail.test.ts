@@ -1,5 +1,5 @@
-import { expect, test } from 'vitest'
-import { buildFtQuery, normalizeFtOffre } from './france-travail'
+import { expect, test, vi } from 'vitest'
+import { buildFtQuery, normalizeFtOffre, searchFranceTravail } from './france-travail'
 
 test('buildFtQuery inclut mot-clé, code ROME, commune, distance, contrat', () => {
   const q = buildFtQuery(
@@ -46,4 +46,24 @@ test('normalizeFtOffre tolère les champs manquants', () => {
   expect(o.entreprise).toBeNull()
   expect(o.latitude).toBeNull()
   expect(o.email_contact).toBeNull()
+})
+
+test('searchFranceTravail plafonne à 300 offres au total, même avec plusieurs mots-clés qui débordent chacun', async () => {
+  let counter = 0
+  const fetchImpl = vi.fn(async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({
+      resultats: Array.from({ length: 150 }, () => {
+        counter += 1
+        return { id: `FT${counter}`, intitule: 'Diététicien' }
+      }),
+    }),
+  })) as unknown as typeof fetch
+
+  const offres = await searchFranceTravail(
+    { motsCles: ['diététicien', 'nutritionniste', 'diet'], codeRome: 'J1402' },
+    { token: 'tok', fetchImpl },
+  )
+  expect(offres.length).toBeLessThanOrEqual(300)
 })

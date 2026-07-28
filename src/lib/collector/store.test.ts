@@ -28,7 +28,7 @@ test('storeOffres upsert sur (source, source_id) et renvoie les ids', async () =
 test('linkResultats upsert une ligne resultats par offre sans écraser le score', async () => {
   const upsert = vi.fn().mockResolvedValue({ error: null })
   const client = { from: vi.fn(() => ({ upsert })) } as any
-  await linkResultats(client, 'rech-1', [{ id: 'uuid-1', source: 'x', source_id: 'A', was_new: true }])
+  await linkResultats(client, 'rech-1', [{ id: 'uuid-1', source: 'x', source_id: 'A' }])
   expect(client.from).toHaveBeenCalledWith('resultats')
   const [payload, opts] = upsert.mock.calls[0]
   expect(payload).toEqual([expect.objectContaining({ recherche_id: 'rech-1', offre_id: 'uuid-1' })])

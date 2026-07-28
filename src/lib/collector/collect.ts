@@ -40,7 +40,7 @@ export async function collectForRecherche(
   await linkResultats(client, recherche.id, stored)
 
   // Intitulé de la recherche pour le scoring (fallback : premier mot-clé)
-  const intitule = (recherche as any).intitule ?? params.motsCles[0] ?? 'diététique'
+  const intitule = recherche.intitule ?? params.motsCles[0] ?? 'diététique'
   let scored = 0
   try {
     scored = await scoreNew(client, recherche.id, intitule)

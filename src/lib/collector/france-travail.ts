@@ -59,6 +59,7 @@ export async function searchFranceTravail(params: SearchParams, deps: Deps = {})
   const bySourceId = new Map<string, NormalizedOffer>()
 
   for (const mot of params.motsCles) {
+    if (bySourceId.size >= MAX_OFFRES) break
     const base = buildFtQuery(params, mot)
     let start = 0
     while (start < MAX_OFFRES) {
@@ -75,8 +76,9 @@ export async function searchFranceTravail(params: SearchParams, deps: Deps = {})
         bySourceId.set(o.source_id, o) // dédoublonnage intra-source
       }
       if (offres.length < PAGE_SIZE) break // dernière page
+      if (bySourceId.size >= MAX_OFFRES) break // plafond global (300) toutes recherches confondues
       start += PAGE_SIZE
     }
   }
-  return [...bySourceId.values()]
+  return [...bySourceId.values()].slice(0, MAX_OFFRES)
 }

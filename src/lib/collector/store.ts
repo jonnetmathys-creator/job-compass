@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { NormalizedOffer } from './types'
 
-export type StoredOffre = { id: string; source: string; source_id: string; was_new: boolean }
+export type StoredOffre = { id: string; source: string; source_id: string }
 
 export async function storeOffres(
   client: SupabaseClient,
@@ -19,7 +19,6 @@ export async function storeOffres(
     id: r.id as string,
     source: r.source as string,
     source_id: r.source_id as string,
-    was_new: true, // affiné à la Task 8 via le scoring (offre sans score = à traiter)
   }))
 }
 
