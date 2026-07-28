@@ -5,7 +5,14 @@ Statut : validé en brainstorming, prêt pour le plan d'implémentation
 
 ## 1. Vision
 
-Application web qui centralise la recherche d'emploi et l'aide à la candidature. Elle collecte automatiquement des offres depuis des sources officielles, les présente en liste et sur une carte, note leur pertinence par IA, et (dans les briques suivantes) génère des lettres de motivation adaptées et suit l'avancement des candidatures.
+JobCompass est une **plateforme de centralisation et de suivi de candidatures**. Elle collecte automatiquement des offres depuis des sources officielles, les présente en liste et sur une carte, note leur pertinence par IA, puis, pour chaque offre, permet de **candidater directement avec un email et une lettre de motivation personnalisés**, générés à partir de l'offre et de la lettre de base de l'utilisateur. Elle suit ensuite l'avancement de chaque candidature.
+
+Le cœur de valeur n'est donc pas la simple recherche d'offres, mais **l'envoi de candidatures personnalisées** et leur suivi centralisé.
+
+Contrainte assumée sur l'envoi : toutes les offres n'exposent pas un email de contact.
+- **Offre avec email de contact** → envoi direct depuis la plateforme (email + lettre personnalisés).
+- **Offre avec URL de candidature seulement** → la plateforme génère l'email + la lettre, et redirige en un clic vers la page de candidature (candidature *assistée*).
+- Le marché caché (La Bonne Boîte) fournit le plus souvent un contact direct : c'est là que l'envoi par mail prend tout son sens.
 
 Le MVP se concentre sur les **métiers de la diététique**, tout en gardant une architecture ouverte à d'autres métiers.
 
@@ -71,7 +78,7 @@ L'utilisateur gère son profil, son CV (PDF sur Supabase Storage) et sa lettre d
 - **users** (Supabase Auth) : email, mot de passe.
 - **profils** (1 par utilisateur) : `user_id`, `nom`, `titre_recherché`, `cv_url`, `lettre_base`.
 - **recherches** (N par utilisateur) : `user_id`, `intitulé`, `mots_clés`, `code_métier` (ROME, préréglé J1402 au MVP), `localisation`, `rayon_km`, `type_contrat`, `date_création`.
-- **offres** (mutualisées entre tous) : `source`, `source_id`, `titre`, `entreprise`, `description`, `contrat`, `salaire`, `latitude`, `longitude`, `ville`, `url_postuler`, `date_publication`, `date_collecte`.
+- **offres** (mutualisées entre tous) : `source`, `source_id`, `titre`, `entreprise`, `description`, `contrat`, `salaire`, `latitude`, `longitude`, `ville`, `url_postuler`, `email_contact` (si fourni par la source ; conditionne l'envoi direct en brique 2), `date_publication`, `date_collecte`.
 - **resultats** (lien recherche ↔ offre) : `recherche_id`, `offre_id`, `score_pertinence`, `date`.
 
 Décisions de conception :
@@ -127,7 +134,7 @@ Principe : l'app reste utilisable même quand une brique externe tombe.
 Dans l'ordre pressenti, chacune avec sa propre spec :
 
 1. **Marché caché** : intégration de La Bonne Boîte (entreprises susceptibles d'embaucher sur le code diététique dans une zone), pour proposer des candidatures spontanées. Ajoute un type de donnée « entreprise » et la notion de candidature spontanée.
-2. **Candidature assistée** : génération de lettre de motivation adaptée à l'offre par IA, relue et modifiée, puis export.
+2. **Candidature assistée (cœur de valeur)** : pour une offre, génération par IA d'un **email de candidature ET d'une lettre de motivation** personnalisés (à partir de l'offre + lettre de base + CV), relus et modifiés par l'utilisateur, puis **envoi direct** si l'offre expose un email, sinon redirection assistée vers la page de candidature. Statut de candidature créé automatiquement à l'envoi.
 3. **Suivi des candidatures** : statuts (postulé, réponse +/-, relance), table `candidatures`.
 4. **Sources supplémentaires** : Jooble, flux RSS.
 5. **Ouverture à d'autres métiers** : sélection du code ROME au lieu du préréglage diététique.
