@@ -27,19 +27,19 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
       <div>
         <label htmlFor="nom" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Nom</label>
         <input id="nom" value={form.nom ?? ''} onChange={(e) => setForm({ ...form, nom: e.target.value })}
-          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition"
+          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
           style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
         <label htmlFor="titre" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Titre recherché</label>
         <input id="titre" value={form.titre_recherche ?? ''} onChange={(e) => setForm({ ...form, titre_recherche: e.target.value })}
-          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition"
+          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
           style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
         <label htmlFor="lettre" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Lettre de motivation de base</label>
         <textarea id="lettre" rows={8} value={form.lettre_base ?? ''} onChange={(e) => setForm({ ...form, lettre_base: e.target.value })}
-          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition resize-y"
+          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)] resize-y"
           style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
