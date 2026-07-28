@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { lancerRecherche } from '@/lib/recherche/actions'
+import MetierAutocomplete from './metier-autocomplete'
 
 const PHRASES = [
   'Quel *poste* recherchez-vous ?',
@@ -8,11 +9,8 @@ const PHRASES = [
   'Trouvons votre prochain *poste*.',
   'Prêt·e pour un nouveau *chapitre* ?',
 ]
-const JOBS = ['Diététicien', 'Nutritionniste', 'Conseiller en nutrition', 'Diététicien hospitalier', 'Nutrithérapeute']
-
 export default function SearchBar() {
   const [poste, setPoste] = useState('')
-  const [placeholder, setPlaceholder] = useState('Diététicien')
   const headlineRef = useRef<HTMLHeadingElement>(null)
   const [pending, startTransition] = useTransition()
 
@@ -39,27 +37,18 @@ export default function SearchBar() {
     return () => { clearInterval(id); clearTimeout(swap) }
   }, [])
 
-  // placeholder machine à écrire
-  useEffect(() => {
-    let ji = 0, ci = 0, del = false, timer: ReturnType<typeof setTimeout>
-    const tick = () => {
-      const w = JOBS[ji]
-      setPlaceholder(w.slice(0, ci))
-      if (!del) { ci++; if (ci > w.length) { del = true; timer = setTimeout(tick, 1300); return } }
-      else { ci--; if (ci === 0) { del = false; ji = (ji + 1) % JOBS.length } }
-      timer = setTimeout(tick, del ? 45 : 85)
-    }
-    timer = setTimeout(tick, 600)
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
     <div className="hero">
       <div className="logo" style={{ fontSize: 27, marginBottom: 34 }}>Job<span>Compass</span></div>
       <div className="headline"><h1 ref={headlineRef} /></div>
       <form className="searchbar" onSubmit={(e) => { e.preventDefault(); if (poste.trim()) startTransition(() => lancerRecherche(poste)) }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-        <input value={poste} onChange={(e) => setPoste(e.target.value)} placeholder={placeholder} aria-label="Poste recherché" />
+        <MetierAutocomplete
+          value={poste}
+          onChange={setPoste}
+          onSubmit={() => poste.trim() && startTransition(() => lancerRecherche(poste))}
+          placeholder="Diététicien, nutritionniste..."
+        />
         <button type="submit" className="btn-primary" disabled={pending}>{pending ? 'Recherche…' : 'Rechercher'}</button>
       </form>
     </div>

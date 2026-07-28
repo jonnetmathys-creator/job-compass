@@ -102,6 +102,16 @@ body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--
 .field svg { color: var(--muted); }
 .field input, .field select { border: 0; outline: 0; background: transparent; font-family: inherit; font-size: 14px; color: var(--ink); cursor: pointer; }
 .field input { cursor: text; width: 120px; }
+.autocomplete-suggestions {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 700; background: var(--card);
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-md); overflow: hidden;
+  max-height: 260px; overflow-y: auto;
+}
+.autocomplete-suggestions button {
+  display: block; width: 100%; text-align: left; padding: 10px 16px; border: 0; background: transparent;
+  font-family: inherit; font-size: 14px; color: var(--ink); cursor: pointer;
+}
+.autocomplete-suggestions button:hover, .autocomplete-suggestions button:focus { background: var(--accent-soft); }
 .spacer { flex: 1; }
 .count { font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap; }
 .count b { color: var(--ink); font-weight: 700; }
