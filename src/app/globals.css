@@ -520,3 +520,72 @@ a.logo:hover { opacity: .78; }
   font-size: .8rem; color: var(--muted); background: none; border: 0; cursor: pointer; text-decoration: underline;
 }
 .cand-suivi-retirer:hover { color: #e2565b; }
+
+/* ── Dashboard suivi ─────────────────────────────────────────────────── */
+.sr-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.suivi-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 12px; max-width: 460px; margin: 30px auto 60px;
+}
+.suivi-empty-ico { width: 72px; height: 72px; border-radius: 20px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.suivi-empty-ico svg { width: 34px; height: 34px; }
+.suivi-empty h2 { font-size: 1.35rem; font-weight: 800; }
+.suivi-empty p { font-size: .94rem; color: var(--muted); line-height: 1.55; }
+.suivi-empty .btn-primary { margin-top: 6px; }
+
+.suivi-dash { display: flex; flex-direction: column; gap: 26px; padding-bottom: 56px; }
+.suivi-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.suivi-stat {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 15px 17px;
+  box-shadow: var(--shadow-sm);
+}
+.suivi-stat b { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+.suivi-stat span { font-size: .8rem; color: var(--muted); font-weight: 600; }
+@media (max-width: 620px) { .suivi-stats { grid-template-columns: repeat(2, 1fr); } }
+
+.suivi-section-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+.suivi-section-head h3 { font-size: 1.02rem; font-weight: 700; }
+.suivi-section-count {
+  font-size: .74rem; font-weight: 700; color: var(--muted);
+  background: #f1f2f1; border-radius: 999px; padding: 2px 9px;
+}
+.suivi-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.suivi-cards { display: flex; flex-direction: column; gap: 12px; }
+
+.suivi-carte {
+  background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--line);
+  border-radius: 14px; padding: 15px 17px; box-shadow: var(--shadow-sm);
+}
+.suivi-carte-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.suivi-carte-titre { font-size: 1rem; font-weight: 700; color: var(--ink); text-decoration: none; }
+.suivi-carte-titre:hover { color: var(--accent-dark); }
+.suivi-carte-emp { font-size: .86rem; color: var(--muted); margin-top: 2px; }
+.suivi-carte-date { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.suivi-carte-statut select {
+  font-family: inherit; font-size: .84rem; font-weight: 600; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: #fff; cursor: pointer; outline: none;
+}
+.suivi-carte-statut select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.suivi-carte-details { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 13px; }
+.suivi-champ { display: flex; flex-direction: column; gap: 5px; }
+.suivi-champ.grow { flex: 1; min-width: 200px; }
+.suivi-champ span { font-size: .74rem; font-weight: 600; color: var(--muted); }
+.suivi-champ input, .suivi-champ textarea {
+  font-family: inherit; font-size: .86rem; color: var(--ink); background: #fff;
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; outline: none; resize: vertical;
+}
+.suivi-champ input:focus, .suivi-champ textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* Couleurs par statut : liseré de carte + pastille de section */
+.st-postulee.suivi-carte { border-left-color: #3b82f6; }
+.st-postulee .suivi-dot { background: #3b82f6; }
+.st-relancee.suivi-carte { border-left-color: #d99a2b; }
+.st-relancee .suivi-dot { background: #d99a2b; }
+.st-entretien.suivi-carte { border-left-color: #8b5cf6; }
+.st-entretien .suivi-dot { background: #8b5cf6; }
+.st-acceptee.suivi-carte { border-left-color: var(--accent); }
+.st-acceptee .suivi-dot { background: var(--accent); }
+.st-refusee.suivi-carte { border-left-color: #e2565b; }
+.st-refusee .suivi-dot { background: #e2565b; }
