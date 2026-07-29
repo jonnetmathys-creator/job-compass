@@ -510,3 +510,13 @@ a.logo:hover { opacity: .78; }
 }
 .cand-postuler .btn-primary { display: inline-flex; align-items: center; gap: 9px; }
 .cand-postuler-hint { font-size: .82rem; color: var(--muted); line-height: 1.5; max-width: 460px; }
+
+/* Encart suivi dans le bloc Postuler */
+.cand-suivi { margin-top: 6px; display: flex; justify-content: center; }
+.cand-suivi-ok { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.cand-suivi-badge { font-size: .88rem; font-weight: 700; color: var(--accent-dark); }
+.cand-suivi-link { font-size: .85rem; font-weight: 600; color: var(--accent-dark); text-decoration: underline; }
+.cand-suivi-retirer {
+  font-size: .8rem; color: var(--muted); background: none; border: 0; cursor: pointer; text-decoration: underline;
+}
+.cand-suivi-retirer:hover { color: #e2565b; }

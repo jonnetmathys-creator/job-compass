@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { OffreRow } from '@/lib/offres/types'
 import type { Candidature } from '@/lib/candidature/types'
 import { genererCandidature, enregistrerCandidature } from '@/lib/candidature/actions'
+import { marquerPostulee, retirerDuSuivi } from '@/lib/suivi/actions'
 import LettreImprimable from './lettre-imprimable'
 import LoadingOverlay from './loading-overlay'
 
@@ -29,12 +30,14 @@ export default function CandidatureEditor({
   const [info, setInfo] = useState<string | null>(null)
   const [generating, setGenerating] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [statutSuivi, setStatutSuivi] = useState<string>(candidatureInitiale?.statut ?? 'brouillon')
 
   function appliquer(c: Candidature) {
     setCand(c)
     setObjet(c.email_objet ?? '')
     setCorps(c.email_corps ?? '')
     setLettre(c.lettre ?? '')
+    setStatutSuivi(c.statut ?? 'brouillon')
   }
 
   function generer() {
@@ -84,6 +87,32 @@ export default function CandidatureEditor({
     const dest = offre.email_contact ?? ''
     const href = `mailto:${dest}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(corps)}`
     window.location.href = href
+  }
+
+  function jaiPostule() {
+    setErreur(null)
+    setStatutSuivi('postulee')
+    startTransition(async () => {
+      try {
+        await marquerPostulee(offre.id)
+      } catch {
+        setStatutSuivi('brouillon')
+        setErreur("Échec de l'enregistrement dans le suivi, réessaie.")
+      }
+    })
+  }
+
+  function retirerSuivi() {
+    setErreur(null)
+    setStatutSuivi('brouillon')
+    startTransition(async () => {
+      try {
+        await retirerDuSuivi(offre.id)
+      } catch {
+        setStatutSuivi('postulee')
+        setErreur('Échec du retrait du suivi, réessaie.')
+      }
+    })
   }
 
   // Profil incomplet : pas de génération possible.
@@ -200,6 +229,23 @@ export default function CandidatureEditor({
               </>
             )
             : <button type="button" className="btn-primary btn-lg" disabled>Lien de candidature indisponible</button>}
+
+        <div className="cand-suivi">
+          {statutSuivi === 'brouillon'
+            ? (
+              <button type="button" className="btn-ghost" onClick={jaiPostule} disabled={isPending}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                J&apos;ai postulé
+              </button>
+            )
+            : (
+              <div className="cand-suivi-ok">
+                <span className="cand-suivi-badge">Dans ton suivi ✓</span>
+                <Link href="/suivi" className="cand-suivi-link">Voir dans le suivi</Link>
+                <button type="button" className="cand-suivi-retirer" onClick={retirerSuivi} disabled={isPending}>Retirer du suivi</button>
+              </div>
+            )}
+        </div>
       </div>
 
       <LettreImprimable lettre={lettre} offre={offre} />

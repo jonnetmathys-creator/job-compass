@@ -8,6 +8,11 @@ vi.mock('@/lib/candidature/actions', () => ({
   enregistrerCandidature: vi.fn(),
 }))
 
+vi.mock('@/lib/suivi/actions', () => ({
+  marquerPostulee: vi.fn(),
+  retirerDuSuivi: vi.fn(),
+}))
+
 const offre = {
   id: 'o1', source: 'x', source_id: 'x', titre: 'Diététicien', entreprise: 'Clinique', entreprise_logo: null,
   description: null, contrat: 'CDI', salaire: null, latitude: null, longitude: null, ville: 'Nantes',
@@ -34,4 +39,18 @@ test('candidature présente : champs éditables + boutons copier', () => {
   expect((screen.getByLabelText(/lettre/i) as HTMLTextAreaElement).value).toBe('Ma lettre')
   expect(screen.getByRole('button', { name: /copier l'email/i })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: /copier la lettre/i })).toBeInTheDocument()
+})
+
+test('candidature en brouillon : bouton « J\'ai postulé » présent', () => {
+  const cand = { user_id: 'u1', offre_id: 'o1', email_objet: 'O', email_corps: 'C', lettre: 'L', statut: 'brouillon' }
+  render(<CandidatureEditor offre={offre} profilComplet={true} candidatureInitiale={cand} />)
+  expect(screen.getByRole('button', { name: /j'ai postulé/i })).toBeInTheDocument()
+})
+
+test('candidature déjà postulée : encart « dans ton suivi » + lien vers /suivi, pas de bouton « J\'ai postulé »', () => {
+  const cand = { user_id: 'u1', offre_id: 'o1', email_objet: 'O', email_corps: 'C', lettre: 'L', statut: 'postulee' }
+  render(<CandidatureEditor offre={offre} profilComplet={true} candidatureInitiale={cand} />)
+  expect(screen.getByText(/dans ton suivi/i)).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: /voir dans le suivi/i })).toHaveAttribute('href', '/suivi')
+  expect(screen.queryByRole('button', { name: /j'ai postulé/i })).toBeNull()
 })
