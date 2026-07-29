@@ -20,6 +20,7 @@ export default function SuiviCarte({ item, today }: { item: CandidatureSuivi; to
   const [relanceOuverte, setRelanceOuverte] = useState(Boolean(item.relance_corps))
   const [info, setInfo] = useState<string | null>(null)
   const [erreur, setErreur] = useState<string | null>(null)
+  const [relanceEnCours, setRelanceEnCours] = useState(false)
   const [isPending, startTransition] = useTransition()
   const o = item.offre
   const aRelancer = estARelancer(statut, relance || null, today)
@@ -33,12 +34,16 @@ export default function SuiviCarte({ item, today }: { item: CandidatureSuivi; to
     startTransition(async () => { try { await enregistrerSuivi(o.id, { notes: nextNotes || null, relance_le: nextRelance || null }) } catch { /* non bloquant */ } })
   }
   function genererMailRelance() {
-    setErreur(null); setInfo(null)
+    setErreur(null); setInfo(null); setRelanceEnCours(true)
     startTransition(async () => {
       try {
         const c = await genererRelance(o.id)
         setRelObjet(c.objet); setRelCorps(c.corps); setRelanceOuverte(true)
-      } catch { setErreur('La génération a échoué, réessaie.') }
+      } catch {
+        setErreur('La génération a échoué, réessaie.')
+      } finally {
+        setRelanceEnCours(false)
+      }
     })
   }
   function sauverRelance() {
@@ -94,8 +99,10 @@ export default function SuiviCarte({ item, today }: { item: CandidatureSuivi; to
       </div>
 
       <div className="suivi-relance">
-        <button type="button" className="btn-ghost" onClick={genererMailRelance} disabled={isPending}>
-          {isPending ? '…' : (relCorps ? 'Regénérer le mail de relance' : 'Générer un mail de relance')}
+        <button type="button" className="btn-ghost" onClick={genererMailRelance} disabled={isPending || relanceEnCours}>
+          {relanceEnCours
+            ? (<><span className="mini-spinner" aria-hidden="true" />L&apos;IA rédige ta relance…</>)
+            : (relCorps ? 'Regénérer le mail de relance' : 'Générer un mail de relance')}
         </button>
         {relanceOuverte && (
           <div className="suivi-relance-bloc">

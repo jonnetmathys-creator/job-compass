@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { getServerClient } from '@/lib/supabase/server'
 import SearchBar from '@/components/search-bar'
 
@@ -25,10 +24,6 @@ export default async function Home() {
         </svg>
       </div>
       <SearchBar />
-      <Link href="/suivi" className="accueil-suivi-link">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" /></svg>
-        Suivi de mes candidatures
-      </Link>
     </main>
   )
 }

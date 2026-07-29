@@ -635,3 +635,12 @@ a.logo:hover { opacity: .78; }
 .suivi-relance-bloc input:focus, .suivi-relance-bloc textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .suivi-relance-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .accueil-suivi-link:hover { color: var(--accent-dark); background: var(--accent-soft); }
+
+/* Petit spinner inline (ex. génération du mail de relance) */
+.mini-spinner {
+  display: inline-block; width: 14px; height: 14px; margin-right: 7px; vertical-align: -2px;
+  border: 2px solid var(--accent-soft); border-top-color: var(--accent); border-radius: 50%;
+  animation: mini-spin .7s linear infinite;
+}
+@keyframes mini-spin { to { transform: rotate(360deg) } }
+.btn-ghost .mini-spinner { border-color: #e4e4e4; border-top-color: var(--accent); }
