@@ -224,11 +224,11 @@ body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--
   box-shadow: 0 4px 14px rgba(46, 158, 91, .32);
 }
 .btn-apply:hover { background: var(--accent-dark); transform: translateY(-1px); }
-.btn-future {
-  display: flex; align-items: center; justify-content: center; gap: 8px; background: #f4f5f4; color: #9aa0a6;
-  font-family: inherit; font-weight: 600; font-size: 14px; border: 1px dashed #d7d7d7; border-radius: 14px; padding: 13px; cursor: not-allowed;
+.btn-ia {
+  display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-soft); color: var(--accent-dark);
+  font-family: inherit; font-weight: 600; font-size: 14px; border: 1.5px solid var(--accent); border-radius: 14px; padding: 13px; cursor: pointer; transition: .2s;
 }
-.btn-future .soon { font-size: 11px; background: #fff; color: var(--muted); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); }
+.btn-ia:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
 .btn-save {
   display: flex; align-items: center; justify-content: center; gap: 8px; background: #fff; color: var(--ink);
   font-family: inherit; font-weight: 600; font-size: 14px; border: 1px solid var(--line); border-radius: 14px; padding: 13px; cursor: pointer; transition: .2s;
@@ -356,10 +356,11 @@ body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--
 .lettre-imprimable .li-corps { white-space: pre-wrap; line-height: 1.6; font-size: 12pt; }
 
 @media print {
-  body * { visibility: hidden; }
-  .lettre-imprimable, .lettre-imprimable * { visibility: visible; }
-  .lettre-imprimable {
-    display: block; position: absolute; inset: 0; margin: 0;
+  body:has(.lettre-imprimable) * { visibility: hidden; }
+  body:has(.lettre-imprimable) .lettre-imprimable,
+  body:has(.lettre-imprimable) .lettre-imprimable * { visibility: visible; }
+  body:has(.lettre-imprimable) .lettre-imprimable {
+    display: block; position: absolute; top: 0; left: 0; right: 0; margin: 0;
     padding: 24mm 20mm; color: #000; background: #fff; font-family: Georgia, "Times New Roman", serif;
   }
 }

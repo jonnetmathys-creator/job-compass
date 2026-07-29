@@ -143,7 +143,7 @@ export default function OffreDetail({ offre, likedInitial }: { offre: OffreRow; 
                   </a>
                 )
                 : <button type="button" className="btn-apply" disabled>Lien indisponible</button>}
-              <Link href={`/offre/${offre.id}/candidature`} className="btn-future">
+              <Link href={`/offre/${offre.id}/candidature`} className="btn-ia">
                 Candidater avec lettre IA
               </Link>
             </aside>
