@@ -22,6 +22,7 @@ export function normalizeFtOffre(raw: any): NormalizedOffer {
     source_id: String(raw.id),
     titre: raw.intitule ?? '',
     entreprise: raw.entreprise?.nom ?? null,
+    entreprise_logo: raw.entreprise?.logo ?? null,
     description: raw.description ?? null,
     contrat: raw.typeContratLibelle ?? raw.typeContrat ?? null,
     salaire: raw.salaire?.libelle ?? null,

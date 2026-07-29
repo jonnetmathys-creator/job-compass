@@ -23,24 +23,27 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
   }
 
   return (
-    <form onSubmit={save} className="max-w-lg space-y-4">
+    <form onSubmit={save} className="space-y-5">
       <div>
-        <label htmlFor="nom" className="block text-sm mb-1">Nom</label>
+        <label htmlFor="nom" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Nom</label>
         <input id="nom" value={form.nom ?? ''} onChange={(e) => setForm({ ...form, nom: e.target.value })}
-          className="w-full rounded-xl border px-3 py-2" />
+          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
+          style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
-        <label htmlFor="titre" className="block text-sm mb-1">Titre recherché</label>
+        <label htmlFor="titre" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Titre recherché</label>
         <input id="titre" value={form.titre_recherche ?? ''} onChange={(e) => setForm({ ...form, titre_recherche: e.target.value })}
-          className="w-full rounded-xl border px-3 py-2" />
+          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
+          style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
-        <label htmlFor="lettre" className="block text-sm mb-1">Lettre de motivation de base</label>
+        <label htmlFor="lettre" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Lettre de motivation de base</label>
         <textarea id="lettre" rows={8} value={form.lettre_base ?? ''} onChange={(e) => setForm({ ...form, lettre_base: e.target.value })}
-          className="w-full rounded-xl border px-3 py-2" />
+          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)] resize-y"
+          style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
-        <label htmlFor="cv" className="block text-sm mb-1">CV (PDF)</label>
+        <label htmlFor="cv" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>CV (PDF)</label>
         <input id="cv" type="file" accept="application/pdf"
           onChange={async (e) => {
             const file = e.target.files?.[0]
@@ -55,14 +58,15 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
               setError("Échec de l'envoi du CV, réessayez.")
             }
           }}
-          className="w-full text-sm" />
-        {form.cv_url && <p className="text-xs mt-1 text-gray-500">CV actuel : {form.cv_url}</p>}
+          className="w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium file:cursor-pointer cursor-pointer"
+          style={{ color: 'var(--muted)' }} />
+        {form.cv_url && <p className="text-xs mt-1.5" style={{ color: 'var(--muted)' }}>CV actuel : {form.cv_url}</p>}
       </div>
-      <button type="submit" className="rounded-xl px-4 py-2 text-white font-medium" style={{ background: 'var(--accent)' }}>
-        Enregistrer
-      </button>
-      {saved && <span className="ml-3 text-sm" style={{ color: 'var(--accent)' }}>Enregistré ✓</span>}
-      {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+      <div className="flex items-center gap-3 pt-2">
+        <button type="submit" className="btn-primary">Enregistrer</button>
+        {saved && <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>Enregistré ✓</span>}
+      </div>
+      {error && <p className="text-sm mt-1" style={{ color: '#e2565b' }}>{error}</p>}
     </form>
   )
 }

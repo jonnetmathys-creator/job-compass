@@ -48,6 +48,16 @@ test('normalizeFtOffre tolère les champs manquants', () => {
   expect(o.email_contact).toBeNull()
 })
 
+test('normalizeFtOffre capte le logo entreprise quand présent', () => {
+  const o = normalizeFtOffre({ id: '1', intitule: 'X', entreprise: { nom: 'ACME', logo: 'https://x/logo.png' } })
+  expect(o.entreprise_logo).toBe('https://x/logo.png')
+})
+
+test('normalizeFtOffre met entreprise_logo à null si absent', () => {
+  const o = normalizeFtOffre({ id: '2', intitule: 'Y', entreprise: { nom: 'ACME' } })
+  expect(o.entreprise_logo).toBeNull()
+})
+
 test('searchFranceTravail plafonne à 300 offres au total, même avec plusieurs mots-clés qui débordent chacun', async () => {
   let counter = 0
   const fetchImpl = vi.fn(async () => ({

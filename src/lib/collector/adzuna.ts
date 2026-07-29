@@ -23,6 +23,7 @@ export function normalizeAdzunaOffre(raw: any): NormalizedOffer {
     source_id: String(raw.id),
     titre: raw.title ?? '',
     entreprise: raw.company?.display_name ?? null,
+    entreprise_logo: null, // Adzuna ne fournit pas de logo entreprise
     description: raw.description ?? null,
     contrat: raw.contract_time ?? raw.contract_type ?? null,
     salaire,

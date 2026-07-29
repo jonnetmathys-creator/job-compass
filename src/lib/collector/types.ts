@@ -3,6 +3,7 @@ export type NormalizedOffer = {
   source_id: string
   titre: string
   entreprise: string | null
+  entreprise_logo: string | null
   description: string | null
   contrat: string | null
   salaire: string | null

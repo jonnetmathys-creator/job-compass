@@ -36,6 +36,9 @@ export default function LoginPage() {
         <button type="submit"
           className="w-full rounded-xl px-3 py-2 text-white font-medium"
           style={{ background: 'var(--accent)' }}>Se connecter</button>
+        <p className="text-sm text-center" style={{ color: 'var(--muted)' }}>
+          Pas encore de compte ? <a href="/signup" style={{ color: 'var(--accent-dark)', fontWeight: 600 }}>Créer un compte</a>
+        </p>
       </form>
     </main>
   )
