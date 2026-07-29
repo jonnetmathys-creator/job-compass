@@ -1,0 +1,46 @@
+import { expect, test, vi } from 'vitest'
+import { getBoite, compterNonVues, marquerOffreVue } from './boite'
+
+test('getBoite ne renvoie que les entrées non expirées, jointes aux offres, triées', async () => {
+  const rows = [
+    { created_at: '2026-07-29T10:00:00Z', vue_le: null, offres: { id: 'o2', titre: 'B' } },
+    { created_at: '2026-07-29T08:00:00Z', vue_le: '2026-07-29T09:00:00Z', offres: { id: 'o1', titre: 'A' } },
+  ]
+  const gt = vi.fn().mockResolvedValue({ data: rows, error: null })
+  const eq = vi.fn(() => ({ gt }))
+  const select = vi.fn(() => ({ eq }))
+  const client = { from: vi.fn(() => ({ select })) } as any
+
+  const out = await getBoite(client, 'u1')
+
+  expect(client.from).toHaveBeenCalledWith('nouvelles_offres')
+  expect(eq).toHaveBeenCalledWith('user_id', 'u1')
+  // filtre d'expiration appliqué sur created_at
+  expect(gt).toHaveBeenCalledWith('created_at', expect.any(String))
+  expect(out.map((n) => n.offre.id)).toEqual(['o2', 'o1'])
+})
+
+test('compterNonVues filtre vue_le null et non expirées', async () => {
+  const gt = vi.fn().mockResolvedValue({ data: [{ offre_id: 'a' }, { offre_id: 'b' }], error: null })
+  const is = vi.fn(() => ({ gt }))
+  const eq = vi.fn(() => ({ is }))
+  const select = vi.fn(() => ({ eq }))
+  const client = { from: vi.fn(() => ({ select })) } as any
+
+  const n = await compterNonVues(client, 'u1')
+  expect(is).toHaveBeenCalledWith('vue_le', null)
+  expect(n).toBe(2)
+})
+
+test('marquerOffreVue pose vue_le pour l\'entrée non vue', async () => {
+  const calls: any[] = []
+  const is = vi.fn(() => Promise.resolve({ error: null }))
+  const eq2 = vi.fn(() => ({ is }))
+  const eq1 = vi.fn(() => ({ eq: eq2 }))
+  const update = vi.fn((p: any) => { calls.push(p); return { eq: eq1 } })
+  const client = { from: vi.fn(() => ({ update })) } as any
+
+  await marquerOffreVue(client, 'u1', 'o1')
+  expect(client.from).toHaveBeenCalledWith('nouvelles_offres')
+  expect(calls[0]).toHaveProperty('vue_le')
+})
