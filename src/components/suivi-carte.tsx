@@ -52,11 +52,11 @@ export default function SuiviCarte({ item, today }: { item: CandidatureSuivi; to
     startTransition(async () => { try { await supprimerCandidature(o.id) } catch { setErreur('Échec de la suppression, réessaie.') } })
   }
 
-  const titre = o.url_postuler
-    ? <a href={o.source === 'manuelle' ? o.url_postuler : `/offre/${o.id}`} className="suivi-carte-titre" {...(o.source === 'manuelle' ? { target: '_blank', rel: 'noopener' } : {})}>{o.titre}</a>
-    : o.source === 'manuelle'
-      ? <span className="suivi-carte-titre">{o.titre}</span>
-      : <Link href={`/offre/${o.id}`} className="suivi-carte-titre">{o.titre}</Link>
+  const titre = o.source === 'manuelle'
+    ? (o.url_postuler
+        ? <a href={o.url_postuler} target="_blank" rel="noopener" className="suivi-carte-titre">{o.titre}</a>
+        : <span className="suivi-carte-titre">{o.titre}</span>)
+    : <Link href={`/offre/${o.id}`} className="suivi-carte-titre">{o.titre}</Link>
 
   return (
     <div className={`suivi-carte st-${statut}`}>
