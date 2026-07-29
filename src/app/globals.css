@@ -521,6 +521,15 @@ a.logo:hover { opacity: .78; }
 }
 .cand-suivi-retirer:hover { color: #e2565b; }
 
+/* Bouton « J'ai postulé » (page offre + candidature) */
+.postuler-toggle { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.postuler-toggle .btn-apply { display: inline-flex; align-items: center; gap: 8px; }
+.postuler-toggle.done { justify-content: flex-start; }
+.postuler-badge { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; color: var(--accent-dark); }
+.postuler-link { font-size: .86rem; font-weight: 600; color: var(--accent-dark); text-decoration: underline; }
+.postuler-annuler { font-size: .8rem; color: var(--muted); background: none; border: 0; cursor: pointer; text-decoration: underline; }
+.postuler-annuler:hover { color: #e2565b; }
+
 /* ── Dashboard suivi ─────────────────────────────────────────────────── */
 .sr-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 

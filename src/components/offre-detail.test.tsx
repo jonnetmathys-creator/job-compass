@@ -4,6 +4,7 @@ import OffreDetail from './offre-detail'
 import type { OffreRow } from '@/lib/offres/types'
 
 vi.mock('@/lib/favoris/actions', () => ({ toggleFavori: vi.fn(async () => ({ liked: true })) }))
+vi.mock('@/lib/suivi/actions', () => ({ marquerPostulee: vi.fn(), retirerDuSuivi: vi.fn() }))
 
 const offre: OffreRow = {
   id: '1', source: 'ft', source_id: '1', titre: 'Diététicien', entreprise: 'Clinique du Parc', entreprise_logo: null,
@@ -13,14 +14,14 @@ const offre: OffreRow = {
 
 describe('OffreDetail', () => {
   test('affiche le titre, l’initiale employeur en repli, et un lien Postuler', () => {
-    render(<OffreDetail offre={offre} likedInitial={false} />)
+    render(<OffreDetail offre={offre} likedInitial={false} statutSuivi="brouillon" />)
     expect(screen.getByRole('heading', { name: 'Diététicien' })).toBeInTheDocument()
     expect(screen.getByText('C')).toBeInTheDocument() // initiale de "Clinique…"
     expect(screen.getByRole('link', { name: /postuler/i })).toHaveAttribute('href', 'https://ft/offre')
   })
 
   test('affiche le logo employeur quand présent', () => {
-    render(<OffreDetail offre={{ ...offre, entreprise_logo: 'https://x/logo.png' }} likedInitial={false} />)
+    render(<OffreDetail offre={{ ...offre, entreprise_logo: 'https://x/logo.png' }} likedInitial={false} statutSuivi="brouillon" />)
     expect(screen.getByRole('img')).toHaveAttribute('src', 'https://x/logo.png')
   })
 })

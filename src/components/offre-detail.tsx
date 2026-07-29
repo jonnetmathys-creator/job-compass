@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { OffreRow } from '@/lib/offres/types'
 import { positionEpingle } from '@/lib/geo/departements'
 import { toggleFavori } from '@/lib/favoris/actions'
+import PostulerToggle from './postuler-toggle'
 
 const PIN_SVG = '<svg width="28" height="38" viewBox="0 0 30 40" fill="currentColor"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 12.4 22.7 14.2 24.5a1.1 1.1 0 0 0 1.6 0C17.6 37.7 30 25.5 30 15 30 6.7 23.3 0 15 0Z" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="5.4" fill="#fff"/></svg>'
 
@@ -13,7 +14,7 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-export default function OffreDetail({ offre, likedInitial }: { offre: OffreRow; likedInitial: boolean }) {
+export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offre: OffreRow; likedInitial: boolean; statutSuivi: string }) {
   const [liked, setLiked] = useState(likedInitial)
   const [isPending, startTransition] = useTransition()
   const mapElRef = useRef<HTMLDivElement>(null)
@@ -143,6 +144,7 @@ export default function OffreDetail({ offre, likedInitial }: { offre: OffreRow; 
                   </a>
                 )
                 : <button type="button" className="btn-apply" disabled>Lien indisponible</button>}
+              <PostulerToggle offreId={offre.id} statutInitial={statutSuivi} />
               <Link href={`/offre/${offre.id}/candidature`} className="btn-ia">
                 Candidater avec lettre IA
               </Link>
