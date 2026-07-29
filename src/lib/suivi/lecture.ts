@@ -96,12 +96,14 @@ export async function setDetailsSuivi(
 }
 
 export async function supprimerCandidature(client: SupabaseClient, userId: string, offreId: string): Promise<void> {
-  // Récupère la source de l'offre avant suppression (pour nettoyer une offre manuelle).
   const { data: off } = await client.from('offres').select('source').eq('id', offreId).single()
-  const { error } = await client.from('candidatures').delete().eq('user_id', userId).eq('offre_id', offreId)
-  if (error) throw error
   if (off?.source === 'manuelle') {
-    // RLS offres_delete_manuelle autorise la suppression d'une offre manuelle.
-    await client.from('offres').delete().eq('id', offreId)
+    // Supprime l'offre manuelle : la policy RLS n'autorise que le propriétaire
+    // (celui qui a une candidature dessus). Le cascade FK retire la candidature.
+    const { error } = await client.from('offres').delete().eq('id', offreId)
+    if (error) throw error
+  } else {
+    const { error } = await client.from('candidatures').delete().eq('user_id', userId).eq('offre_id', offreId)
+    if (error) throw error
   }
 }

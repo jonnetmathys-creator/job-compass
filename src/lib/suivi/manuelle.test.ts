@@ -26,7 +26,7 @@ test('creerCandidatureManuelle insère une offre manuelle puis la candidature', 
   expect(candInsert).toMatchObject({ user_id: 'u1', offre_id: 'offre-123', statut: 'postulee', postulee_le: '2026-07-10', relance_le: '2026-07-20' })
 })
 
-test('supprimerCandidature supprime la candidature puis l\'offre si manuelle', async () => {
+test('supprimerCandidature supprime l\'offre (et sa candidature via cascade) si offre manuelle', async () => {
   const deletes: string[] = []
   const single = vi.fn().mockResolvedValue({ data: { source: 'manuelle' }, error: null })
   const client: any = {
@@ -40,6 +40,24 @@ test('supprimerCandidature supprime la candidature puis l\'offre si manuelle', a
   }
 
   await supprimerCandidature(client, 'u1', 'offre-123')
-  expect(deletes).toContain('candidatures')
-  expect(deletes).toContain('offres')
+  expect(deletes).toEqual(['offres'])
+  expect(deletes).not.toContain('candidatures')
+})
+
+test('supprimerCandidature supprime seulement la candidature si offre France Travail', async () => {
+  const deletes: string[] = []
+  const single = vi.fn().mockResolvedValue({ data: { source: 'france_travail' }, error: null })
+  const client: any = {
+    from: vi.fn((table: string) => ({
+      select: () => ({ eq: () => ({ single }) }),
+      delete: () => {
+        deletes.push(table)
+        return { eq: () => ({ eq: () => Promise.resolve({ error: null }), then: (r: any) => r({ error: null }) }), then: (r: any) => r({ error: null }) }
+      },
+    })),
+  }
+
+  await supprimerCandidature(client, 'u1', 'offre-456')
+  expect(deletes).toEqual(['candidatures'])
+  expect(deletes).not.toContain('offres')
 })

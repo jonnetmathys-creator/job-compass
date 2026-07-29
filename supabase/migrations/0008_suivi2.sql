@@ -11,4 +11,10 @@ create policy offres_insert_manuelle on public.offres
 
 create policy offres_delete_manuelle on public.offres
   for delete to authenticated
-  using (source = 'manuelle');
+  using (
+    source = 'manuelle'
+    and exists (
+      select 1 from public.candidatures c
+      where c.offre_id = offres.id and c.user_id = auth.uid()
+    )
+  );
