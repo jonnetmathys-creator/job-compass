@@ -5,6 +5,14 @@ import type { OffreRow } from '@/lib/offres/types'
 import type { Candidature } from '@/lib/candidature/types'
 import { genererCandidature, enregistrerCandidature } from '@/lib/candidature/actions'
 import LettreImprimable from './lettre-imprimable'
+import LoadingOverlay from './loading-overlay'
+
+const GENERATION_MSGS = [
+  'Lecture de ton CV…',
+  "Analyse de l'offre…",
+  'Rédaction de ta lettre…',
+  'Peaufinage du ton…',
+]
 
 export default function CandidatureEditor({
   offre, profilComplet, candidatureInitiale,
@@ -19,6 +27,7 @@ export default function CandidatureEditor({
   const [lettre, setLettre] = useState(candidatureInitiale?.lettre ?? '')
   const [erreur, setErreur] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const [generating, setGenerating] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   function appliquer(c: Candidature) {
@@ -29,12 +38,14 @@ export default function CandidatureEditor({
   }
 
   function generer() {
-    setErreur(null); setInfo(null)
+    setErreur(null); setInfo(null); setGenerating(true)
     startTransition(async () => {
       try {
         appliquer(await genererCandidature(offre.id))
       } catch {
         setErreur('La génération a échoué, réessaie.')
+      } finally {
+        setGenerating(false)
       }
     })
   }
@@ -85,6 +96,7 @@ export default function CandidatureEditor({
           {isPending ? "L'IA rédige ta candidature…" : 'Générer ma candidature'}
         </button>
         {erreur && <p className="cand-err">{erreur}</p>}
+        {generating && <LoadingOverlay messages={GENERATION_MSGS} />}
       </div>
     )
   }
@@ -119,6 +131,7 @@ export default function CandidatureEditor({
         {erreur && <span className="cand-err">{erreur}</span>}
       </div>
       <LettreImprimable lettre={lettre} offre={offre} />
+      {generating && <LoadingOverlay messages={GENERATION_MSGS} />}
     </div>
   )
 }

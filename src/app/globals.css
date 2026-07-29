@@ -364,3 +364,58 @@ body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--
     padding: 24mm 20mm; color: #000; background: #fff; font-family: Georgia, "Times New Roman", serif;
   }
 }
+
+/* ── Overlay de chargement (recherche + génération IA) ───────────────── */
+.lo-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(16, 20, 17, 0.66);
+  backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+  animation: lo-fade 0.32s ease;
+}
+@keyframes lo-fade { from { opacity: 0 } to { opacity: 1 } }
+
+.lo-card { display: flex; flex-direction: column; align-items: center; gap: 30px; padding: 0 24px; }
+
+.lo-radar {
+  position: relative; width: 132px; height: 132px;
+  display: grid; place-items: center; color: var(--accent);
+}
+.lo-ring {
+  position: absolute; inset: 0; margin: auto; width: 46px; height: 46px;
+  border: 2px solid var(--accent); border-radius: 50%; opacity: 0;
+  animation: lo-pulse 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+.lo-ring:nth-child(2) { animation-delay: 0.8s }
+.lo-ring:nth-child(3) { animation-delay: 1.6s }
+@keyframes lo-pulse {
+  0%   { transform: scale(0.4); opacity: 0.7 }
+  100% { transform: scale(2.9); opacity: 0 }
+}
+.lo-sweep {
+  position: absolute; width: 132px; height: 132px; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(46, 158, 91, 0.30) 42deg, transparent 74deg);
+  animation: lo-spin 1.5s linear infinite;
+}
+@keyframes lo-spin { to { transform: rotate(360deg) } }
+.lo-core {
+  position: relative; z-index: 1; width: 54px; height: 54px; border-radius: 50%;
+  background: #fff; display: grid; place-items: center; color: var(--accent);
+  box-shadow: 0 8px 24px rgba(46, 158, 91, 0.38);
+  animation: lo-bob 2s ease-in-out infinite;
+}
+@keyframes lo-bob { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+
+.lo-msg {
+  color: #fff; font-size: 1.02rem; font-weight: 600; letter-spacing: 0.2px;
+  text-align: center; min-height: 1.4em; max-width: 320px;
+  animation: lo-msgin 0.5s ease;
+}
+@keyframes lo-msgin {
+  from { opacity: 0; transform: translateY(7px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lo-ring, .lo-sweep, .lo-core { animation: none }
+  .lo-msg { animation: none }
+}

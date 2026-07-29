@@ -2,12 +2,19 @@
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { lancerRecherche } from '@/lib/recherche/actions'
 import MetierAutocomplete from './metier-autocomplete'
+import LoadingOverlay from './loading-overlay'
 
 const PHRASES = [
   'Quel *poste* recherchez-vous ?',
   'Quelle sera votre prochaine *mission* ?',
   'Trouvons votre prochain *poste*.',
   'Prêt·e pour un nouveau *chapitre* ?',
+]
+const RECHERCHE_MSGS = [
+  'Exploration des offres…',
+  'Analyse des postes disponibles…',
+  'Localisation sur la carte…',
+  'On y est presque…',
 ]
 export default function SearchBar() {
   const [poste, setPoste] = useState('')
@@ -51,6 +58,7 @@ export default function SearchBar() {
         />
         <button type="submit" className="btn-primary" disabled={pending}>{pending ? 'Recherche…' : 'Rechercher'}</button>
       </form>
+      {pending && <LoadingOverlay messages={RECHERCHE_MSGS} />}
     </div>
   )
 }
