@@ -58,6 +58,11 @@ export async function genererRelanceCore(deps: {
 
   const prompt = buildPromptRelance(offre, { nom: profil?.nom ?? null }, cand.email_corps ?? null)
   const contenu = await appeler(prompt, RELANCE_SCHEMA) as RelanceContenu
+  // Validation minimale avant persistance : Gemini peut renvoyer un JSON
+  // incomplet ou mal formé malgré le schéma demandé.
+  if (typeof contenu?.objet !== 'string' || !contenu.objet.trim() || typeof contenu?.corps !== 'string' || !contenu.corps.trim()) {
+    throw new Error('Réponse Gemini malformée')
+  }
   await setRelanceEmail(client, userId, offreId, contenu)
   return contenu
 }

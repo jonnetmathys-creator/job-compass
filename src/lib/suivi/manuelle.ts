@@ -19,6 +19,7 @@ export async function creerCandidatureManuelle(
     .insert({
       source: 'manuelle',
       source_id: crypto.randomUUID(),
+      created_by: userId,
       titre: form.titre,
       entreprise: form.entreprise || null,
       ville: form.ville || null,

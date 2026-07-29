@@ -84,7 +84,9 @@ export async function setPostulee(
 }
 
 export async function clearSuivi(client: SupabaseClient, userId: string, offreId: string): Promise<void> {
-  await majCandidature(client, userId, offreId, { statut: 'brouillon', postulee_le: null })
+  // On efface aussi relance_le : sinon une nouvelle candidature reprendrait
+  // l'ancienne date de relance au lieu de la recalculer (+10j) via setPostulee.
+  await majCandidature(client, userId, offreId, { statut: 'brouillon', postulee_le: null, relance_le: null })
 }
 
 export async function setStatut(client: SupabaseClient, userId: string, offreId: string, statut: StatutSuivi): Promise<void> {

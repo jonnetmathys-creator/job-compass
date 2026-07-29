@@ -65,7 +65,7 @@ export default function SuiviCarte({ item, today }: { item: CandidatureSuivi; to
           {titre}
           <div className="suivi-carte-emp"><b>{o.entreprise ?? 'Employeur non précisé'}</b>{o.ville ? ` · ${o.ville}` : ''}</div>
           <div className="suivi-carte-meta">
-            {jours !== null && <span>Postulé il y a {jours} jour{jours > 1 ? 's' : ''}</span>}
+            {jours !== null && <span>{jours <= 0 ? "Postulé aujourd'hui" : `Postulé il y a ${jours} jour${jours > 1 ? 's' : ''}`}</span>}
             {aRelancer && <span className="suivi-badge-relance">À relancer</span>}
           </div>
         </div>

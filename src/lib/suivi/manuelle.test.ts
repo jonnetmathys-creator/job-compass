@@ -20,7 +20,7 @@ test('creerCandidatureManuelle insère une offre manuelle puis la candidature', 
 
   expect(offreId).toBe('offre-123')
   const offreInsert = inserts.find((i) => i.table === 'offres')!.payload
-  expect(offreInsert).toMatchObject({ source: 'manuelle', titre: 'Diététicien', entreprise: 'Clinique', ville: 'Nantes', url_postuler: 'https://x.fr' })
+  expect(offreInsert).toMatchObject({ source: 'manuelle', created_by: 'u1', titre: 'Diététicien', entreprise: 'Clinique', ville: 'Nantes', url_postuler: 'https://x.fr' })
   expect(typeof offreInsert.source_id).toBe('string')
   const candInsert = inserts.find((i) => i.table === 'candidatures')!.payload
   expect(candInsert).toMatchObject({ user_id: 'u1', offre_id: 'offre-123', statut: 'postulee', postulee_le: '2026-07-10', relance_le: '2026-07-20' })
