@@ -501,3 +501,12 @@ a.logo:hover { opacity: .78; }
 /* Avatar en-tête coeur (page favoris) */
 .d-avatar.liked { background: rgba(226,86,91,.12); color: #e2565b; }
 .d-avatar.liked svg { width: 30px; height: 30px; }
+
+/* Bloc Postuler (bas de la page candidature) */
+.cand-postuler {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px;
+  padding: 26px 20px; margin-top: 4px;
+  background: var(--accent-soft); border: 1px solid #d6ecdd; border-radius: 18px;
+}
+.cand-postuler .btn-primary { display: inline-flex; align-items: center; gap: 9px; }
+.cand-postuler-hint { font-size: .82rem; color: var(--muted); line-height: 1.5; max-width: 460px; }
