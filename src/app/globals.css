@@ -605,4 +605,33 @@ a.logo:hover { opacity: .78; }
   font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none;
   padding: 8px 14px; border-radius: 999px; transition: color .15s, background .15s;
 }
+
+/* Barre d'actions du dashboard + bandeau à relancer */
+.suivi-barre { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.suivi-relance-bandeau {
+  display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 700; color: #b06a12;
+  background: #fdf3e2; border: 1px solid #f2dcb8; border-radius: 12px; padding: 9px 15px;
+}
+.ajout-ouvrir { display: inline-flex; align-items: center; gap: 8px; }
+.ajout-form { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.ajout-form h3 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+.ajout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ajout-grid label { display: flex; flex-direction: column; gap: 5px; font-size: .78rem; font-weight: 600; color: var(--muted); }
+.ajout-grid input { font-family: inherit; font-size: .9rem; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
+.ajout-grid input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ajout-actions { display: flex; gap: 10px; margin-top: 14px; }
+@media (max-width: 560px) { .ajout-grid { grid-template-columns: 1fr; } }
+
+/* Carte suivi : métas, badge à relancer, suppression, bloc relance */
+.suivi-carte-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .78rem; color: var(--muted); margin-top: 5px; }
+.suivi-badge-relance { font-weight: 700; color: #b06a12; background: #fdf3e2; border-radius: 999px; padding: 2px 9px; }
+.suivi-carte-actions { display: flex; align-items: flex-start; gap: 8px; }
+.suivi-supprimer { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--muted); cursor: pointer; }
+.suivi-supprimer:hover { color: #e2565b; border-color: #f0c9cb; }
+.suivi-relance { margin-top: 13px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.suivi-relance-bloc { width: 100%; display: flex; flex-direction: column; gap: 8px; background: #fbfbfa; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.suivi-relance-bloc label { display: flex; flex-direction: column; gap: 5px; font-size: .76rem; font-weight: 600; color: var(--muted); }
+.suivi-relance-bloc input, .suivi-relance-bloc textarea { font-family: inherit; font-size: .86rem; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; outline: none; resize: vertical; }
+.suivi-relance-bloc input:focus, .suivi-relance-bloc textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.suivi-relance-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .accueil-suivi-link:hover { color: var(--accent-dark); background: var(--accent-soft); }

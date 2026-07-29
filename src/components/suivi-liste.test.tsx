@@ -4,7 +4,8 @@ import SuiviListe from './suivi-liste'
 import type { CandidatureSuivi } from '@/lib/suivi/lecture'
 
 vi.mock('@/lib/suivi/actions', () => ({
-  changerStatut: vi.fn(), enregistrerSuivi: vi.fn(),
+  changerStatut: vi.fn(), enregistrerSuivi: vi.fn(), genererRelance: vi.fn(),
+  enregistrerRelance: vi.fn(), supprimerCandidature: vi.fn(), ajouterCandidatureManuelle: vi.fn(),
 }))
 
 function item(id: string, statut: string): CandidatureSuivi {
@@ -32,4 +33,12 @@ test('affiche les compteurs et une section par statut présent', () => {
   expect(screen.getByText('En cours').previousSibling?.textContent ?? screen.getByText('En cours').parentElement?.textContent).toContain('3')
   // pas de section Refusée (aucun élément)
   expect(screen.queryByRole('heading', { name: /refusée/i })).toBeNull()
+})
+
+test('bandeau « à relancer » quand une candidature est échue', () => {
+  const it = { ...item('a', 'postulee'), relance_le: '2000-01-01' }
+  render(<SuiviListe items={[it]} />)
+  // Le badge de la carte affiche aussi « À relancer » : on cible le libellé du bandeau,
+  // qui inclut « candidature », pour éviter une correspondance multiple.
+  expect(screen.getByText(/candidature.*à relancer/i)).toBeInTheDocument()
 })
