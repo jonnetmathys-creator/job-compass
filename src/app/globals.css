@@ -36,7 +36,8 @@ body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--
 /* (docs/superpowers/specs/mockups/interface-mockup.html)                 */
 /* ---------------------------------------------------------------------- */
 
-.logo { font-weight: 800; letter-spacing: -.02em; }
+.logo { font-weight: 800; letter-spacing: -.02em; color: var(--ink); text-decoration: none; cursor: pointer; display: inline-block; }
+a.logo:hover { opacity: .78; }
 .logo span { color: var(--accent); }
 
 /* ---------- accueil : héro + décor ---------- */

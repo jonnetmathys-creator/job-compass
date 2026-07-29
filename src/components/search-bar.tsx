@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useTransition } from 'react'
+import Link from 'next/link'
 import { lancerRecherche } from '@/lib/recherche/actions'
 import MetierAutocomplete from './metier-autocomplete'
 import LoadingOverlay from './loading-overlay'
@@ -46,7 +47,7 @@ export default function SearchBar() {
 
   return (
     <div className="hero">
-      <div className="logo" style={{ fontSize: 27, marginBottom: 34 }}>Job<span>Compass</span></div>
+      <Link href="/" className="logo" style={{ fontSize: 27, marginBottom: 34 }} aria-label="Retour à la recherche">Job<span>Compass</span></Link>
       <div className="headline"><h1 ref={headlineRef} /></div>
       <form className="searchbar" onSubmit={(e) => { e.preventDefault(); if (poste.trim()) startTransition(() => lancerRecherche(poste)) }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>

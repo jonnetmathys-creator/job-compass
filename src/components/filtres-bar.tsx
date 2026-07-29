@@ -1,5 +1,6 @@
 'use client'
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { affinerLieu } from '@/lib/recherche/actions'
 import VilleAutocomplete from './ville-autocomplete'
 
@@ -30,7 +31,7 @@ export default function FiltresBar(props: {
 
   return (
     <div className="topbar">
-      <div className="logo" style={{ fontSize: 19, marginRight: 6 }}>Job<span>Compass</span></div>
+      <Link href="/" className="logo" style={{ fontSize: 19, marginRight: 6 }} aria-label="Retour à la recherche">Job<span>Compass</span></Link>
       <div className="poste-chip">{props.poste}</div>
       <div className="field">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
