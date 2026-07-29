@@ -589,3 +589,11 @@ a.logo:hover { opacity: .78; }
 .st-acceptee .suivi-dot { background: var(--accent); }
 .st-refusee.suivi-carte { border-left-color: #e2565b; }
 .st-refusee .suivi-dot { background: #e2565b; }
+
+.accueil-suivi-link {
+  position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
+  z-index: 1; display: inline-flex; align-items: center; gap: 7px;
+  font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none;
+  padding: 8px 14px; border-radius: 999px; transition: color .15s, background .15s;
+}
+.accueil-suivi-link:hover { color: var(--accent-dark); background: var(--accent-soft); }
