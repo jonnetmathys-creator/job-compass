@@ -5,6 +5,7 @@ import type { OffreRow } from '@/lib/offres/types'
 
 vi.mock('@/lib/favoris/actions', () => ({ toggleFavori: vi.fn(async () => ({ liked: true })) }))
 vi.mock('@/lib/suivi/actions', () => ({ marquerPostulee: vi.fn(), retirerDuSuivi: vi.fn() }))
+vi.mock('@/lib/alertes/actions', () => ({ marquerVue: vi.fn(async () => {}) }))
 
 const offre: OffreRow = {
   id: '1', source: 'ft', source_id: '1', titre: 'Diététicien', entreprise: 'Clinique du Parc', entreprise_logo: null,

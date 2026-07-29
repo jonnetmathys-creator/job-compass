@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import CompteMenu from '@/components/compte-menu'
+import ClocheNotifs from '@/components/cloche-notifs'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={montserrat.variable}>
       <body>
+        <ClocheNotifs />
         <CompteMenu />
         {children}
       </body>
