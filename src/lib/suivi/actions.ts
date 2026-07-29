@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getServerClient } from '@/lib/supabase/server'
 import { setPostulee, clearSuivi, setStatut, setDetailsSuivi } from './lecture'
 import { estStatutSuivi } from './statuts'
+import { ajouterJours } from './dates'
 
 async function userOuErreur() {
   const supabase = await getServerClient()
@@ -15,7 +16,8 @@ async function userOuErreur() {
 export async function marquerPostulee(offreId: string): Promise<void> {
   const { supabase, userId } = await userOuErreur()
   const aujourdhui = new Date().toISOString().slice(0, 10)
-  await setPostulee(supabase, userId, offreId, aujourdhui)
+  const relance = ajouterJours(aujourdhui, 10)
+  await setPostulee(supabase, userId, offreId, aujourdhui, relance)
   revalidatePath('/suivi')
 }
 

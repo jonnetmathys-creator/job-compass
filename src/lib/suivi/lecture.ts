@@ -48,16 +48,34 @@ async function majCandidature(
   if (error) throw error
 }
 
-// Marque « postulée » sans écraser une date de candidature déjà posée.
-export async function setPostulee(client: SupabaseClient, userId: string, offreId: string, dateIso: string): Promise<void> {
-  await majCandidature(client, userId, offreId, { statut: 'postulee' })
-  const { error } = await client
+// Marque « postulée » : crée la candidature si absente, promeut brouillon -> postulee
+// sans rétrograder un statut plus avancé, et pose postulee_le / relance_le si absents.
+export async function setPostulee(
+  client: SupabaseClient,
+  userId: string,
+  offreId: string,
+  dateIso: string,
+  relanceIso: string,
+): Promise<void> {
+  const { error: e1 } = await client
+    .from('candidatures')
+    .upsert({ user_id: userId, offre_id: offreId }, { onConflict: 'user_id,offre_id', ignoreDuplicates: true })
+  if (e1) throw e1
+  const { error: e2 } = await client
+    .from('candidatures')
+    .update({ statut: 'postulee', updated_at: new Date().toISOString() })
+    .eq('user_id', userId).eq('offre_id', offreId).eq('statut', 'brouillon')
+  if (e2) throw e2
+  const { error: e3 } = await client
     .from('candidatures')
     .update({ postulee_le: dateIso })
-    .eq('user_id', userId)
-    .eq('offre_id', offreId)
-    .is('postulee_le', null)
-  if (error) throw error
+    .eq('user_id', userId).eq('offre_id', offreId).is('postulee_le', null)
+  if (e3) throw e3
+  const { error: e4 } = await client
+    .from('candidatures')
+    .update({ relance_le: relanceIso })
+    .eq('user_id', userId).eq('offre_id', offreId).is('relance_le', null)
+  if (e4) throw e4
 }
 
 export async function clearSuivi(client: SupabaseClient, userId: string, offreId: string): Promise<void> {

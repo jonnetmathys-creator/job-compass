@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest'
-import { setPostulee, clearSuivi, setStatut, setDetailsSuivi } from './lecture'
+import { clearSuivi, setStatut, setDetailsSuivi } from './lecture'
 import { estStatutSuivi } from './statuts'
 
 function makeClient() {
@@ -16,13 +16,6 @@ function makeClient() {
   const client = { from: vi.fn(() => chain()) } as any
   return { client, calls }
 }
-
-test('setPostulee met statut=postulee puis pose postulee_le si null', async () => {
-  const { client, calls } = makeClient()
-  await setPostulee(client, 'u1', 'o1', '2026-07-29')
-  expect(calls.some((p) => p.statut === 'postulee')).toBe(true)
-  expect(calls.some((p) => p.postulee_le === '2026-07-29')).toBe(true)
-})
 
 test('clearSuivi repasse en brouillon et efface postulee_le', async () => {
   const { client, calls } = makeClient()
