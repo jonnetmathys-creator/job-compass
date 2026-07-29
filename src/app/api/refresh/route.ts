@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
-import { requireEnv } from '@/lib/env'
 import { getServiceClient } from '@/lib/supabase/service'
 import { rafraichirEtEnregistrer, type RechercheAref } from '@/lib/alertes/refresh'
 
 const COLS = 'id, user_id, intitule, mots_cles, localisation, rayon_km, type_contrat, alertes_email'
 
-function autorise(request: Request): boolean {
-  return request.headers.get('authorization') === `Bearer ${requireEnv('COLLECT_SECRET')}`
+// Accepte un bearer correspondant à COLLECT_SECRET (usage manuel/local) ou CRON_SECRET
+// (injecté automatiquement par le cron Vercel). Aucun throw si les secrets sont absents :
+// la requête est simplement refusée (401) plutôt que de faire planter le serveur (500).
+export function autorise(request: Request): boolean {
+  const header = request.headers.get('authorization')
+  const secrets = [process.env.COLLECT_SECRET, process.env.CRON_SECRET].filter(Boolean)
+  return secrets.length > 0 && secrets.some((s) => header === `Bearer ${s}`)
 }
 
 async function traiter(recherches: RechercheAref[]) {
