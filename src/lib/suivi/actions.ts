@@ -2,9 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { getServerClient } from '@/lib/supabase/server'
-import { setPostulee, clearSuivi, setStatut, setDetailsSuivi } from './lecture'
+import { setPostulee, clearSuivi, setStatut, setDetailsSuivi, supprimerCandidature as supprimerCandidatureDb } from './lecture'
 import { estStatutSuivi } from './statuts'
 import { ajouterJours } from './dates'
+import { creerCandidatureManuelle, type FormManuelle } from './manuelle'
 
 async function userOuErreur() {
   const supabase = await getServerClient()
@@ -40,5 +41,17 @@ export async function enregistrerSuivi(
 ): Promise<void> {
   const { supabase, userId } = await userOuErreur()
   await setDetailsSuivi(supabase, userId, offreId, patch)
+  revalidatePath('/suivi')
+}
+
+export async function ajouterCandidatureManuelle(form: FormManuelle): Promise<void> {
+  const { supabase, userId } = await userOuErreur()
+  await creerCandidatureManuelle(supabase, userId, form)
+  revalidatePath('/suivi')
+}
+
+export async function supprimerCandidature(offreId: string): Promise<void> {
+  const { supabase, userId } = await userOuErreur()
+  await supprimerCandidatureDb(supabase, userId, offreId)
   revalidatePath('/suivi')
 }
