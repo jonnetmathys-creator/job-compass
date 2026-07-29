@@ -15,6 +15,7 @@ function item(id: string, statut: string): CandidatureSuivi {
       url_postuler: null, email_contact: null, date_publication: null,
     },
     statut, postulee_le: '2026-07-10', relance_le: null, notes: null,
+    relance_objet: null, relance_corps: null,
   }
 }
 

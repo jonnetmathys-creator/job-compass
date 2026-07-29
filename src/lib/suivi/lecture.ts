@@ -8,12 +8,14 @@ export type CandidatureSuivi = {
   postulee_le: string | null
   relance_le: string | null
   notes: string | null
+  relance_objet: string | null
+  relance_corps: string | null
 }
 
 export async function getSuivi(client: SupabaseClient, userId: string): Promise<CandidatureSuivi[]> {
   const { data, error } = await client
     .from('candidatures')
-    .select(`statut, postulee_le, relance_le, notes, offres:offre_id (${OFFRE_COLUMNS})`)
+    .select(`statut, postulee_le, relance_le, notes, relance_objet, relance_corps, offres:offre_id (${OFFRE_COLUMNS})`)
     .eq('user_id', userId)
     .neq('statut', 'brouillon')
   if (error) throw error
@@ -22,7 +24,10 @@ export async function getSuivi(client: SupabaseClient, userId: string): Promise<
     .map((r: any) => {
       const offre = (Array.isArray(r.offres) ? r.offres[0] : r.offres) as OffreRow | null
       if (!offre) return null
-      return { offre, statut: r.statut, postulee_le: r.postulee_le ?? null, relance_le: r.relance_le ?? null, notes: r.notes ?? null }
+      return {
+        offre, statut: r.statut, postulee_le: r.postulee_le ?? null, relance_le: r.relance_le ?? null,
+        notes: r.notes ?? null, relance_objet: r.relance_objet ?? null, relance_corps: r.relance_corps ?? null,
+      }
     })
     .filter(Boolean) as CandidatureSuivi[]
   // tri par date de candidature décroissante, nulls en fin
@@ -93,6 +98,15 @@ export async function setDetailsSuivi(
   patch: { notes: string | null; relance_le: string | null },
 ): Promise<void> {
   await majCandidature(client, userId, offreId, { notes: patch.notes, relance_le: patch.relance_le })
+}
+
+export async function setRelanceEmail(
+  client: SupabaseClient,
+  userId: string,
+  offreId: string,
+  patch: { objet: string; corps: string },
+): Promise<void> {
+  await majCandidature(client, userId, offreId, { relance_objet: patch.objet, relance_corps: patch.corps })
 }
 
 export async function supprimerCandidature(client: SupabaseClient, userId: string, offreId: string): Promise<void> {

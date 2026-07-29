@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest'
 process.env.GEMINI_API_KEY ??= 'test-key'
-import { buildPrompt, parseReponse, appelerGemini } from './gemini'
+import { buildPrompt, parseReponse, appelerGemini, appelerGeminiJson } from './gemini'
 import type { GeminiParams } from './types'
 
 const offre = { titre: 'Diététicien', entreprise: 'Clinique du Parc', ville: 'Nantes', contrat: 'CDI', description: 'Suivi nutritionnel' }
@@ -60,4 +60,20 @@ test('appelerGemini lève une erreur claire sur réponse HTTP non ok', async () 
   const fetchImpl = vi.fn().mockResolvedValue({ ok: false, status: 429, text: async () => 'quota' })
   const params: GeminiParams = { offre, profil, cvBase64: 'A', lettreBase64: 'B' }
   await expect(appelerGemini(params, { fetchImpl: fetchImpl as any })).rejects.toThrow(/Gemini/i)
+})
+
+test('appelerGeminiJson poste le prompt + schéma et parse le JSON', async () => {
+  const fetchImpl = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ candidates: [{ content: { parts: [{ text: '{"objet":"O","corps":"C"}' }] } }] }),
+  })
+  const schema = { type: 'OBJECT', properties: { objet: { type: 'STRING' }, corps: { type: 'STRING' } }, required: ['objet', 'corps'] }
+  const out = await appelerGeminiJson<{ objet: string; corps: string }>('un prompt', schema, { fetchImpl: fetchImpl as any })
+
+  expect(out).toEqual({ objet: 'O', corps: 'C' })
+  const [url, init] = fetchImpl.mock.calls[0]
+  expect(String(url)).toContain('gemini-flash-latest')
+  const body = JSON.parse(init.body)
+  expect(body.contents[0].parts[0].text).toBe('un prompt')
+  expect(body.generationConfig.response_schema).toEqual(schema)
 })

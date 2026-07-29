@@ -97,3 +97,34 @@ export async function appelerGemini(
   if (!text) throw new Error('Appel Gemini : réponse vide')
   return parseReponse(text)
 }
+
+// Appel Gemini générique texte -> JSON structuré (sans PDF), pour des usages
+// hors candidature complète (ex. mail de relance).
+export async function appelerGeminiJson<T>(
+  prompt: string,
+  schema: object,
+  deps: { fetchImpl?: typeof fetch } = {},
+): Promise<T> {
+  const fetchImpl = deps.fetchImpl ?? fetch
+  const body = {
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { response_mime_type: 'application/json', response_schema: schema },
+  }
+  const res = await fetchImpl(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`Appel Gemini échoué : HTTP ${res.status} ${detail}`.trim())
+  }
+  const json = await res.json()
+  const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text
+  if (!text) throw new Error('Appel Gemini : réponse vide')
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    throw new Error('Réponse Gemini malformée')
+  }
+}
