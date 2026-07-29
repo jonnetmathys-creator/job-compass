@@ -14,24 +14,21 @@ vi.mock('@/lib/profil', async () => {
 })
 
 test('le formulaire pré-remplit les champs du profil', () => {
-  render(<ProfilForm initial={{ user_id: 'u1', nom: 'Alice', titre_recherche: 'Diététicienne', cv_url: null, lettre_base: 'Bonjour' }} />)
+  render(<ProfilForm initial={{ user_id: 'u1', nom: 'Alice', titre_recherche: 'Diététicienne', cv_url: null, lettre_base: 'Bonjour', lettre_url: 'u1/lettre.pdf' }} />)
   expect(screen.getByLabelText(/nom/i)).toHaveValue('Alice')
   expect(screen.getByLabelText(/titre recherché/i)).toHaveValue('Diététicienne')
-  expect(screen.getByLabelText(/lettre de motivation de base/i)).toHaveValue('Bonjour')
+  expect(screen.getByText(/lettre actuelle/i)).toHaveTextContent('u1/lettre.pdf')
 })
 
 test('la soumission du formulaire enregistre les valeurs modifiées via upsertProfil', async () => {
   const user = userEvent.setup()
-  render(<ProfilForm initial={{ user_id: 'u1', nom: 'Alice', titre_recherche: 'Diététicienne', cv_url: null, lettre_base: 'Bonjour' }} />)
+  render(<ProfilForm initial={{ user_id: 'u1', nom: 'Alice', titre_recherche: 'Diététicienne', cv_url: null, lettre_base: 'Bonjour', lettre_url: null }} />)
 
   await user.clear(screen.getByLabelText(/nom/i))
   await user.type(screen.getByLabelText(/nom/i), 'Alice Dupont')
 
   await user.clear(screen.getByLabelText(/titre recherché/i))
   await user.type(screen.getByLabelText(/titre recherché/i), 'Diététicienne senior')
-
-  await user.clear(screen.getByLabelText(/lettre de motivation de base/i))
-  await user.type(screen.getByLabelText(/lettre de motivation de base/i), 'Madame, Monsieur,')
 
   await user.click(screen.getByRole('button', { name: /enregistrer/i }))
 
@@ -41,7 +38,6 @@ test('la soumission du formulaire enregistre les valeurs modifiées via upsertPr
     {
       nom: 'Alice Dupont',
       titre_recherche: 'Diététicienne senior',
-      lettre_base: 'Madame, Monsieur,',
     },
   )
 })

@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { getBrowserClient } from '@/lib/supabase/client'
-import { upsertProfil, uploadCv, type Profil } from '@/lib/profil'
+import { upsertProfil, uploadCv, uploadLettre, type Profil } from '@/lib/profil'
 
 export default function ProfilForm({ initial }: { initial: Profil }) {
   const [form, setForm] = useState(initial)
@@ -14,7 +14,7 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
     try {
       const supabase = getBrowserClient()
       await upsertProfil(supabase, initial.user_id, {
-        nom: form.nom, titre_recherche: form.titre_recherche, lettre_base: form.lettre_base,
+        nom: form.nom, titre_recherche: form.titre_recherche,
       })
       setSaved(true)
     } catch {
@@ -37,10 +37,24 @@ export default function ProfilForm({ initial }: { initial: Profil }) {
           style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
       </div>
       <div>
-        <label htmlFor="lettre" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Lettre de motivation de base</label>
-        <textarea id="lettre" rows={8} value={form.lettre_base ?? ''} onChange={(e) => setForm({ ...form, lettre_base: e.target.value })}
-          className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)] resize-y"
-          style={{ borderColor: 'var(--line)', color: 'var(--ink)' }} />
+        <label htmlFor="lettre" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>Lettre de motivation de base (PDF)</label>
+        <input id="lettre" type="file" accept="application/pdf"
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            setError(null)
+            try {
+              const supabase = getBrowserClient()
+              const path = await uploadLettre(supabase, initial.user_id, file)
+              setForm((prev) => ({ ...prev, lettre_url: path }))
+              setSaved(true)
+            } catch {
+              setError("Échec de l'envoi de la lettre, réessayez.")
+            }
+          }}
+          className="w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium file:cursor-pointer cursor-pointer"
+          style={{ color: 'var(--muted)' }} />
+        {form.lettre_url && <p className="text-xs mt-1.5" style={{ color: 'var(--muted)' }}>Lettre actuelle : {form.lettre_url}</p>}
       </div>
       <div>
         <label htmlFor="cv" className="block text-sm font-medium mb-1.5" style={{ color: 'var(--muted)' }}>CV (PDF)</label>

@@ -6,6 +6,7 @@ export type Profil = {
   titre_recherche: string | null
   cv_url: string | null
   lettre_base: string | null
+  lettre_url: string | null
 }
 
 export async function getProfil(client: SupabaseClient, userId: string): Promise<Profil | null> {
@@ -35,5 +36,15 @@ export async function uploadCv(client: SupabaseClient, userId: string, file: Fil
   })
   if (error) throw error
   await upsertProfil(client, userId, { cv_url: path })
+  return path
+}
+
+export async function uploadLettre(client: SupabaseClient, userId: string, file: File): Promise<string> {
+  const path = `${userId}/lettre.pdf`
+  const { error } = await client.storage.from('cv').upload(path, file, {
+    upsert: true, contentType: 'application/pdf',
+  })
+  if (error) throw error
+  await upsertProfil(client, userId, { lettre_url: path })
   return path
 }

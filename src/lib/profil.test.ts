@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest'
-import { getProfil, upsertProfil, uploadCv } from './profil'
+import { getProfil, upsertProfil, uploadCv, uploadLettre } from './profil'
 
 function createMockClient(row: unknown, error: unknown = null) {
   const single = vi.fn().mockResolvedValue({ data: row, error })
@@ -106,4 +106,22 @@ test('uploadCv téléverse sous le préfixe user et renvoie le chemin', async ()
   expect(upsert).toHaveBeenCalledWith(
     expect.objectContaining({ user_id: 'u1', cv_url: 'u1/cv.pdf' }),
   )
+})
+
+test('uploadLettre upload sous {userId}/lettre.pdf et met à jour lettre_url', async () => {
+  const upload = vi.fn().mockResolvedValue({ error: null })
+  const select = vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue({ data: { user_id: 'u1', lettre_url: 'u1/lettre.pdf' }, error: null }) })
+  const upsert = vi.fn().mockReturnValue({ select })
+  const client = {
+    storage: { from: vi.fn(() => ({ upload })) },
+    from: vi.fn(() => ({ upsert })),
+  } as any
+  const file = new File(['x'], 'lettre.pdf', { type: 'application/pdf' })
+
+  const path = await uploadLettre(client, 'u1', file)
+
+  expect(client.storage.from).toHaveBeenCalledWith('cv')
+  expect(upload).toHaveBeenCalledWith('u1/lettre.pdf', file, { upsert: true, contentType: 'application/pdf' })
+  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({ user_id: 'u1', lettre_url: 'u1/lettre.pdf' }))
+  expect(path).toBe('u1/lettre.pdf')
 })

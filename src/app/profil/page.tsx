@@ -15,7 +15,7 @@ export default async function ProfilPage() {
     getFavoris(supabase, user.id),
   ])
   const initial: Profil = existing ?? {
-    user_id: user.id, nom: null, titre_recherche: null, cv_url: null, lettre_base: null,
+    user_id: user.id, nom: null, titre_recherche: null, cv_url: null, lettre_base: null, lettre_url: null,
   }
   const initiale = (initial.nom?.trim()[0] ?? user.email?.trim()[0] ?? '?').toUpperCase()
 
