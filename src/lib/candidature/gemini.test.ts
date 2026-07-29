@@ -44,7 +44,7 @@ test('appelerGemini poste sur l\'endpoint avec deux PDF inline et le schéma JSO
 
   expect(out).toEqual({ email_objet: 'O', email_corps: 'C', lettre: 'L' })
   const [url, init] = fetchImpl.mock.calls[0]
-  expect(String(url)).toContain('gemini-2.0-flash')
+  expect(String(url)).toContain('gemini-flash-latest')
   expect(init.method).toBe('POST')
   const body = JSON.parse(init.body)
   const parts = body.contents[0].parts

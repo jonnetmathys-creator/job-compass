@@ -1,7 +1,9 @@
 import { requireEnv } from '@/lib/env'
 import type { OffreInfo, ProfilInfo, GeminiParams, CandidatureContenu } from './types'
 
-const MODEL = 'gemini-2.0-flash'
+// gemini-flash-latest : seul modèle flash avec du quota gratuit sur notre clé
+// (gemini-2.0-flash renvoie limit=0 en free tier). Alias suivi par Google.
+const MODEL = 'gemini-flash-latest'
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 
 export function buildPrompt(offre: OffreInfo, profil: ProfilInfo): string {
