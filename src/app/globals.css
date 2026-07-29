@@ -328,25 +328,81 @@ a.logo:hover { opacity: .78; }
 }
 
 /* ---------- candidature ---------- */
-.cand-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 8px 0 40px; }
-.cand-editor { display: flex; flex-direction: column; gap: 28px; padding-bottom: 48px; }
-.cand-block { display: flex; flex-direction: column; gap: 8px; }
-.cand-block h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
-.cand-block label { font-size: .8rem; font-weight: 600; color: var(--muted); margin-top: 6px; }
-.cand-block input, .cand-block textarea {
+/* Badge IA dans le héro */
+.cand-badge {
+  display: inline-flex; align-items: center; gap: 7px; align-self: flex-start;
+  background: var(--accent-soft); color: var(--accent-dark);
+  font-size: .78rem; font-weight: 700; letter-spacing: .01em;
+  padding: 6px 13px; border-radius: 999px; margin-bottom: 14px;
+}
+.cand-badge svg { width: 15px; height: 15px; }
+
+/* États plein cadre (profil incomplet / avant génération) */
+.cand-state {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 14px; max-width: 460px; margin: 24px auto 56px; padding: 8px;
+}
+.cand-state-ico {
+  width: 74px; height: 74px; border-radius: 20px; display: grid; place-items: center;
+  background: #f4f5f4; color: var(--muted); margin-bottom: 4px;
+}
+.cand-state-ico svg { width: 34px; height: 34px; }
+.cand-state-ico.ai { background: var(--accent-soft); color: var(--accent); }
+.cand-state h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -.01em; }
+.cand-state p { font-size: .95rem; color: var(--muted); line-height: 1.55; }
+.cand-state .btn-primary { margin-top: 6px; }
+.btn-lg { padding: 15px 30px; font-size: 16px; }
+
+/* Éditeur : barre d'action + cartes */
+.cand-editor { display: flex; flex-direction: column; gap: 22px; padding-bottom: 56px; }
+.cand-toolbar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 12px 0; margin-bottom: 2px;
+  background: linear-gradient(var(--bg) 72%, transparent);
+}
+.cand-toolbar-btns { display: flex; align-items: center; gap: 10px; }
+.cand-toolbar-status { display: flex; align-items: center; gap: 10px; }
+
+.cand-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.cand-card-head {
+  display: flex; align-items: center; gap: 13px;
+  padding: 17px 20px; border-bottom: 1px solid var(--line);
+}
+.cand-card-ico {
+  flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent);
+}
+.cand-card-ico svg { width: 21px; height: 21px; }
+.cand-card-head h3 { font-size: 1.02rem; font-weight: 700; line-height: 1.2; }
+.cand-card-head small { font-size: .8rem; color: var(--muted); }
+.cand-card-body { display: flex; flex-direction: column; gap: 7px; padding: 18px 20px; }
+.cand-card-body label { font-size: .78rem; font-weight: 600; color: var(--muted); margin-top: 8px; }
+.cand-card-body label:first-child { margin-top: 0; }
+.cand-card-body input, .cand-card-body textarea {
   width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
   font-size: .92rem; color: var(--ink); background: #fff; outline: none; resize: vertical;
-  font-family: inherit; transition: border-color .15s, box-shadow .15s;
+  font-family: inherit; line-height: 1.55; transition: border-color .15s, box-shadow .15s;
 }
-.cand-block input:focus, .cand-block textarea:focus {
+.cand-card-body input:focus, .cand-card-body textarea:focus {
   border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
 }
-.cand-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.btn-ghost {
-  border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 12px;
-  padding: 10px 16px; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .15s;
+.cand-card-foot {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 14px 20px; border-top: 1px solid var(--line); background: #fcfcfb;
 }
-.btn-ghost:hover { background: var(--accent-soft); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 12px;
+  padding: 10px 16px; font-size: .88rem; font-weight: 600; cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.btn-ghost:hover { background: var(--accent-soft); border-color: var(--accent-soft); }
+.btn-ghost:disabled { opacity: .55; cursor: default; }
 .cand-ok { font-size: .85rem; font-weight: 600; color: var(--accent); }
 .cand-err { font-size: .85rem; font-weight: 600; color: #e2565b; }
 

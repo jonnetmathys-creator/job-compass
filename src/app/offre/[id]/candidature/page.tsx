@@ -28,10 +28,14 @@ export default async function CandidaturePage({ params }: { params: Promise<{ id
       <div className="detail-scroll">
         <div className="detail-hero">
           <header className="detail-head">
+            <div className="cand-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4L12 3z" /></svg>
+              Candidature assistée par IA
+            </div>
             <div className="d-titletext">
-              <h1>Candidater : {o.titre}</h1>
+              <h1>Ta candidature</h1>
               <div className="d-emp">
-                <b>{o.entreprise ?? 'Employeur non précisé'}</b>{o.ville ? ` · ${o.ville}` : ''}
+                Pour <b>{o.titre}</b>{o.entreprise ? ` · ${o.entreprise}` : ''}{o.ville ? ` · ${o.ville}` : ''}
               </div>
             </div>
           </header>
