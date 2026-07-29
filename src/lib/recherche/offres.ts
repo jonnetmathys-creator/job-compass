@@ -13,7 +13,7 @@ export function sortByDateDesc(offres: OffreRow[]): OffreRow[] {
 export async function getRecherche(client: SupabaseClient, id: string) {
   const { data, error } = await client
     .from('recherches')
-    .select('id, intitule, localisation, rayon_km, type_contrat, latitude, longitude, lieu_label')
+    .select('id, intitule, localisation, rayon_km, type_contrat, latitude, longitude, lieu_label, alertes_email')
     .eq('id', id)
     .single()
   // PGRST116 = aucune ligne (recherche introuvable) : on renvoie null. Toute autre
@@ -23,7 +23,7 @@ export async function getRecherche(client: SupabaseClient, id: string) {
     | {
         id: string; intitule: string; localisation: string | null; rayon_km: number | null
         type_contrat: string | null; latitude: number | null; longitude: number | null
-        lieu_label: string | null
+        lieu_label: string | null; alertes_email: boolean
       }
     | null) ?? null
 }

@@ -3,6 +3,7 @@ import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { affinerLieu } from '@/lib/recherche/actions'
 import VilleAutocomplete from './ville-autocomplete'
+import AlerteMailToggle from './alerte-mail-toggle'
 
 const RAYONS = [
   { label: 'France entière', v: null }, { label: '10 km', v: 10 }, { label: '25 km', v: 25 },
@@ -17,6 +18,7 @@ export default function FiltresBar(props: {
   rechercheId: string
   initialLieu?: string
   initialRayon?: number | null
+  alertesEmail: boolean
 }) {
   const [ville, setVille] = useState(props.initialLieu ?? '')
   const [rayon, setRayon] = useState<number | null>(props.initialRayon ?? null)
@@ -49,6 +51,7 @@ export default function FiltresBar(props: {
         </select>
       </div>
       <div className="spacer" />
+      <AlerteMailToggle rechercheId={props.rechercheId} actifInitial={props.alertesEmail} />
       {pending && <span className="count">Actualisation...</span>}
       {erreur && <span className="count" style={{ color: '#d14343' }}>{erreur}</span>}
     </div>

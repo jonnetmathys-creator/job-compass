@@ -11,7 +11,7 @@ const CarteOffres = dynamic(() => import('./carte-offres'), { ssr: false })
 export default function ResultatsShell(props: {
   recherche: {
     id: string; intitule: string; localisation: string | null; rayon_km: number | null
-    lieu_label: string | null
+    lieu_label: string | null; alertes_email?: boolean
   }
   offres: OffreRow[]
   favoriIds: string[]
@@ -39,7 +39,7 @@ export default function ResultatsShell(props: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <FiltresBarClient poste={props.recherche.intitule} contrats={contrats} contrat={contrat} onContrat={setContrat} rechercheId={props.recherche.id}
-        initialLieu={props.recherche.lieu_label ?? ''} initialRayon={props.recherche.rayon_km} />
+        initialLieu={props.recherche.lieu_label ?? ''} initialRayon={props.recherche.rayon_km} alertesEmail={props.recherche.alertes_email ?? false} />
       <div className={`split${collapsed ? ' collapsed' : ''}`} id="split">
         <div className="list-pane" id="list">
           <OffreListe offres={visibles} expandedId={expandedId} hoveredId={hoveredId} likes={likes}

@@ -662,3 +662,10 @@ a.logo:hover { opacity: .78; }
 .cloche-item.neuf .cloche-item-titre::after { content: ' •'; color: var(--accent); }
 .cloche-item-titre { font-weight: 600; font-size: .9rem; color: var(--ink); }
 .cloche-item-emp { font-size: .8rem; color: var(--muted); }
+
+/* Toggle Alertes mail (barre résultats) */
+.alerte-toggle { display: inline-flex; align-items: center; gap: 7px; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: #f4f5f4; border: 1px solid transparent; border-radius: 999px; padding: 8px 13px; cursor: pointer; transition: .18s; white-space: nowrap; }
+.alerte-toggle svg { width: 15px; height: 15px; }
+.alerte-toggle:hover { background: #edefed; }
+.alerte-toggle.on { color: var(--accent-dark); background: var(--accent-soft); border-color: #cdead8; }
+.alerte-toggle:disabled { opacity: .6; cursor: default; }
