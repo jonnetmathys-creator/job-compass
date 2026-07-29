@@ -420,3 +420,28 @@ a.logo:hover { opacity: .78; }
   .lo-ring, .lo-sweep, .lo-core { animation: none }
   .lo-msg { animation: none }
 }
+
+/* ── Lien vers les offres likées (page profil) ──────────────────────── */
+.profil-link {
+  display: flex; align-items: center; gap: 15px;
+  padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px;
+  background: #fff; text-decoration: none; color: var(--ink);
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.profil-link:hover {
+  border-color: var(--accent); box-shadow: 0 6px 18px rgba(46,158,91,.10);
+  transform: translateY(-1px);
+}
+.profil-link-ico {
+  flex: none; width: 44px; height: 44px; border-radius: 12px;
+  display: grid; place-items: center; color: #e2565b; background: rgba(226,86,91,.10);
+}
+.profil-link-ico svg { width: 22px; height: 22px; }
+.profil-link-txt { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.profil-link-txt b { font-size: .95rem; font-weight: 700; }
+.profil-link-txt small { font-size: .8rem; color: var(--muted); }
+.profil-link-arr { color: var(--muted); flex: none; }
+
+/* Avatar en-tête coeur (page favoris) */
+.d-avatar.liked { background: rgba(226,86,91,.12); color: #e2565b; }
+.d-avatar.liked svg { width: 30px; height: 30px; }

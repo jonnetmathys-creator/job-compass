@@ -1,19 +1,15 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { getServerClient } from '@/lib/supabase/server'
 import { getProfil, type Profil } from '@/lib/profil'
-import { getFavoris } from '@/lib/favoris/lecture'
 import ProfilForm from './profil-form'
-import OffresLikees from '@/components/offres-likees'
 import PageHeader from '@/components/page-header'
 
 export default async function ProfilPage() {
   const supabase = await getServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  const [existing, favoris] = await Promise.all([
-    getProfil(supabase, user.id),
-    getFavoris(supabase, user.id),
-  ])
+  const existing = await getProfil(supabase, user.id)
   const initial: Profil = existing ?? {
     user_id: user.id, nom: null, titre_recherche: null, cv_url: null, lettre_base: null, lettre_url: null,
   }
@@ -35,16 +31,19 @@ export default async function ProfilPage() {
           </header>
         </div>
         <div className="detail-wrap">
-          <div className="side-card" style={{ padding: '22px 22px 26px', marginBottom: 36 }}>
+          <div className="side-card" style={{ padding: '22px 22px 26px', marginBottom: 20 }}>
             <ProfilForm initial={initial} />
           </div>
-          <section>
-            <div className="liked-headrow">
-              <h3>Mes offres likées</h3>
-              <span className="liked-count">{favoris.length} offre{favoris.length > 1 ? 's' : ''}</span>
-            </div>
-            <OffresLikees offres={favoris} />
-          </section>
+          <Link href="/favoris" className="profil-link">
+            <span className="profil-link-ico">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" /></svg>
+            </span>
+            <span className="profil-link-txt">
+              <b>Mes offres likées</b>
+              <small>Retrouve les offres que tu as sauvegardées</small>
+            </span>
+            <svg className="profil-link-arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+          </Link>
         </div>
       </div>
     </section>
