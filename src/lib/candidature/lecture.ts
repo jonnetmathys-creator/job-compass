@@ -32,7 +32,6 @@ export async function upsertCandidature(
         email_objet: contenu.email_objet,
         email_corps: contenu.email_corps,
         lettre: contenu.lettre,
-        statut: 'brouillon',
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id,offre_id' },

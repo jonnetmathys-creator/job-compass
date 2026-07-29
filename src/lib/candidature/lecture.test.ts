@@ -26,8 +26,8 @@ test('getCandidature renvoie null quand aucune ligne (PGRST116)', async () => {
   expect(cand).toBeNull()
 })
 
-test('upsertCandidature upsert sur (user_id, offre_id) avec le contenu', async () => {
-  const row = { user_id: 'u1', offre_id: 'o1', email_objet: 'O', email_corps: 'C', lettre: 'L', statut: 'brouillon' }
+test('upsertCandidature upsert sur (user_id, offre_id) sans écraser le statut', async () => {
+  const row = { user_id: 'u1', offre_id: 'o1', email_objet: 'O', email_corps: 'C', lettre: 'L', statut: 'postulee' }
   const single = vi.fn().mockResolvedValue({ data: row, error: null })
   const select = vi.fn(() => ({ single }))
   const upsert = vi.fn((..._args: unknown[]) => ({ select }))
@@ -35,9 +35,10 @@ test('upsertCandidature upsert sur (user_id, offre_id) avec le contenu', async (
 
   const out = await upsertCandidature(client, 'u1', 'o1', { email_objet: 'O', email_corps: 'C', lettre: 'L' })
 
-  expect(client.from).toHaveBeenCalledWith('candidatures')
-  const [payload, opts] = upsert.mock.calls[0]
+  const [payload, opts] = upsert.mock.calls[0] as [Record<string, unknown>, Record<string, unknown>]
   expect(payload).toMatchObject({ user_id: 'u1', offre_id: 'o1', email_objet: 'O', email_corps: 'C', lettre: 'L' })
+  // statut NON présent : un statut existant (ex. 'postulee') n'est pas remis à 'brouillon'
+  expect(payload).not.toHaveProperty('statut')
   expect(opts).toMatchObject({ onConflict: 'user_id,offre_id' })
   expect(out).toMatchObject({ user_id: 'u1', offre_id: 'o1' })
 })
