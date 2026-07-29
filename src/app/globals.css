@@ -348,3 +348,18 @@ body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--
 .btn-ghost:hover { background: var(--accent-soft); }
 .cand-ok { font-size: .85rem; font-weight: 600; color: var(--accent); }
 .cand-err { font-size: .85rem; font-weight: 600; color: #e2565b; }
+
+/* Vue imprimable de la lettre : masquée à l'écran, visible à l'impression. */
+.lettre-imprimable { display: none; }
+.lettre-imprimable .li-head { display: flex; justify-content: space-between; margin-bottom: 28px; font-size: 12pt; }
+.lettre-imprimable .li-objet { font-weight: 700; margin-bottom: 20px; font-size: 12pt; }
+.lettre-imprimable .li-corps { white-space: pre-wrap; line-height: 1.6; font-size: 12pt; }
+
+@media print {
+  body * { visibility: hidden; }
+  .lettre-imprimable, .lettre-imprimable * { visibility: visible; }
+  .lettre-imprimable {
+    display: block; position: absolute; inset: 0; margin: 0;
+    padding: 24mm 20mm; color: #000; background: #fff; font-family: Georgia, "Times New Roman", serif;
+  }
+}

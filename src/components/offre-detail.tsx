@@ -1,6 +1,7 @@
 'use client'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef, useState, useTransition } from 'react'
+import Link from 'next/link'
 import type { OffreRow } from '@/lib/offres/types'
 import { positionEpingle } from '@/lib/geo/departements'
 import { toggleFavori } from '@/lib/favoris/actions'
@@ -142,7 +143,9 @@ export default function OffreDetail({ offre, likedInitial }: { offre: OffreRow; 
                   </a>
                 )
                 : <button type="button" className="btn-apply" disabled>Lien indisponible</button>}
-              <button type="button" className="btn-future" disabled>Candidater avec lettre IA <span className="soon">bientôt</span></button>
+              <Link href={`/offre/${offre.id}/candidature`} className="btn-future">
+                Candidater avec lettre IA
+              </Link>
             </aside>
           </div>
         </div>

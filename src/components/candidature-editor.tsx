@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { OffreRow } from '@/lib/offres/types'
 import type { Candidature } from '@/lib/candidature/types'
 import { genererCandidature, enregistrerCandidature } from '@/lib/candidature/actions'
+import LettreImprimable from './lettre-imprimable'
 
 export default function CandidatureEditor({
   offre, profilComplet, candidatureInitiale,
@@ -55,13 +56,17 @@ export default function CandidatureEditor({
     })
   }
 
-  async function copier(texte: string, quoi: string) {
+  async function copier(texte: string, message: string) {
     try {
       await navigator.clipboard.writeText(texte)
-      setInfo(`${quoi} copié ✓`)
+      setInfo(message)
     } catch {
       setErreur('Copie impossible.')
     }
+  }
+
+  function telechargerPdf() {
+    window.print()
   }
 
   if (!profilComplet) {
@@ -92,7 +97,7 @@ export default function CandidatureEditor({
         <input id="objet" value={objet} onChange={(e) => setObjet(e.target.value)} />
         <label htmlFor="corps">Corps de l'email</label>
         <textarea id="corps" rows={7} value={corps} onChange={(e) => setCorps(e.target.value)} />
-        <button type="button" className="btn-ghost" onClick={() => copier(`${objet}\n\n${corps}`, "L'email")}>Copier l'email</button>
+        <button type="button" className="btn-ghost" onClick={() => copier(`${objet}\n\n${corps}`, "L'email copié ✓")}>Copier l'email</button>
       </section>
 
       <section className="cand-block">
@@ -100,7 +105,8 @@ export default function CandidatureEditor({
         <label htmlFor="lettre">Lettre</label>
         <textarea id="lettre" rows={16} value={lettre} onChange={(e) => setLettre(e.target.value)} />
         <div className="cand-actions">
-          <button type="button" className="btn-ghost" onClick={() => copier(lettre, 'La lettre')}>Copier la lettre</button>
+          <button type="button" className="btn-ghost" onClick={() => copier(lettre, 'La lettre copiée ✓')}>Copier la lettre</button>
+          <button type="button" className="btn-ghost" onClick={telechargerPdf}>Télécharger la lettre en PDF</button>
         </div>
       </section>
 
@@ -112,6 +118,7 @@ export default function CandidatureEditor({
         {info && <span className="cand-ok">{info}</span>}
         {erreur && <span className="cand-err">{erreur}</span>}
       </div>
+      <LettreImprimable lettre={lettre} offre={offre} />
     </div>
   )
 }
