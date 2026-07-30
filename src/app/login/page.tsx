@@ -49,9 +49,7 @@ export default function LoginPage() {
             className="w-full rounded-xl border px-3 py-2" required />
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button type="submit"
-          className="w-full rounded-xl px-3 py-2 text-white font-medium"
-          style={{ background: 'var(--accent)' }}>Se connecter</button>
+        <button type="submit" className="w-full rounded-xl px-3 py-2 text-white font-medium btn-auth">Se connecter</button>
         <p className="text-sm text-center" style={{ color: 'var(--muted)' }}>
           Pas encore de compte ? <a href="/signup" style={{ color: 'var(--accent-dark)', fontWeight: 600 }}>Créer un compte</a>
         </p>

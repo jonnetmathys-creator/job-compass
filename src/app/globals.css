@@ -823,3 +823,15 @@ a.logo:hover { opacity: .78; }
 @media (prefers-reduced-motion: reduce) {
   .alerte-cloche[data-anim] svg, .alerte-ondes i, .cloche-btn.sonne svg, .cloche-btn.sonne .cloche-pastille { animation: none; }
 }
+
+/* ── Boutons connexion / inscription ────────────────────────────────── */
+.btn-auth {
+  background: var(--accent); cursor: pointer;
+  transition: transform .14s ease, box-shadow .18s ease, background .18s ease;
+}
+.btn-auth:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(46, 158, 91, .32); }
+.btn-auth:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(46, 158, 91, .28); }
+@media (prefers-reduced-motion: reduce) {
+  .btn-auth { transition: background .18s ease; }
+  .btn-auth:hover, .btn-auth:active { transform: none; }
+}

@@ -46,9 +46,7 @@ export default function SignupPage() {
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         {info && <p className="text-sm" style={{ color: 'var(--accent-dark)' }}>{info}</p>}
-        <button type="submit"
-          className="w-full rounded-xl px-3 py-2 text-white font-medium"
-          style={{ background: 'var(--accent)' }}>Créer mon compte</button>
+        <button type="submit" className="w-full rounded-xl px-3 py-2 text-white font-medium btn-auth">Créer mon compte</button>
         <p className="text-sm text-center" style={{ color: 'var(--muted)' }}>
           Déjà un compte ? <a href="/login" style={{ color: 'var(--accent-dark)', fontWeight: 600 }}>Se connecter</a>
         </p>
