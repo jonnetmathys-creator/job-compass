@@ -22,6 +22,7 @@ export default function OnboardingTour() {
   const [rect, setRect] = useState<Rect | null>(null)
   const [chargement, setChargement] = useState(false)
   const [confetti, setConfetti] = useState(false)
+  const [pause, setPause] = useState(false)
   const [, demarrerTransition] = useTransition()
   // `enCours` protège contre la concurrence (remis à false à l'annulation ou en fin d'essai) ;
   // `demarre` mémorise qu'un contrôle complet a eu lieu (démarré ou non) et n'est jamais remis à
@@ -61,6 +62,14 @@ export default function OnboardingTour() {
 
   // L'overlay de chargement ne dure que le temps de la collecte : la redirection le referme.
   useEffect(() => { setChargement(false) }, [pathname])
+
+  // Le mode « pause » (petit bandeau bas) n'apparaît que si on reste réellement sans cible
+  // plus d'un instant : jamais pendant le chargement ni sur les transitions rapides.
+  useEffect(() => {
+    if (!actif || chargement || rect) { setPause(false); return }
+    const t = setTimeout(() => setPause(true), 700)
+    return () => clearTimeout(t)
+  }, [actif, chargement, rect])
 
   // Localise la cible de l'étape courante et suit ses mouvements (scroll/resize).
   useEffect(() => {
@@ -130,15 +139,13 @@ export default function OnboardingTour() {
   return (
     <>
       {confetti && <Confetti onFini={() => setConfetti(false)} />}
-      {actif && (
-        <>
-          {chargement && <LoadingOverlay messages={CHARGEMENT_MSGS} />}
-          <OnboardingSpotlight
-            etape={ETAPES[index]} rect={rect} index={index} total={ETAPES.length}
-            suivantLabel={estDerniere(index, ETAPES.length) ? 'Terminer' : 'Suivant'}
-            onPrecedent={precedent} onSuivant={suivant} onPasser={() => finir(false)}
-          />
-        </>
+      {actif && chargement && <LoadingOverlay messages={CHARGEMENT_MSGS} />}
+      {actif && !chargement && (rect || pause) && (
+        <OnboardingSpotlight
+          etape={ETAPES[index]} rect={rect} index={index} total={ETAPES.length}
+          suivantLabel={estDerniere(index, ETAPES.length) ? 'Terminer' : 'Suivant'}
+          onPrecedent={precedent} onSuivant={suivant} onPasser={() => finir(false)}
+        />
       )}
     </>
   )
