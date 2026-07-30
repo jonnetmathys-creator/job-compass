@@ -926,3 +926,37 @@ a.logo:hover { opacity: .78; }
   .split.vue-carte .list-pane { display: none; }
   .split.collapsed .list-pane { transform: none; margin-left: 0; } /* neutralise le repli desktop */
 }
+
+/* ── Responsive : autres pages sous 768px ───────────────────────────── */
+@media (max-width: 768px) {
+  /* Marges de contenu générales */
+  .detail-wrap { padding-left: 16px; padding-right: 16px; }
+  .detail-top { padding: 12px 14px; }
+
+  /* Offre : une colonne (déjà proche), carte latérale et boutons pleine largeur */
+  .detail-grid { grid-template-columns: 1fr; gap: 18px; }
+  .detail-side { position: static; }
+  .detail-hero { padding-left: 16px; padding-right: 16px; }
+  .side-map { height: 200px; }
+
+  /* Candidature IA : l'éditeur est déjà en colonne ; on fait passer la barre d'outils
+     à la ligne, on met la saisie à 16px (évite le zoom iOS) et les actions pleine largeur */
+  .cand-toolbar, .cand-toolbar-btns { flex-wrap: wrap; }
+  .cand-card-body input, .cand-card-body textarea { font-size: 16px; }
+  .cand-postuler .btn-primary, .cand-postuler .btn-lg { width: 100%; }
+
+  /* Suivi : cartes pleine largeur */
+  .suivi-carte { width: 100%; }
+
+  /* Accueil : barre de recherche confortable */
+  .searchbar { max-width: 100%; padding: 6px 6px 6px 16px; }
+  .searchbar input { font-size: 16px; } /* >=16px : évite le zoom auto iOS */
+  .hero .logo { font-size: 23px; margin-bottom: 24px; }
+}
+
+/* ── Responsive : très petits écrans sous 480px ─────────────────────── */
+@media (max-width: 480px) {
+  .suivi-stats { grid-template-columns: 1fr; }
+  .pm-actions { flex-direction: column; }
+  .searchbar .btn-primary { padding: 12px 18px; }
+}
