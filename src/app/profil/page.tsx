@@ -2,14 +2,19 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getServerClient } from '@/lib/supabase/server'
 import { getProfil, type Profil } from '@/lib/profil'
+import { getAlertes } from '@/lib/alertes/liste'
 import ProfilForm from './profil-form'
+import AlertesProfil from '@/components/alertes-profil'
 import PageHeader from '@/components/page-header'
 
 export default async function ProfilPage() {
   const supabase = await getServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  const existing = await getProfil(supabase, user.id)
+  const [existing, alertes] = await Promise.all([
+    getProfil(supabase, user.id),
+    getAlertes(supabase, user.id),
+  ])
   const initial: Profil = existing ?? {
     user_id: user.id, nom: null, titre_recherche: null, cv_url: null, lettre_base: null, lettre_url: null,
   }
@@ -33,6 +38,9 @@ export default async function ProfilPage() {
         <div className="detail-wrap">
           <div className="side-card" style={{ padding: '22px 22px 26px', marginBottom: 20 }}>
             <ProfilForm initial={initial} />
+          </div>
+          <div className="side-card" style={{ padding: '20px 22px', marginBottom: 20 }}>
+            <AlertesProfil alertes={alertes} />
           </div>
           <Link href="/favoris" className="profil-link">
             <span className="profil-link-ico">

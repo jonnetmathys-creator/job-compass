@@ -129,7 +129,7 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
                   <b>{offre.ville ?? 'Non précisé'}</b>
                 </div>
                 <div className="side-row">
-                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="2" x2="12" y2="22" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>Salaire</span>
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h12" /><path d="M4 14h9" /><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7 7 0 0 0 7 12a7 7 0 0 0 6.8 8 7.7 7.7 0 0 0 5.2-2" /></svg>Salaire</span>
                   <b className="hl">{offre.salaire ?? 'Non précisé'}</b>
                 </div>
                 <div className="side-row">

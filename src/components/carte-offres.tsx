@@ -71,7 +71,10 @@ export default function CarteOffres(props: {
           { closeButton: false, offset: [0, -30] },
         )
         m.on('popupopen', (e: any) => {
-          e.popup.getElement()?.querySelector('.mp-link')?.addEventListener('click', () => selectRef.current(o.id))
+          // Clic sur « Voir l'offre » dans la bulle -> page complète de l'offre.
+          e.popup.getElement()?.querySelector('.mp-link')?.addEventListener('click', () => {
+            window.location.href = `/offre/${o.id}`
+          })
         })
         m.on('click', () => {
           selectRef.current(o.id)
@@ -110,9 +113,15 @@ export default function CarteOffres(props: {
       const m = markersRef.current[id]
       if (!m || !mapRef.current) return
       const ll = m.getLatLng()
-      mapRef.current.setView(ll, 12, { animate: true })
-      if (clusterRef.current?.zoomToShowLayer) clusterRef.current.zoomToShowLayer(m, () => m.openPopup())
-      else m.openPopup()
+      // Déplacement fluide (vol animé) jusqu'à l'épingle, puis ouverture de la bulle.
+      const carte = mapRef.current
+      carte.flyTo(ll, 12, { duration: 0.8 })
+      carte.once('moveend', () => {
+        try {
+          if (clusterRef.current?.zoomToShowLayer) clusterRef.current.zoomToShowLayer(m, () => m.openPopup())
+          else m.openPopup()
+        } catch { /* marqueur pas prêt : on ignore */ }
+      })
       m._icon?.querySelector('.pin')?.classList.add('active')
     } catch {
       // jsdom ou marqueur pas encore prêt : on ignore

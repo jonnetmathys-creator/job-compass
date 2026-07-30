@@ -500,6 +500,32 @@ a.logo:hover { opacity: .78; }
 .profil-link-txt small { font-size: .8rem; color: var(--muted); }
 .profil-link-arr { color: var(--muted); flex: none; }
 
+/* ── Mes alertes mail (page profil) ─────────────────────────────────── */
+.alertes-profil-head { display: flex; align-items: center; gap: 13px; margin-bottom: 14px; }
+.alertes-profil-ico {
+  flex: none; width: 44px; height: 44px; border-radius: 12px;
+  display: grid; place-items: center; color: var(--accent); background: rgba(46,158,91,.10);
+}
+.alertes-profil-ico svg { width: 22px; height: 22px; }
+.alertes-profil-txt { display: flex; flex-direction: column; gap: 2px; }
+.alertes-profil-txt b { font-size: .95rem; font-weight: 700; }
+.alertes-profil-txt small { font-size: .8rem; color: var(--muted); }
+.alertes-profil-vide { font-size: .85rem; color: var(--muted); margin: 4px 2px 0; }
+.alertes-profil-liste { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.alertes-profil-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fafbfa;
+}
+.alertes-profil-nom { flex: 1; font-size: .9rem; font-weight: 600; }
+.alertes-profil-nom em { font-style: normal; font-weight: 500; color: var(--muted); }
+.alertes-profil-del {
+  flex: none; width: 34px; height: 34px; border-radius: 9px; cursor: pointer;
+  display: grid; place-items: center; color: #e2565b; background: rgba(226,86,91,.08);
+  border: 1px solid transparent; transition: background .15s, border-color .15s;
+}
+.alertes-profil-del:hover { background: rgba(226,86,91,.16); border-color: rgba(226,86,91,.35); }
+.alertes-profil-del:disabled { opacity: .5; cursor: default; }
+
 /* Avatar en-tête coeur (page favoris) */
 .d-avatar.liked { background: rgba(226,86,91,.12); color: #e2565b; }
 .d-avatar.liked svg { width: 30px; height: 30px; }

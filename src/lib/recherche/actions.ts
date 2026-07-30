@@ -15,18 +15,30 @@ export async function lancerRecherche(poste: string): Promise<void> {
   const supabase = await getServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  const { data, error } = await supabase
+
+  // Une seule recherche par intitulé/mots-clés : si elle existe déjà on la réutilise
+  // (préserve l'alerte mail et les derniers filtres) au lieu d'en recréer une à chaque fois.
+  const { data: existantes } = await supabase
     .from('recherches')
-    .insert(buildRechercheInsert(user.id, p))
-    .select('id')
-    .single()
-  if (error || !data) throw new Error('Création de la recherche impossible')
-  const service = getServiceClient()
-  const recherche: RechercheRow & { id: string } = {
-    id: data.id, mots_cles: [p], localisation: null, rayon_km: null, type_contrat: null,
+    .select('id, mots_cles, localisation, rayon_km, type_contrat')
+    .eq('user_id', user.id)
+    .ilike('intitule', p)
+    .limit(1)
+  let recherche: RechercheRow & { id: string }
+  if (existantes && existantes.length > 0) {
+    recherche = existantes[0] as RechercheRow & { id: string }
+  } else {
+    const { data, error } = await supabase
+      .from('recherches')
+      .insert(buildRechercheInsert(user.id, p))
+      .select('id')
+      .single()
+    if (error || !data) throw new Error('Création de la recherche impossible')
+    recherche = { id: data.id, mots_cles: [p], localisation: null, rayon_km: null, type_contrat: null }
   }
+  const service = getServiceClient()
   await collectForRecherche(service, recherche)
-  redirect(`/recherche/${data.id}`)
+  redirect(`/recherche/${recherche.id}`)
 }
 
 export async function affinerLieu(
