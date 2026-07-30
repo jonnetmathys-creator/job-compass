@@ -713,8 +713,7 @@ a.logo:hover { opacity: .78; }
   display: grid; place-items: center; color: var(--accent); background: var(--accent-soft);
 }
 .pm-ico svg { width: 26px; height: 26px; }
-.pm-titre { font-size: 1.15rem; font-weight: 800; color: var(--ink); }
-.pm-sous { font-size: .85rem; color: var(--muted); margin: 7px 0 22px; }
+.pm-titre { font-size: 1.15rem; font-weight: 800; color: var(--ink); margin-bottom: 22px; }
 .pm-actions { display: flex; gap: 9px; }
 .pm-btn {
   flex: 1; padding: 12px 6px; border-radius: 12px; font-size: .92rem; font-weight: 700;
@@ -727,10 +726,6 @@ a.logo:hover { opacity: .78; }
 .pm-attente:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
 .pm-oui { background: var(--accent); color: #fff; border-color: var(--accent); }
 .pm-oui:hover:not(:disabled) { box-shadow: 0 8px 20px rgba(46, 158, 91, .32); }
-.postuler-rappel {
-  display: flex; align-items: center; gap: 7px; margin-top: 10px;
-  font-size: .82rem; font-weight: 600; color: var(--accent);
-}
 @media (prefers-reduced-motion: reduce) {
   .pm-overlay, .pm-card { animation: none; }
 }

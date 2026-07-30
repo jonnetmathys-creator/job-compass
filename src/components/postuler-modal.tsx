@@ -30,7 +30,6 @@ export default function PostulerModal({ offreId, onFini }: { offreId: string; on
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7Z" /></svg>
         </div>
         <h3 className="pm-titre">Avez-vous postulé à cette offre ?</h3>
-        <p className="pm-sous">Ta réponse met à jour ton suivi de candidatures.</p>
         <div className="pm-actions">
           <button type="button" className="pm-btn pm-non" disabled={!!pending} onClick={() => repondre('non')}>
             {pending === 'non' ? '…' : 'Non'}
