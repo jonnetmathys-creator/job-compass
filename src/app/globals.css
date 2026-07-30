@@ -907,14 +907,14 @@ a.logo:hover { opacity: .78; }
 /* ── Responsive : page résultats sous 768px ─────────────────────────── */
 @media (max-width: 768px) {
   /* En-tête compact : on réserve la place de la cloche + avatar (fixés en haut à droite) */
-  .topbar { gap: 8px; padding: 12px 14px; padding-right: 104px; }
+  .topbar { gap: 8px; padding: 12px 14px; padding-right: 116px; }
   .topbar .logo { font-size: 17px; margin-right: 2px; }
   .poste-chip { font-size: 13px; padding: 7px 11px; max-width: 34vw; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .filtres-btn .btn-label, .alerte-toggle .btn-label, .filtres-chevron { display: none; }
   .filtres-btn, .alerte-toggle { padding: 9px 11px; }
 
   /* Panneau filtres en (quasi) pleine largeur */
-  .filtres-panel { width: auto; left: 14px; right: 14px; }
+  .filtres-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; }
 
   /* Bascule visible, bouton de repli desktop masqué */
   .segment-vue { display: flex; gap: 4px; margin: 10px 14px 0; padding: 4px; background: #eef0ee; border-radius: 12px; }
