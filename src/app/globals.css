@@ -713,8 +713,9 @@ a.logo:hover { opacity: .78; }
   display: grid; place-items: center; color: var(--accent); background: var(--accent-soft);
 }
 .pm-ico svg { width: 26px; height: 26px; }
-.pm-titre { font-size: 1.15rem; font-weight: 800; color: var(--ink); margin-bottom: 22px; }
-.pm-actions { display: flex; gap: 9px; }
+.pm-titre { font-size: 1.15rem; font-weight: 800; color: var(--ink); }
+.pm-sous { font-size: .87rem; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+.pm-actions { display: flex; gap: 9px; margin-top: 22px; }
 .pm-btn {
   flex: 1; padding: 12px 6px; border-radius: 12px; font-size: .92rem; font-weight: 700;
   cursor: pointer; border: 1px solid var(--line); background: #fff; color: var(--ink);
@@ -881,3 +882,16 @@ a.logo:hover { opacity: .78; }
 .profil-tuto-txt { display: flex; flex-direction: column; gap: 2px; }
 .profil-tuto-txt b { font-size: .95rem; font-weight: 700; }
 .profil-tuto-txt small { font-size: .8rem; color: var(--muted); }
+
+/* ── Confettis (fin de la visite guidée) ────────────────────────────── */
+.confetti { position: fixed; inset: 0; z-index: 4000; pointer-events: none; overflow: hidden; }
+.confetti-piece {
+  position: absolute; top: -16px; border-radius: 2px; opacity: 0;
+  animation-name: confetti-chute; animation-timing-function: cubic-bezier(.25, .6, .4, 1); animation-fill-mode: forwards;
+}
+@keyframes confetti-chute {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translate(var(--drift), 108vh) rotate(var(--rot)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .confetti { display: none; } }

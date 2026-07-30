@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getBrowserClient } from '@/lib/supabase/client'
 
@@ -8,6 +8,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
+
+  // Message après un retour depuis le lien de confirmation d'email.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('confirmed') === '1') setInfo('Adresse confirmée. Connecte-toi pour accéder à ton compte.')
+    else if (params.get('erreur') === 'confirmation') setError('Lien de confirmation invalide ou expiré. Réessaie ou recrée un compte.')
+  }, [])
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -15,7 +23,7 @@ export default function LoginPage() {
     const supabase = getBrowserClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) setError('Email ou mot de passe incorrect.')
-    else router.push('/profil')
+    else router.push('/')
   }
 
   return (
@@ -38,6 +46,7 @@ export default function LoginPage() {
       <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4" style={{ position: 'relative', zIndex: 1 }}>
         <div className="logo" style={{ fontSize: 24, marginBottom: 8 }}>Job<span>Compass</span></div>
         <h1 className="text-xl font-semibold">Connexion</h1>
+        {info && <p className="text-sm" style={{ color: 'var(--accent-dark)', fontWeight: 600 }}>{info}</p>}
         <div>
           <label htmlFor="email" className="block text-sm mb-1">Email</label>
           <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}

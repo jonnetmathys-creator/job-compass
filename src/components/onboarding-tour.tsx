@@ -8,6 +8,7 @@ import { lancerRecherche } from '@/lib/recherche/actions'
 import { ETAPES, etapeSuivante, etapePrecedente, estDerniere, pageCorrespond } from '@/lib/onboarding/etapes'
 import OnboardingSpotlight, { type Rect } from './onboarding-spotlight'
 import LoadingOverlay from './loading-overlay'
+import Confetti from './confetti'
 
 const CLE_INDEX = 'jc_tour_index'
 const CLE_RELANCE = 'jc_tour_relance'
@@ -20,6 +21,7 @@ export default function OnboardingTour() {
   const [index, setIndex] = useState(0)
   const [rect, setRect] = useState<Rect | null>(null)
   const [chargement, setChargement] = useState(false)
+  const [confetti, setConfetti] = useState(false)
   const [, demarrerTransition] = useTransition()
   // `enCours` protège contre la concurrence (remis à false à l'annulation ou en fin d'essai) ;
   // `demarre` mémorise qu'un contrôle complet a eu lieu (démarré ou non) et n'est jamais remis à
@@ -96,7 +98,8 @@ export default function OnboardingTour() {
     return () => { annule = true; window.removeEventListener('scroll', suivre, true); window.removeEventListener('resize', suivre) }
   }, [actif, index, pathname])
 
-  const finir = useCallback(() => {
+  const finir = useCallback((avecConfetti = false) => {
+    if (avecConfetti) setConfetti(true)
     setActif(false); setRect(null); setChargement(false)
     if (typeof window !== 'undefined') localStorage.removeItem(CLE_INDEX)
     terminerOnboarding().catch(() => {})
@@ -104,7 +107,7 @@ export default function OnboardingTour() {
 
   const suivant = useCallback(() => {
     const etape = ETAPES[index]
-    if (estDerniere(index, ETAPES.length)) { finir(); return }
+    if (estDerniere(index, ETAPES.length)) { finir(true); return } // Terminer : petits confettis
     if (etape.action === 'recherche') {
       setIndex((i) => etapeSuivante(i, ETAPES.length))
       setChargement(true)
@@ -123,15 +126,20 @@ export default function OnboardingTour() {
 
   const precedent = useCallback(() => setIndex((i) => etapePrecedente(i)), [])
 
-  if (!actif || pathname === '/login' || pathname === '/signup') return null
+  if (pathname === '/login' || pathname === '/signup') return null
   return (
     <>
-      {chargement && <LoadingOverlay messages={CHARGEMENT_MSGS} />}
-      <OnboardingSpotlight
-        etape={ETAPES[index]} rect={rect} index={index} total={ETAPES.length}
-        suivantLabel={estDerniere(index, ETAPES.length) ? 'Terminer' : 'Suivant'}
-        onPrecedent={precedent} onSuivant={suivant} onPasser={finir}
-      />
+      {confetti && <Confetti onFini={() => setConfetti(false)} />}
+      {actif && (
+        <>
+          {chargement && <LoadingOverlay messages={CHARGEMENT_MSGS} />}
+          <OnboardingSpotlight
+            etape={ETAPES[index]} rect={rect} index={index} total={ETAPES.length}
+            suivantLabel={estDerniere(index, ETAPES.length) ? 'Terminer' : 'Suivant'}
+            onPrecedent={precedent} onSuivant={suivant} onPasser={() => finir(false)}
+          />
+        </>
+      )}
     </>
   )
 }
