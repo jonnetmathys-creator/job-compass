@@ -108,10 +108,14 @@ export default function OnboardingTour() {
         const visible = r.top >= 64 && r.bottom <= vh - (mobile ? 40 : 24)
         if (!visible) {
           try { el.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: 'center', inline: 'center' }) } catch { /* jsdom */ }
-          // Recale le trou une fois le défilement (animé) terminé.
-          setTimeout(() => { if (!annule) { const e2 = document.querySelector(etape.cible) as HTMLElement | null; if (e2) maj(e2) } }, 420)
         }
         maj(el)
+        // Le panneau Liste vient parfois d'apparaître (bascule Carte→Liste) et sa mise en page se
+        // stabilise sur quelques frames : on recale le halo une fois posée pour qu'il colle pile
+        // sur la cible (sinon il reste légèrement décalé). Couvre aussi la fin d'un défilement animé.
+        const recaler = () => { if (annule) return; const e2 = document.querySelector(etape.cible) as HTMLElement | null; if (e2) maj(e2) }
+        requestAnimationFrame(() => requestAnimationFrame(recaler))
+        setTimeout(recaler, visible ? 200 : 460)
         return
       }
       if (essais++ < 20) { setTimeout(trouver, 100); return } // ~2 s puis pause
