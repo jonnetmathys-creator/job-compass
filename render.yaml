@@ -1,0 +1,34 @@
+# Blueprint Render : service web Next.js (offre gratuite).
+# Render demande la valeur de chaque variable `sync: false` à la création (jamais commitée).
+services:
+  - type: web
+    name: job-compass
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: FT_ID
+        sync: false
+      - key: FT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: ALERTE_FROM
+        sync: false
+      - key: ALERTE_BASE_URL
+        sync: false
+      - key: COLLECT_SECRET
+        sync: false
