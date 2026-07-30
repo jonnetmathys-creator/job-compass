@@ -107,7 +107,7 @@ export default function OnboardingTour() {
 
   const suivant = useCallback(() => {
     const etape = ETAPES[index]
-    if (estDerniere(index, ETAPES.length)) { finir(true); return } // Terminer : petits confettis
+    if (estDerniere(index, ETAPES.length)) { finir(true); router.push('/'); return } // Terminer : confettis + retour recherche
     if (etape.action === 'recherche') {
       setIndex((i) => etapeSuivante(i, ETAPES.length))
       setChargement(true)
