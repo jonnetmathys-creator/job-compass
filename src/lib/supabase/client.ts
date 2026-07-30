@@ -12,5 +12,8 @@ export function getBrowserClient() {
       "Config Supabase navigateur manquante (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY)",
     )
   }
-  return createBrowserClient(url, anonKey)
+  // detectSessionInUrl: false -> le lien de confirmation d'email ne connecte PAS
+  // automatiquement. L'adresse est validée côté Supabase au clic, mais aucune session
+  // n'est ouverte depuis l'URL : l'utilisateur doit ressaisir email + mot de passe.
+  return createBrowserClient(url, anonKey, { auth: { detectSessionInUrl: false } })
 }
