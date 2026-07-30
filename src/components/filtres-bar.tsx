@@ -69,7 +69,7 @@ export default function FiltresBar(props: {
               <label htmlFor="rayon">Distance</label>
               <span className="filtre-valeur">{franceEntiere ? 'France entière' : `${rayonKm} km`}</span>
             </div>
-            <input id="rayon" type="range" min={10} max={200} step={10} value={rayonKm} disabled={franceEntiere}
+            <input id="rayon" type="range" min={10} max={200} step={1} value={rayonKm} disabled={franceEntiere}
               onChange={(e) => setRayonKm(Number(e.target.value))} className="filtre-slider" />
             <label className="filtre-check">
               <input type="checkbox" checked={franceEntiere} onChange={(e) => setFranceEntiere(e.target.checked)} />
