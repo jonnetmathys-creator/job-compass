@@ -24,7 +24,7 @@ export const ETAPES: Etape[] = [
   { id: 'cloche', page: /^\/recherche\//, cible: '[data-tour="cloche"]', placement: 'gauche', action: 'offre',
     titre: 'Notifications', texte: 'Nouvelles offres et rappels de candidature arrivent dans cette cloche. Clique Suivant pour ouvrir une offre.' },
   { id: 'postuler', page: /^\/offre\//, cible: '[data-tour="postuler"]', placement: 'gauche',
-    titre: 'Postule', texte: 'Au retour sur l’onglet, on te demande si c’est fait pour remplir ton suivi.' },
+    titre: 'Postule', texte: 'Prêt·e ? Postule en un clic depuis ce bouton, par email ou sur France Travail.' },
   { id: 'candidature-ia', page: /^\/offre\//, cible: '[data-tour="candidature-ia"]', placement: 'gauche',
     titre: 'Candidature IA', texte: 'Laisse l’IA rédiger un mail et une lettre personnalisés à partir de ton CV.' },
   { id: 'compte', page: /^\/(recherche|offre)\//, cible: '[data-tour="compte"]', placement: 'gauche',
