@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import CompteMenu from '@/components/compte-menu'
@@ -15,6 +15,11 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'JobCompass',
   description: 'Centralisez et envoyez vos candidatures en diététique.',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

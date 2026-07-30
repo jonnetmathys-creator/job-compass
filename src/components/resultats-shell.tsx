@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import type { OffreRow } from '@/lib/offres/types'
 import OffreListe from './offre-liste'
@@ -18,6 +18,7 @@ export default function ResultatsShell(props: {
 }) {
   const [contrat, setContrat] = useState('')
   const [collapsed, setCollapsed] = useState(false)
+  const [vue, setVue] = useState<'liste' | 'carte'>('liste')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [likes, setLikes] = useState<Set<string>>(new Set(props.favoriIds))
@@ -31,6 +32,13 @@ export default function ResultatsShell(props: {
     [props.offres, contrat],
   )
 
+  // Quand on bascule sur la carte (mobile), Leaflet doit recalculer sa taille.
+  useEffect(() => {
+    if (vue !== 'carte') return
+    const t = setTimeout(() => window.dispatchEvent(new Event('resize')), 60)
+    return () => clearTimeout(t)
+  }, [vue])
+
   const onToggleLike = async (id: string) => {
     setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
     try { await toggleFavori(id) } catch { setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n }) }
@@ -40,7 +48,11 @@ export default function ResultatsShell(props: {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <FiltresBarClient poste={props.recherche.intitule} contrats={contrats} contrat={contrat} onContrat={setContrat} rechercheId={props.recherche.id}
         initialLieu={props.recherche.lieu_label ?? ''} initialRayon={props.recherche.rayon_km} alertesEmail={props.recherche.alertes_email ?? false} />
-      <div className={`split${collapsed ? ' collapsed' : ''}`} id="split">
+      <div className="segment-vue" role="tablist" aria-label="Affichage des résultats">
+        <button type="button" role="tab" aria-selected={vue === 'liste'} className={vue === 'liste' ? 'on' : ''} onClick={() => setVue('liste')}>Liste</button>
+        <button type="button" role="tab" aria-selected={vue === 'carte'} className={vue === 'carte' ? 'on' : ''} onClick={() => setVue('carte')}>Carte</button>
+      </div>
+      <div className={`split vue-${vue}${collapsed ? ' collapsed' : ''}`} id="split">
         <div className="list-pane" id="list" data-tour="liste">
           <OffreListe offres={visibles} expandedId={expandedId} hoveredId={hoveredId} likes={likes}
             onToggleExpand={(id) => setExpandedId((cur) => (cur === id ? null : id))}

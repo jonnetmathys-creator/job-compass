@@ -23,3 +23,16 @@ test('le filtre contrat masque les offres non concernées', async () => {
   expect(screen.getByText('Offre 1')).toBeInTheDocument()
   expect(screen.queryByText('Offre 2')).not.toBeInTheDocument()
 })
+
+test('la bascule Liste/Carte change la vue active', async () => {
+  render(<ResultatsShell recherche={{ id: 'r1', intitule: 'Diét', localisation: null, rayon_km: null, lieu_label: null }}
+    offres={[o('1', 'CDI')]} favoriIds={[]} />)
+  const liste = screen.getByRole('tab', { name: 'Liste' })
+  const carte = screen.getByRole('tab', { name: 'Carte' })
+  expect(liste).toHaveAttribute('aria-selected', 'true')
+  expect(carte).toHaveAttribute('aria-selected', 'false')
+  await userEvent.click(carte)
+  expect(carte).toHaveAttribute('aria-selected', 'true')
+  expect(liste).toHaveAttribute('aria-selected', 'false')
+  expect(document.getElementById('split')).toHaveClass('vue-carte')
+})

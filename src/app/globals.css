@@ -895,3 +895,11 @@ a.logo:hover { opacity: .78; }
   100% { transform: translate(var(--drift), 108vh) rotate(var(--rot)); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
+
+/* ── Responsive : bascule Liste/Carte (page résultats) ──────────────── */
+.segment-vue { display: none; } /* visible seulement sur mobile (voir media query 768px) */
+.segment-vue button {
+  flex: 1; padding: 10px; border: 0; background: transparent; font-family: inherit;
+  font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-radius: 9px;
+}
+.segment-vue button.on { background: #fff; color: var(--ink); box-shadow: var(--shadow-sm); }
