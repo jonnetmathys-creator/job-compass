@@ -93,11 +93,16 @@ export default function OnboardingTour() {
     const trouver = () => {
       if (annule) return
       const el = document.querySelector(etape.cible) as HTMLElement | null
-      if (el) {
+      const r = el?.getBoundingClientRect()
+      // Une cible dans un panneau masqué (ex. la liste quand la carte est affichée) existe dans
+      // le DOM mais mesure 0×0 : la placer donnerait un halo en (0,0). On attend qu'elle ait une
+      // taille réelle (le basculement Liste/Carte de l'étape arrive au tick suivant) avant de mesurer.
+      // jsdom (tests) ne calcule aucune mise en page (body 0px) : on n'applique pas ce filtre.
+      const aLayout = typeof document !== 'undefined' && document.body.getBoundingClientRect().width > 0
+      if (el && r && (!aLayout || (r.width > 0 && r.height > 0))) {
         const doux = typeof window !== 'undefined' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
         const vh = typeof window !== 'undefined' ? window.innerHeight : 768
         const mobile = typeof window !== 'undefined' && window.innerWidth <= 768
-        const r = el.getBoundingClientRect()
         // On ne défile que si la cible est réellement hors de la zone confortable : une cible
         // déjà visible (ex. le cœur d'une offre) ne doit pas être recentrée, sinon le halo saute.
         const visible = r.top >= 64 && r.bottom <= vh - (mobile ? 40 : 24)
