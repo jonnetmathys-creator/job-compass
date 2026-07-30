@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google'
 import './globals.css'
 import CompteMenu from '@/components/compte-menu'
 import ClocheNotifs from '@/components/cloche-notifs'
+import OnboardingTour from '@/components/onboarding-tour'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CompteMenu />
         </div>
         {children}
+        <OnboardingTour />
       </body>
     </html>
   )
