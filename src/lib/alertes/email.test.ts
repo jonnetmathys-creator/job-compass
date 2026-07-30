@@ -10,36 +10,36 @@ test('buildEmailHtml contient l\'intitulé et les offres', () => {
   expect(html).toContain('https://app.test/offre/o1')
 })
 
-test('envoyerAlerte sans RESEND_API_KEY renvoie false sans appeler fetch', async () => {
-  delete process.env.RESEND_API_KEY
-  const fetchImpl = vi.fn()
-  const client = { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: [], error: null }) }) }) } as any
-  const ok = await envoyerAlerte({ to: 'a@b.c', recherche: { id: 'r1', intitule: 'Diét' }, offreIds: ['o1'] }, client, { fetchImpl: fetchImpl as any })
+test('envoyerAlerte sans compte Gmail configuré renvoie false sans envoyer', async () => {
+  delete process.env.GMAIL_USER; delete process.env.GMAIL_APP_PASSWORD
+  const envoi = vi.fn((..._args: unknown[]) => Promise.resolve(true))
+  const client = { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: [], error: null }) }) }) } as never
+  const ok = await envoyerAlerte({ to: 'a@b.c', recherche: { id: 'r1', intitule: 'Diét' }, offreIds: ['o1'] }, client, { envoi })
   expect(ok).toBe(false)
-  expect(fetchImpl).not.toHaveBeenCalled()
+  expect(envoi).not.toHaveBeenCalled()
 })
 
-test('envoyerAlerte sans destinataire renvoie false sans appeler fetch', async () => {
-  process.env.RESEND_API_KEY = 'test-key'
-  const fetchImpl = vi.fn()
-  const client = { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: [], error: null }) }) }) } as any
-  const ok = await envoyerAlerte({ to: null, recherche: { id: 'r1', intitule: 'Diét' }, offreIds: ['o1'] }, client, { fetchImpl: fetchImpl as any })
+test('envoyerAlerte sans destinataire renvoie false sans envoyer', async () => {
+  process.env.GMAIL_USER = 'jc@gmail.com'; process.env.GMAIL_APP_PASSWORD = 'app-pass'
+  const envoi = vi.fn((..._args: unknown[]) => Promise.resolve(true))
+  const client = { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: [], error: null }) }) }) } as never
+  const ok = await envoyerAlerte({ to: null, recherche: { id: 'r1', intitule: 'Diét' }, offreIds: ['o1'] }, client, { envoi })
   expect(ok).toBe(false)
-  expect(fetchImpl).not.toHaveBeenCalled()
-  delete process.env.RESEND_API_KEY
+  expect(envoi).not.toHaveBeenCalled()
+  delete process.env.GMAIL_USER; delete process.env.GMAIL_APP_PASSWORD
 })
 
-test('envoyerAlerte poste sur Resend quand la clé est présente', async () => {
-  process.env.RESEND_API_KEY = 'test-key'
+test('envoyerAlerte envoie via SMTP quand Gmail est configuré', async () => {
+  process.env.GMAIL_USER = 'jc@gmail.com'; process.env.GMAIL_APP_PASSWORD = 'app-pass'
   const offres = [{ id: 'o1', titre: 'Diét', entreprise: 'C', ville: 'Nantes' }]
-  const client = { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: offres, error: null }) }) }) } as any
-  const fetchImpl = vi.fn().mockResolvedValue({ ok: true })
-  const ok = await envoyerAlerte({ to: 'a@b.c', recherche: { id: 'r1', intitule: 'Diét' }, offreIds: ['o1'] }, client, { fetchImpl: fetchImpl as any })
+  const client = { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: offres, error: null }) }) }) } as never
+  const envoi = vi.fn((..._args: unknown[]) => Promise.resolve(true))
+  const ok = await envoyerAlerte({ to: 'a@b.c', recherche: { id: 'r1', intitule: 'Diét' }, offreIds: ['o1'] }, client, { envoi })
   expect(ok).toBe(true)
-  const [url, init] = fetchImpl.mock.calls[0]
-  expect(String(url)).toContain('api.resend.com')
-  expect(init.headers.Authorization).toBe('Bearer test-key')
-  const body = JSON.parse(init.body)
-  expect(body.to).toBe('a@b.c')
-  delete process.env.RESEND_API_KEY
+  const msg = envoi.mock.calls[0][0] as { to: string; from: string; subject: string; html: string }
+  expect(msg.to).toBe('a@b.c')
+  expect(msg.from).toContain('jc@gmail.com')
+  expect(msg.subject).toContain('Diét')
+  expect(msg.html).toContain('Diét')
+  delete process.env.GMAIL_USER; delete process.env.GMAIL_APP_PASSWORD
 })

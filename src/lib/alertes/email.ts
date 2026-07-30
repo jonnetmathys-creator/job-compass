@@ -1,6 +1,5 @@
+import nodemailer from 'nodemailer'
 import type { SupabaseClient } from '@supabase/supabase-js'
-
-const RESEND_URL = 'https://api.resend.com/emails'
 
 export function buildEmailHtml(
   intitule: string,
@@ -20,15 +19,28 @@ export function buildEmailHtml(
 <p style="color:#9aa0a6;font-size:12px">JobCompass</p></div>`
 }
 
+export type MessageMail = { from: string; to: string; subject: string; html: string }
+export type EnvoiMail = (msg: MessageMail) => Promise<boolean>
+
+// Envoi réel via SMTP Gmail (compte dédié + mot de passe d'application).
+async function envoiGmail(msg: MessageMail): Promise<boolean> {
+  const user = process.env.GMAIL_USER
+  const pass = process.env.GMAIL_APP_PASSWORD
+  if (!user || !pass) return false
+  const transport = nodemailer.createTransport({ service: 'gmail', auth: { user, pass } })
+  const info = await transport.sendMail(msg)
+  return (info.accepted?.length ?? 0) > 0
+}
+
 export async function envoyerAlerte(
   params: { to: string | null; recherche: { id: string; intitule?: string }; offreIds: string[] },
   client: SupabaseClient,
-  deps: { fetchImpl?: typeof fetch } = {},
+  deps: { envoi?: EnvoiMail } = {},
 ): Promise<boolean> {
   if (!params.to) return false
-  const key = process.env.RESEND_API_KEY
-  if (!key) return false
-  const fetchImpl = deps.fetchImpl ?? fetch
+  const user = process.env.GMAIL_USER
+  // Best-effort : sans compte Gmail configuré, on n'envoie rien (pas d'erreur).
+  if (!user || !process.env.GMAIL_APP_PASSWORD) return false
 
   const { data } = await client
     .from('offres')
@@ -38,16 +50,12 @@ export async function envoyerAlerte(
   if (offres.length === 0) return false
 
   const baseUrl = process.env.ALERTE_BASE_URL ?? 'https://jobcompass.app'
-  const from = process.env.ALERTE_FROM ?? 'JobCompass <onboarding@resend.dev>'
-  const res = await fetchImpl(RESEND_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-    body: JSON.stringify({
-      from,
-      to: params.to,
-      subject: `Nouvelles offres : ${params.recherche.intitule ?? 'ta recherche'}`,
-      html: buildEmailHtml(params.recherche.intitule ?? 'ta recherche', offres, baseUrl),
-    }),
+  const from = process.env.ALERTE_FROM ?? `JobCompass <${user}>`
+  const envoi = deps.envoi ?? envoiGmail
+  return envoi({
+    from,
+    to: params.to,
+    subject: `Nouvelles offres : ${params.recherche.intitule ?? 'ta recherche'}`,
+    html: buildEmailHtml(params.recherche.intitule ?? 'ta recherche', offres, baseUrl),
   })
-  return res.ok
 }
