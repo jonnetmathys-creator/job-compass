@@ -18,10 +18,15 @@ export default function CompteMenu() {
 
   useEffect(() => {
     let annule = false
-    getBrowserClient().auth.getUser().then(({ data }) => {
+    const client = getBrowserClient()
+    client.auth.getUser().then(({ data }) => {
       if (!annule) setEmail(data.user?.email ?? '')
     }).catch(() => {})
-    return () => { annule = true }
+    // Met à jour l'avatar immédiatement après connexion/déconnexion, sans refresh.
+    const { data: sub } = client.auth.onAuthStateChange((_event, session) => {
+      if (!annule) setEmail(session?.user?.email ?? '')
+    })
+    return () => { annule = true; sub.subscription.unsubscribe() }
   }, [])
 
   if (pathname === '/login') return null
