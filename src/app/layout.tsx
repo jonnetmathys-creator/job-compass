@@ -20,8 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={montserrat.variable}>
       <body>
-        <ClocheNotifs />
-        <CompteMenu />
+        <div className="topnav-right">
+          <ClocheNotifs />
+          <CompteMenu />
+        </div>
         {children}
       </body>
     </html>
