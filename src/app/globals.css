@@ -903,3 +903,26 @@ a.logo:hover { opacity: .78; }
   font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-radius: 9px;
 }
 .segment-vue button.on { background: #fff; color: var(--ink); box-shadow: var(--shadow-sm); }
+
+/* ── Responsive : page résultats sous 768px ─────────────────────────── */
+@media (max-width: 768px) {
+  /* En-tête compact : on réserve la place de la cloche + avatar (fixés en haut à droite) */
+  .topbar { gap: 8px; padding: 12px 14px; padding-right: 104px; }
+  .topbar .logo { font-size: 17px; margin-right: 2px; }
+  .poste-chip { font-size: 13px; padding: 7px 11px; max-width: 34vw; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .filtres-btn .btn-label, .alerte-toggle .btn-label, .filtres-chevron { display: none; }
+  .filtres-btn, .alerte-toggle { padding: 9px 11px; }
+
+  /* Panneau filtres en (quasi) pleine largeur */
+  .filtres-panel { width: auto; left: 14px; right: 14px; }
+
+  /* Bascule visible, bouton de repli desktop masqué */
+  .segment-vue { display: flex; gap: 4px; margin: 10px 14px 0; padding: 4px; background: #eef0ee; border-radius: 12px; }
+  .map-toggle { display: none; }
+
+  /* Liste et carte en pleine largeur, on n'en montre qu'une selon la vue */
+  .list-pane { width: 100%; }
+  .split.vue-liste .map-pane { display: none; }
+  .split.vue-carte .list-pane { display: none; }
+  .split.collapsed .list-pane { transform: none; margin-left: 0; } /* neutralise le repli desktop */
+}
