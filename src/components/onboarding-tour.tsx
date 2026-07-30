@@ -50,6 +50,9 @@ export default function OnboardingTour() {
   // Persiste l'index pour survivre aux navigations/reloads en cours de visite.
   useEffect(() => { if (actif) localStorage.setItem(CLE_INDEX, String(index)) }, [actif, index])
 
+  // L'overlay de chargement ne dure que le temps de la collecte : la redirection le referme.
+  useEffect(() => { setChargement(false) }, [pathname])
+
   // Localise la cible de l'étape courante et suit ses mouvements (scroll/resize).
   useEffect(() => {
     if (!actif) { setRect(null); return }
@@ -92,7 +95,7 @@ export default function OnboardingTour() {
     if (etape.action === 'recherche') {
       setIndex((i) => etapeSuivante(i, ETAPES.length))
       setChargement(true)
-      demarrerTransition(() => { lancerRecherche('Diététicien') })
+      demarrerTransition(() => { lancerRecherche('Diététicien').catch(() => setChargement(false)) })
       return
     }
     if (etape.action === 'offre') {
