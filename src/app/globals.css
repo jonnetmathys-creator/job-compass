@@ -872,3 +872,12 @@ a.logo:hover { opacity: .78; }
 @media (prefers-reduced-motion: reduce) {
   .tour-trou, .tour-bulle { transition: none; animation: none; }
 }
+
+/* ── Bouton « Revoir le tutoriel » (profil) ─────────────────────────── */
+.profil-tuto { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; padding: 12px 2px; background: none; border: 0; cursor: pointer; font-family: inherit; color: var(--ink); }
+.profil-tuto:disabled { opacity: .6; cursor: default; }
+.profil-tuto-ico { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--accent); background: var(--accent-soft); }
+.profil-tuto-ico svg { width: 22px; height: 22px; }
+.profil-tuto-txt { display: flex; flex-direction: column; gap: 2px; }
+.profil-tuto-txt b { font-size: .95rem; font-weight: 700; }
+.profil-tuto-txt small { font-size: .8rem; color: var(--muted); }

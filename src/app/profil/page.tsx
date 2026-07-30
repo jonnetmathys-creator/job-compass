@@ -6,6 +6,7 @@ import { getAlertes } from '@/lib/alertes/liste'
 import ProfilForm from './profil-form'
 import AlertesProfil from '@/components/alertes-profil'
 import PageHeader from '@/components/page-header'
+import OnboardingRejouer from '@/components/onboarding-rejouer'
 
 export default async function ProfilPage() {
   const supabase = await getServerClient()
@@ -41,6 +42,9 @@ export default async function ProfilPage() {
           </div>
           <div className="side-card" style={{ padding: '20px 22px', marginBottom: 20 }}>
             <AlertesProfil alertes={alertes} />
+            <div style={{ borderTop: '1px solid var(--line)', marginTop: 16, paddingTop: 6 }}>
+              <OnboardingRejouer />
+            </div>
           </div>
           <Link href="/favoris" className="profil-link">
             <span className="profil-link-ico">
