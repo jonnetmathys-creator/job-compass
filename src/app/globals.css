@@ -956,10 +956,10 @@ a.logo:hover { opacity: .78; }
   /* Accueil : logo dans l'en-tête (haut à gauche), contenu (titre + barre) centré */
   .hero { animation: none; } /* le transform de l'animation casserait le position:fixed du logo */
   .hero .logo { position: fixed; top: 16px; left: 16px; margin-bottom: 0; font-size: 20px; z-index: 20; }
-  /* Titre plus compact + hauteur réservée de 2 lignes : la phrase la plus longue tient
-     en 2 lignes et la barre de recherche ne saute plus quand le texte change. */
-  .headline { min-height: 78px; margin-bottom: 24px; }
-  .headline h1 { font-size: clamp(24px, 6.8vw, 30px); }
+  /* Hauteur réservée de 2 lignes : la barre de recherche ne saute plus quand le texte
+     change. La taille du titre reste grande ; un ajustement JS la réduit seulement si une
+     phrase déborderait sur une 3e ligne (voir search-bar.tsx). */
+  .headline { min-height: 80px; margin-bottom: 24px; }
   .searchbar { max-width: 100%; padding: 6px 6px 6px 16px; }
   .searchbar input { font-size: 16px; } /* >=16px : évite le zoom auto iOS */
 

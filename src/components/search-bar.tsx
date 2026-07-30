@@ -27,22 +27,38 @@ export default function SearchBar() {
     let pi = 0
     const el = headlineRef.current
     if (!el) return
+    // Réduit la taille du titre seulement si la phrase déborderait au-delà de 2 lignes.
+    // On repart de la taille CSS (grande) et on descend au minimum nécessaire.
+    const ajuster = () => {
+      el.style.fontSize = ''
+      let fs = parseFloat(getComputedStyle(el).fontSize)
+      if (!fs) return
+      const min = fs * 0.6
+      let garde = 0
+      while (el.scrollHeight > fs * 1.1 * 2 + 4 && fs > min && garde++ < 40) {
+        fs -= 1
+        el.style.fontSize = `${fs}px`
+      }
+    }
     const render = (text: string) => {
       el.innerHTML = text.split(' ').map((w, i) => {
         const em = w.includes('*'); const clean = w.replace(/\*/g, '')
         return `<span class="word${em ? ' accent' : ''}" style="transition-delay:${i * 75}ms">${clean}</span>`
       }).join(' ')
+      ajuster()
       requestAnimationFrame(() => requestAnimationFrame(() =>
         el.querySelectorAll('.word').forEach((s) => s.classList.add('show'))))
     }
     render(PHRASES[0])
+    const onResize = () => ajuster()
+    window.addEventListener('resize', onResize)
     let swap: ReturnType<typeof setTimeout>
     const id = setInterval(() => {
       const words = el.querySelectorAll('.word')
       words.forEach((s, i) => { (s as HTMLElement).style.transitionDelay = `${i * 35}ms`; s.classList.remove('show'); s.classList.add('out') })
       swap = setTimeout(() => { pi = (pi + 1) % PHRASES.length; render(PHRASES[pi]) }, 300 + words.length * 35)
     }, 4400)
-    return () => { clearInterval(id); clearTimeout(swap) }
+    return () => { clearInterval(id); clearTimeout(swap); window.removeEventListener('resize', onResize) }
   }, [])
 
   return (
