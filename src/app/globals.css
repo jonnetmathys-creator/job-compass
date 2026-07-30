@@ -983,6 +983,7 @@ a.logo:hover { opacity: .78; }
   .btn-primary, .btn-apply, .btn-ia, .btn-save, .filtres-btn, .alerte-toggle,
   .segment-vue button, .pm-btn, .tour-suiv { min-height: 44px; }
 
-  /* Visite guidée : la bulle se cale en bas de l'écran (elle ne recouvre plus la cible mise en évidence) */
-  .tour-bulle { top: auto !important; bottom: 16px !important; left: 12px !important; right: 12px !important; width: auto !important; }
+  /* Visite guidée : la position (au-dessus ou en dessous de la cible) est calculée en JS
+     pour ne jamais recouvrir l'élément mis en évidence ; on borne juste la largeur. */
+  .tour-bulle { width: calc(100vw - 24px); max-width: 340px; }
 }

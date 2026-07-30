@@ -95,12 +95,18 @@ export default function OnboardingTour() {
       const el = document.querySelector(etape.cible) as HTMLElement | null
       if (el) {
         const doux = typeof window !== 'undefined' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-        // Sur mobile la bulle est ancrée en bas : on amène la cible en haut pour ne pas la masquer.
+        const vh = typeof window !== 'undefined' ? window.innerHeight : 768
         const mobile = typeof window !== 'undefined' && window.innerWidth <= 768
-        try { el.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: mobile ? 'start' : 'center', inline: 'center' }) } catch { /* jsdom */ }
+        const r = el.getBoundingClientRect()
+        // On ne défile que si la cible est réellement hors de la zone confortable : une cible
+        // déjà visible (ex. le cœur d'une offre) ne doit pas être recentrée, sinon le halo saute.
+        const visible = r.top >= 64 && r.bottom <= vh - (mobile ? 40 : 24)
+        if (!visible) {
+          try { el.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: 'center', inline: 'center' }) } catch { /* jsdom */ }
+          // Recale le trou une fois le défilement (animé) terminé.
+          setTimeout(() => { if (!annule) { const e2 = document.querySelector(etape.cible) as HTMLElement | null; if (e2) maj(e2) } }, 420)
+        }
         maj(el)
-        // Recale le trou une fois le défilement (animé) terminé.
-        setTimeout(() => { if (!annule) { const e2 = document.querySelector(etape.cible) as HTMLElement | null; if (e2) maj(e2) } }, 380)
         return
       }
       if (essais++ < 20) { setTimeout(trouver, 100); return } // ~2 s puis pause

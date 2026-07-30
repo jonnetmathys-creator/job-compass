@@ -14,6 +14,16 @@ type Pos = { top: number; left: number }
 // Position de la bulle : ancrée selon le placement souhaité, puis bornée pour rester
 // entièrement visible à l'écran (jamais coupée en haut, en bas ou sur les côtés).
 function calculerPos(rect: Rect, placement: Etape['placement'], bw: number, bh: number, vw: number, vh: number): Pos {
+  // Mobile : on ignore le placement de l'étape et on ancre la bulle du côté opposé à
+  // la cible (au-dessus si la cible est en bas, en dessous sinon) pour ne jamais la recouvrir.
+  if (vw <= 768) {
+    const marge = 12
+    const cibleMilieu = rect.top + rect.height / 2
+    let top = cibleMilieu > vh / 2 ? rect.top - ECART - bh : rect.top + rect.height + ECART
+    top = Math.max(marge, Math.min(top, vh - bh - marge))
+    const left = Math.max(marge, (vw - bw) / 2)
+    return { top, left }
+  }
   let top: number, left: number
   switch (placement) {
     case 'haut': top = rect.top - ECART - bh; left = rect.left + rect.width / 2 - bw / 2; break
