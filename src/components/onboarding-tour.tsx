@@ -95,8 +95,13 @@ export default function OnboardingTour() {
       const el = document.querySelector(etape.cible) as HTMLElement | null
       if (el) {
         const doux = typeof window !== 'undefined' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-        try { el.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: 'center', inline: 'center' }) } catch { /* jsdom */ }
-        maj(el); return
+        // Sur mobile la bulle est ancrée en bas : on amène la cible en haut pour ne pas la masquer.
+        const mobile = typeof window !== 'undefined' && window.innerWidth <= 768
+        try { el.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: mobile ? 'start' : 'center', inline: 'center' }) } catch { /* jsdom */ }
+        maj(el)
+        // Recale le trou une fois le défilement (animé) terminé.
+        setTimeout(() => { if (!annule) { const e2 = document.querySelector(etape.cible) as HTMLElement | null; if (e2) maj(e2) } }, 380)
+        return
       }
       if (essais++ < 20) { setTimeout(trouver, 100); return } // ~2 s puis pause
       // Retries épuisés sur une page de recherche sans aucune offre (collecte vide) :

@@ -953,10 +953,10 @@ a.logo:hover { opacity: .78; }
   /* Suivi : cartes pleine largeur */
   .suivi-carte { width: 100%; }
 
-  /* Accueil : logo fixé en haut à gauche, bloc remonté, barre de recherche confortable */
-  .home-main { align-items: start; padding-top: 78px; }
-  .hero .logo { position: fixed; top: 18px; left: 18px; margin-bottom: 0; font-size: 20px; z-index: 20; }
-  .headline { min-height: auto; margin-bottom: 20px; }
+  /* Accueil : logo dans l'en-tête (haut à gauche), contenu (titre + barre) centré */
+  .hero { animation: none; } /* le transform de l'animation casserait le position:fixed du logo */
+  .hero .logo { position: fixed; top: 16px; left: 16px; margin-bottom: 0; font-size: 20px; z-index: 20; }
+  .headline { min-height: auto; }
   .searchbar { max-width: 100%; padding: 6px 6px 6px 16px; }
   .searchbar input { font-size: 16px; } /* >=16px : évite le zoom auto iOS */
 
