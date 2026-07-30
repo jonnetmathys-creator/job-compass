@@ -41,6 +41,10 @@ a.logo:hover { opacity: .78; }
 .logo span { color: var(--accent); }
 
 /* ---------- accueil : héro + décor ---------- */
+.home-main {
+  position: relative; min-height: 100vh; display: grid; place-items: center; padding: 24px; overflow: hidden;
+  background: radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%);
+}
 .hero { position: relative; z-index: 1; width: 100%; max-width: 700px; text-align: center; animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
 .hero .logo { font-size: 27px; margin-bottom: 34px; opacity: .9; }
 .headline { min-height: 168px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
@@ -909,15 +913,16 @@ a.logo:hover { opacity: .78; }
   /* En-tête compact : on réserve la place de la cloche + avatar (fixés en haut à droite) */
   .topbar { gap: 8px; padding: 12px 14px; padding-right: 116px; }
   .topbar .logo { font-size: 17px; margin-right: 2px; }
-  .poste-chip { font-size: 13px; padding: 7px 11px; max-width: 34vw; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .poste-chip { display: none; } /* le mot-clé recherché encombre l'en-tête sur mobile */
   .filtres-btn .btn-label, .alerte-toggle .btn-label, .filtres-chevron { display: none; }
-  .filtres-btn, .alerte-toggle { padding: 9px 11px; }
+  .filtres-btn, .alerte-toggle { min-width: 44px; min-height: 44px; justify-content: center; padding: 0 12px; }
+  .filtres-btn svg, .alerte-toggle svg, .alerte-cloche svg { width: 19px; height: 19px; }
 
   /* Panneau filtres en (quasi) pleine largeur */
   .filtres-panel { position: fixed; top: 68px; left: 12px; right: 12px; width: auto; }
 
   /* Bascule visible, bouton de repli desktop masqué */
-  .segment-vue { display: flex; gap: 4px; margin: 10px 14px 0; padding: 4px; background: #eef0ee; border-radius: 12px; }
+  .segment-vue { display: flex; gap: 4px; margin: 10px 14px; padding: 4px; background: #eef0ee; border-radius: 12px; }
   .map-toggle { display: none; }
 
   /* Liste et carte en pleine largeur, on n'en montre qu'une selon la vue */
@@ -948,10 +953,16 @@ a.logo:hover { opacity: .78; }
   /* Suivi : cartes pleine largeur */
   .suivi-carte { width: 100%; }
 
-  /* Accueil : barre de recherche confortable */
+  /* Accueil : logo fixé en haut à gauche, bloc remonté, barre de recherche confortable */
+  .home-main { align-items: start; padding-top: 78px; }
+  .hero .logo { position: fixed; top: 18px; left: 18px; margin-bottom: 0; font-size: 20px; z-index: 20; }
+  .headline { min-height: auto; margin-bottom: 20px; }
   .searchbar { max-width: 100%; padding: 6px 6px 6px 16px; }
   .searchbar input { font-size: 16px; } /* >=16px : évite le zoom auto iOS */
-  .hero .logo { font-size: 23px; margin-bottom: 24px; }
+
+  /* Page offre : on retire le logo de l'en-tête (chevauchait la cloche + avatar) */
+  .detail-top { padding-right: 116px; }
+  .detail-top .logo { display: none; }
 }
 
 /* ── Responsive : très petits écrans sous 480px ─────────────────────── */
@@ -968,4 +979,7 @@ a.logo:hover { opacity: .78; }
   /* Cibles tactiles : hauteur mini confortable sur les actions clés */
   .btn-primary, .btn-apply, .btn-ia, .btn-save, .filtres-btn, .alerte-toggle,
   .segment-vue button, .pm-btn, .tour-suiv { min-height: 44px; }
+
+  /* Visite guidée : la bulle se cale en bas de l'écran (elle ne recouvre plus la cible mise en évidence) */
+  .tour-bulle { top: auto !important; bottom: 16px !important; left: 12px !important; right: 12px !important; width: auto !important; }
 }

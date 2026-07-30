@@ -39,6 +39,16 @@ export default function ResultatsShell(props: {
     return () => clearTimeout(t)
   }, [vue])
 
+  // La visite guidée pilote la vue (elle a besoin de la carte à l'étape « carte »).
+  useEffect(() => {
+    const h = (e: Event) => {
+      const v = (e as CustomEvent).detail
+      if (v === 'liste' || v === 'carte') setVue(v)
+    }
+    window.addEventListener('jc-tour-vue', h)
+    return () => window.removeEventListener('jc-tour-vue', h)
+  }, [])
+
   const onToggleLike = async (id: string) => {
     setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
     try { await toggleFavori(id) } catch { setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n }) }

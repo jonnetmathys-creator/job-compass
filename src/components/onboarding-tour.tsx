@@ -71,6 +71,14 @@ export default function OnboardingTour() {
     return () => clearTimeout(t)
   }, [actif, chargement, rect])
 
+  // Sur la page résultats (mobile), aligne la vue Liste/Carte avec l'étape : l'étape
+  // « carte » a besoin que la carte soit affichée, les autres que la liste le soit.
+  useEffect(() => {
+    if (!actif) return
+    const vue = ETAPES[index].id === 'carte' ? 'carte' : 'liste'
+    window.dispatchEvent(new CustomEvent('jc-tour-vue', { detail: vue }))
+  }, [actif, index])
+
   // Localise la cible de l'étape courante et suit ses mouvements (scroll/resize).
   useEffect(() => {
     if (!actif) { setRect(null); return }
