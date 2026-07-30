@@ -837,7 +837,7 @@ a.logo:hover { opacity: .78; }
 }
 
 /* ── Visite guidée (onboarding spotlight) ───────────────────────────── */
-.tour-couche { position: fixed; inset: 0; z-index: 3000; pointer-events: none; }
+.tour-couche { position: fixed; inset: 0; z-index: 3000; pointer-events: auto; }
 .tour-trou {
   position: fixed; border-radius: 12px; pointer-events: none;
   box-shadow: 0 0 0 9999px rgba(16, 20, 17, .62), 0 0 0 3px var(--accent), 0 0 22px 4px rgba(46, 158, 91, .5);

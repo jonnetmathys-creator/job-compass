@@ -56,3 +56,18 @@ test('recherche lancée -> overlay affiché puis refermé après la navigation',
   rerender(<OnboardingTour />)
   await waitFor(() => expect(screen.queryByText('Exploration des offres…')).toBeNull())
 })
+
+test('collecte vide -> étape « like » sautée vers « cloche » au lieu de rester en pause', async () => {
+  flag.termine = false
+  pathnameState.valeur = '/recherche/abc'
+  localStorage.clear()
+  localStorage.setItem('jc_tour_index', '4') // étape « like »
+  // Page de résultats vide : la cloche (toujours présente) existe, mais ni la carte « like »
+  // ni aucune offre (`[data-offre-id]`) ne sont rendues.
+  document.body.innerHTML = '<button data-tour="cloche"></button>'
+  render(<OnboardingTour />)
+  expect(document.querySelector('[data-offre-id]')).toBeNull()
+  await waitFor(() => expect(screen.getByText('Notifications')).toBeInTheDocument(), { timeout: 4000 })
+  expect(screen.queryByText('Sauvegarde')).toBeNull()
+  expect(screen.queryByText('Passer le tutoriel')).toBeNull()
+}, 10000)

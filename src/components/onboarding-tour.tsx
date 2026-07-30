@@ -21,19 +21,24 @@ export default function OnboardingTour() {
   const [rect, setRect] = useState<Rect | null>(null)
   const [chargement, setChargement] = useState(false)
   const [, demarrerTransition] = useTransition()
-  const verifie = useRef(false)
+  // `enCours` protège contre la concurrence (remis à false à l'annulation ou en fin d'essai) ;
+  // `demarre` mémorise qu'un contrôle complet a eu lieu (démarré ou non) et n'est jamais remis à
+  // false, afin que le double montage de StrictMode (dev) laisse le second essai aboutir.
+  const enCours = useRef(false)
+  const demarre = useRef(false)
 
   // Démarrage : première page hors login/signup, on lit le flag (ou une relance locale).
   useEffect(() => {
-    if (verifie.current) return
+    if (demarre.current || enCours.current) return
     if (pathname === '/login' || pathname === '/signup') return
-    verifie.current = true
+    enCours.current = true
     let annule = false
     const client = getBrowserClient()
     ;(async () => {
       const relance = typeof window !== 'undefined' && localStorage.getItem(CLE_RELANCE) === '1'
       const { data: { user } } = await client.auth.getUser()
-      if (!user || annule) return
+      if (annule) return // démontage StrictMode : la remontée relance un contrôle propre
+      if (!user) { demarre.current = true; enCours.current = false; return }
       const termine = await estOnboardingTermine(client, user.id)
       if (annule) return
       if (relance || !termine) {
@@ -43,8 +48,10 @@ export default function OnboardingTour() {
         setIndex(idx)
         setActif(true)
       }
+      demarre.current = true
+      enCours.current = false
     })()
-    return () => { annule = true }
+    return () => { annule = true; enCours.current = false }
   }, [pathname])
 
   // Persiste l'index pour survivre aux navigations/reloads en cours de visite.
@@ -68,10 +75,16 @@ export default function OnboardingTour() {
       if (annule) return
       const el = document.querySelector(etape.cible) as HTMLElement | null
       if (el) {
-        try { el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }) } catch { /* jsdom */ }
+        const doux = typeof window !== 'undefined' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+        try { el.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: 'center', inline: 'center' }) } catch { /* jsdom */ }
         maj(el); return
       }
-      if (essais++ < 20) setTimeout(trouver, 100) // ~2 s puis pause
+      if (essais++ < 20) { setTimeout(trouver, 100); return } // ~2 s puis pause
+      // Retries épuisés sur une page de recherche sans aucune offre (collecte vide) :
+      // la cible ('like', etc.) ne peut jamais apparaître, inutile de bloquer en pause.
+      if (pageCorrespond(etape, pathname) && !document.querySelector('[data-offre-id]')) {
+        setIndex((i) => etapeSuivante(i, ETAPES.length))
+      }
     }
     const suivre = () => {
       const el = document.querySelector(etape.cible) as HTMLElement | null
