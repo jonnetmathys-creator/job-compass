@@ -960,3 +960,12 @@ a.logo:hover { opacity: .78; }
   .pm-actions { flex-direction: column; }
   .searchbar .btn-primary { padding: 12px 18px; }
 }
+
+/* ── Responsive : filet anti-débordement + confort tactile ──────────── */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden; }
+  img, svg, video { max-width: 100%; }
+  /* Cibles tactiles : hauteur mini confortable sur les actions clés */
+  .btn-primary, .btn-apply, .btn-ia, .btn-save, .filtres-btn, .alerte-toggle,
+  .segment-vue button, .pm-btn, .tour-suiv { min-height: 44px; }
+}
