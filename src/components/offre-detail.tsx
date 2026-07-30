@@ -6,7 +6,7 @@ import type { OffreRow } from '@/lib/offres/types'
 import { positionEpingle } from '@/lib/geo/departements'
 import { toggleFavori } from '@/lib/favoris/actions'
 import { marquerVue } from '@/lib/alertes/actions'
-import PostulerToggle from './postuler-toggle'
+import PostulerZone from './postuler-zone'
 
 const PIN_SVG = '<svg width="28" height="38" viewBox="0 0 30 40" fill="currentColor"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 12.4 22.7 14.2 24.5a1.1 1.1 0 0 0 1.6 0C17.6 37.7 30 25.5 30 15 30 6.7 23.3 0 15 0Z" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="5.4" fill="#fff"/></svg>'
 
@@ -142,15 +142,7 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" /></svg>
                 Sauvegarder l'offre
               </button>
-              {offre.url_postuler
-                ? (
-                  <a className="btn-apply" href={offre.url_postuler} target="_blank" rel="noopener">
-                    Postuler
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17 17 7" /><path d="M7 7h10v10" /></svg>
-                  </a>
-                )
-                : <button type="button" className="btn-apply" disabled>Lien indisponible</button>}
-              <PostulerToggle offreId={offre.id} statutInitial={statutSuivi} />
+              <PostulerZone offreId={offre.id} statutInitial={statutSuivi} label="Postuler" href={offre.url_postuler} />
               <Link href={`/offre/${offre.id}/candidature`} className="btn-ia">
                 Candidater avec lettre IA
               </Link>

@@ -6,7 +6,7 @@ import type { Candidature } from '@/lib/candidature/types'
 import { genererCandidature, enregistrerCandidature } from '@/lib/candidature/actions'
 import LettreImprimable from './lettre-imprimable'
 import LoadingOverlay from './loading-overlay'
-import PostulerToggle from './postuler-toggle'
+import PostulerZone from './postuler-zone'
 
 const GENERATION_MSGS = [
   'Lecture de ton CV…',
@@ -182,31 +182,15 @@ export default function CandidatureEditor({
       <div className="cand-postuler">
         {offre.email_contact
           ? (
-            <>
-              <button type="button" className="btn-primary btn-lg" onClick={postulerParEmail}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 6L2 7" /></svg>
-                Postuler par email
-              </button>
-              <p className="cand-postuler-hint">
-                Ton application mail s&apos;ouvre avec le destinataire, l&apos;objet et le message pré-remplis. Pense à joindre ton CV et ta lettre · utilise « Télécharger en PDF » ci-dessus. Les pièces jointes ne peuvent pas être ajoutées automatiquement.
-              </p>
-            </>
+            <PostulerZone offreId={offre.id} statutInitial={statutSuivi} label="Postuler par email" boutonClass="btn-primary btn-lg"
+              onPostuler={postulerParEmail}
+              hint="Ton application mail s'ouvre avec le destinataire, l'objet et le message pré-remplis. Pense à joindre ton CV et ta lettre · utilise « Télécharger en PDF » ci-dessus. Les pièces jointes ne peuvent pas être ajoutées automatiquement." />
           )
-          : offre.url_postuler
-            ? (
-              <>
-                <a className="btn-primary btn-lg" href={offre.url_postuler} target="_blank" rel="noopener">
-                  Postuler sur France Travail
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17 17 7" /><path d="M7 7h10v10" /></svg>
-                </a>
-                <p className="cand-postuler-hint">Aucun email de contact sur cette offre : postule directement via le portail. Pense à joindre ton CV et ta lettre (« Télécharger en PDF »).</p>
-              </>
-            )
-            : <button type="button" className="btn-primary btn-lg" disabled>Lien de candidature indisponible</button>}
-
-        <div className="cand-suivi">
-          <PostulerToggle offreId={offre.id} statutInitial={statutSuivi} />
-        </div>
+          : (
+            <PostulerZone offreId={offre.id} statutInitial={statutSuivi} label="Postuler sur France Travail" boutonClass="btn-primary btn-lg"
+              href={offre.url_postuler}
+              hint="Aucun email de contact sur cette offre : postule directement via le portail. Pense à joindre ton CV et ta lettre (« Télécharger en PDF »)." />
+          )}
       </div>
 
       <LettreImprimable lettre={lettre} offre={offre} />
