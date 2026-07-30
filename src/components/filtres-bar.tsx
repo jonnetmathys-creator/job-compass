@@ -44,7 +44,7 @@ export default function FiltresBar(props: {
 
   return (
     <div className="topbar">
-      <Link href="/" className="logo" style={{ fontSize: 19, marginRight: 6 }} aria-label="Retour à la recherche">Job<span>Compass</span></Link>
+      <Link href="/" className="logo" aria-label="Retour à la recherche">Job<span>Compass</span></Link>
       <div className="poste-chip">{props.poste}</div>
 
       <div className="filtres" id="filtres">

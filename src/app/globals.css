@@ -914,7 +914,7 @@ a.logo:hover { opacity: .78; }
   .filtres-btn, .alerte-toggle { padding: 9px 11px; }
 
   /* Panneau filtres en (quasi) pleine largeur */
-  .filtres-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; }
+  .filtres-panel { position: fixed; top: 68px; left: 12px; right: 12px; width: auto; }
 
   /* Bascule visible, bouton de repli desktop masqué */
   .segment-vue { display: flex; gap: 4px; margin: 10px 14px 0; padding: 4px; background: #eef0ee; border-radius: 12px; }
