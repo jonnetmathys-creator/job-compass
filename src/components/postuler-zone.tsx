@@ -72,14 +72,14 @@ export default function PostulerZone({
     <>
       {href
         ? (
-          <a className={boutonClass} href={href} target="_blank" rel="noopener" onClick={armer}>
+          <a className={boutonClass} data-tour="postuler" href={href} target="_blank" rel="noopener" onClick={armer}>
             {label}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17 17 7" /><path d="M7 7h10v10" /></svg>
           </a>
         )
         : onPostuler
           ? (
-            <button type="button" className={boutonClass} onClick={armer}>{label}</button>
+            <button type="button" className={boutonClass} data-tour="postuler" onClick={armer}>{label}</button>
           )
           : <button type="button" className={boutonClass} disabled>Lien indisponible</button>}
       {hint && <p className="cand-postuler-hint">{hint}</p>}

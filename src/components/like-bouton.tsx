@@ -7,10 +7,10 @@ const HEART = (
   </svg>
 )
 
-export default function LikeBouton({ liked, onToggle }: { liked: boolean; onToggle: () => void }) {
+export default function LikeBouton({ liked, onToggle, dataTour }: { liked: boolean; onToggle: () => void; dataTour?: string }) {
   const ref = useRef<HTMLButtonElement>(null)
   return (
-    <button ref={ref} className={`like${liked ? ' on' : ''}`} aria-label="Aimer cette offre"
+    <button ref={ref} className={`like${liked ? ' on' : ''}`} aria-label="Aimer cette offre" data-tour={dataTour}
       onClick={(e) => {
         e.stopPropagation()
         if (!liked && ref.current) { ref.current.classList.remove('pop'); void ref.current.offsetWidth; ref.current.classList.add('pop'); setTimeout(() => ref.current?.classList.remove('pop'), 560) }

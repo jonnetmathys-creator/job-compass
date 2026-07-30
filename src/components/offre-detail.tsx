@@ -143,7 +143,7 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
                 Sauvegarder l'offre
               </button>
               <PostulerZone offreId={offre.id} statutInitial={statutSuivi} label="Postuler" href={offre.url_postuler} />
-              <Link href={`/offre/${offre.id}/candidature`} className="btn-ia">
+              <Link href={`/offre/${offre.id}/candidature`} className="btn-ia" data-tour="candidature-ia">
                 Candidater avec lettre IA
               </Link>
             </aside>

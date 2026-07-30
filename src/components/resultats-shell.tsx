@@ -41,12 +41,12 @@ export default function ResultatsShell(props: {
       <FiltresBarClient poste={props.recherche.intitule} contrats={contrats} contrat={contrat} onContrat={setContrat} rechercheId={props.recherche.id}
         initialLieu={props.recherche.lieu_label ?? ''} initialRayon={props.recherche.rayon_km} alertesEmail={props.recherche.alertes_email ?? false} />
       <div className={`split${collapsed ? ' collapsed' : ''}`} id="split">
-        <div className="list-pane" id="list">
+        <div className="list-pane" id="list" data-tour="liste">
           <OffreListe offres={visibles} expandedId={expandedId} hoveredId={hoveredId} likes={likes}
             onToggleExpand={(id) => setExpandedId((cur) => (cur === id ? null : id))}
             onHover={setHoveredId} onToggleLike={onToggleLike} />
         </div>
-        <div className="map-pane">
+        <div className="map-pane" data-tour="carte">
           <button className="map-toggle" aria-label="Replier ou déplier la liste" onClick={() => setCollapsed((c) => !c)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
           </button>

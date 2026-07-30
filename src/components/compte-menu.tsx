@@ -42,6 +42,7 @@ export default function CompteMenu() {
     <div className="account" id="account">
       <button
         className="avatar-btn"
+        data-tour="compte"
         aria-label="Mon compte"
         onClick={(e) => { e.stopPropagation(); setOpen((o) => !o) }}
       >

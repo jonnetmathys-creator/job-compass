@@ -48,7 +48,7 @@ export default function FiltresBar(props: {
       <div className="poste-chip">{props.poste}</div>
 
       <div className="filtres" id="filtres">
-        <button type="button" className={`filtres-btn${ouvert ? ' on' : ''}`} onClick={(e) => { e.stopPropagation(); setOuvert((o) => !o) }} aria-expanded={ouvert}>
+        <button type="button" className={`filtres-btn${ouvert ? ' on' : ''}`} data-tour="filtres" onClick={(e) => { e.stopPropagation(); setOuvert((o) => !o) }} aria-expanded={ouvert}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
           Filtres
           {actifs > 0 && <span className="filtres-count">{actifs}</span>}

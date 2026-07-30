@@ -9,9 +9,10 @@ export default function OffreCard(props: {
   const { offre } = props
   return (
     <div className={`card${props.expanded ? ' expanded' : ''}${props.hovered ? ' active' : ''}`}
+      data-offre-id={offre.id}
       onMouseEnter={() => props.onHover(true)} onMouseLeave={() => props.onHover(false)}
       onClick={(e) => { if ((e.target as HTMLElement).closest('.preview')) return; props.onToggleExpand() }}>
-      <LikeBouton liked={props.liked} onToggle={props.onToggleLike} />
+      <LikeBouton liked={props.liked} onToggle={props.onToggleLike} dataTour="like" />
       <h3>{offre.titre}</h3>
       <div className="emp"><b>{offre.entreprise ?? 'Employeur non précisé'}</b>{offre.ville ? ` · ${offre.ville}` : ''}</div>
       <div className="tags">
