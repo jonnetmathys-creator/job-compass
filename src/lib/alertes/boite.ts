@@ -3,8 +3,10 @@ import { OFFRE_COLUMNS, type OffreRow } from '@/lib/offres/types'
 
 export type NouvelleOffre = { offre: OffreRow; created_at: string; vue_le: string | null }
 
-function cutoff24h(): string {
-  return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+export const FENETRE_NOTIF_JOURS = 30
+
+function cutoffFenetre(): string {
+  return new Date(Date.now() - FENETRE_NOTIF_JOURS * 24 * 60 * 60 * 1000).toISOString()
 }
 
 export async function getBoite(client: SupabaseClient, userId: string): Promise<NouvelleOffre[]> {
@@ -12,7 +14,8 @@ export async function getBoite(client: SupabaseClient, userId: string): Promise<
     .from('nouvelles_offres')
     .select(`created_at, vue_le, offres:offre_id (${OFFRE_COLUMNS})`)
     .eq('user_id', userId)
-    .gt('created_at', cutoff24h())
+    .is('vue_le', null)
+    .gt('created_at', cutoffFenetre())
   if (error) throw error
   if (!data) return []
   const items = data
@@ -31,7 +34,7 @@ export async function compterNonVues(client: SupabaseClient, userId: string): Pr
     .select('offre_id')
     .eq('user_id', userId)
     .is('vue_le', null)
-    .gt('created_at', cutoff24h())
+    .gt('created_at', cutoffFenetre())
   if (error) throw error
   return (data ?? []).length
 }

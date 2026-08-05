@@ -1,13 +1,14 @@
 import { expect, test, vi } from 'vitest'
 import { getBoite, compterNonVues, marquerOffreVue } from './boite'
 
-test('getBoite ne renvoie que les entrées non expirées, jointes aux offres, triées', async () => {
+test('getBoite ne renvoie que le non-vu sur la fenêtre, joint aux offres, trié', async () => {
   const rows = [
     { created_at: '2026-07-29T10:00:00Z', vue_le: null, offres: { id: 'o2', titre: 'B' } },
-    { created_at: '2026-07-29T08:00:00Z', vue_le: '2026-07-29T09:00:00Z', offres: { id: 'o1', titre: 'A' } },
+    { created_at: '2026-07-29T08:00:00Z', vue_le: null, offres: { id: 'o1', titre: 'A' } },
   ]
   const gt = vi.fn().mockResolvedValue({ data: rows, error: null })
-  const eq = vi.fn(() => ({ gt }))
+  const is = vi.fn(() => ({ gt }))
+  const eq = vi.fn(() => ({ is }))
   const select = vi.fn(() => ({ eq }))
   const client = { from: vi.fn(() => ({ select })) } as any
 
@@ -15,12 +16,13 @@ test('getBoite ne renvoie que les entrées non expirées, jointes aux offres, tr
 
   expect(client.from).toHaveBeenCalledWith('nouvelles_offres')
   expect(eq).toHaveBeenCalledWith('user_id', 'u1')
-  // filtre d'expiration appliqué sur created_at
+  expect(is).toHaveBeenCalledWith('vue_le', null)
+  // filtre de fenêtre appliqué sur created_at
   expect(gt).toHaveBeenCalledWith('created_at', expect.any(String))
   expect(out.map((n) => n.offre.id)).toEqual(['o2', 'o1'])
 })
 
-test('compterNonVues filtre vue_le null et non expirées', async () => {
+test('compterNonVues filtre vue_le null et la fenêtre', async () => {
   const gt = vi.fn().mockResolvedValue({ data: [{ offre_id: 'a' }, { offre_id: 'b' }], error: null })
   const is = vi.fn(() => ({ gt }))
   const eq = vi.fn(() => ({ is }))
