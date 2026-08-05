@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServiceClient } from '@/lib/supabase/service'
 import { rafraichirEtEnregistrer, type RechercheAref } from '@/lib/alertes/refresh'
+import { purgerVieillesOffres } from '@/lib/alertes/purge'
 
 const COLS = 'id, user_id, intitule, mots_cles, localisation, rayon_km, type_contrat, alertes_email'
 
@@ -22,7 +23,10 @@ async function traiter(recherches: RechercheAref[]) {
     nouvelles += res.nouvelles
     if (res.email) emails += 1
   }
-  return { recherches: recherches.length, nouvelles, emails }
+  let purgees = 0
+  try { purgees = await purgerVieillesOffres(client) }
+  catch (e) { console.error('[refresh] purge en échec :', e) }
+  return { recherches: recherches.length, nouvelles, emails, purgees }
 }
 
 async function recherchesCibles(rechercheId?: string): Promise<RechercheAref[]> {
