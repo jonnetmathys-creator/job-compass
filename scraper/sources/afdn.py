@@ -51,6 +51,8 @@ def parse_afdn(html: str) -> list[dict]:
             "description": description or None,
             "contrat": None,
             "salaire": None,
+            "latitude": None,   # rempli par le géocodage (clé toujours présente : upsert homogène)
+            "longitude": None,
             "ville": _ville(adresse),
             "url_postuler": BASE + about,
             "email_contact": None,
