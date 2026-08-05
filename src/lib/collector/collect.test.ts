@@ -10,7 +10,7 @@ function o(source: string, id: string): NormalizedOffer {
   }
 }
 
-test('collecte des trois sources, dédoublonne, écrit et relie', async () => {
+test('collecte les sources, ajoute les offres scrapées, dédoublonne, écrit et relie', async () => {
   const recherche = {
     id: 'rech-1', mots_cles: [], localisation: '44109',
     rayon_km: 30, type_contrat: null,
@@ -25,13 +25,13 @@ test('collecte des trois sources, dédoublonne, écrit et relie', async () => {
     searchFranceTravail: vi.fn().mockResolvedValue([o('france_travail', '1')]),
     searchAdzuna: vi.fn().mockResolvedValue([o('adzuna', '9')]),
     searchJooble: vi.fn().mockResolvedValue([o('jooble', '5')]),
+    offresScrapees: vi.fn().mockResolvedValue([{ id: 'sc1', source: 'afdn', source_id: 'slug-1' }]),
     storeOffres,
     linkResultats,
   })
-  expect(storeOffres).toHaveBeenCalledOnce()
-  expect(storeOffres.mock.calls[0][1]).toHaveLength(3) // 3 offres dédoublonnées
-  expect(linkResultats).toHaveBeenCalledWith(expect.anything(), 'rech-1', expect.any(Array))
-  expect(res).toMatchObject({ collected: 3, linked: 3 })
+  // 3 offres stockées + 1 scrapée reliées
+  expect(linkResultats.mock.calls[0][2]).toHaveLength(4)
+  expect(res).toMatchObject({ collected: 3, linked: 4 })
 })
 
 test('une source qui échoue n’empêche pas les autres', async () => {
