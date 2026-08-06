@@ -3,7 +3,7 @@ import { geocodeCommune } from '@/lib/geo/adresse'
 import { distanceKm } from './geo-distance'
 import type { StoredOffre } from './store'
 
-const SOURCES_SCRAPEES = ['afdn']
+const SOURCES_SCRAPEES = ['afdn', 'staffsante']
 const FRAICHEUR_JOURS = 14
 
 type RechercheGeo = { localisation: string | null; rayon_km: number | null }
