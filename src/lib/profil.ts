@@ -5,6 +5,7 @@ export type Profil = {
   nom: string | null
   titre_recherche: string | null
   cv_url: string | null
+  cv_texte: string | null
   lettre_base: string | null
   lettre_url: string | null
 }
@@ -35,7 +36,7 @@ export async function uploadCv(client: SupabaseClient, userId: string, file: Fil
     upsert: true, contentType: 'application/pdf',
   })
   if (error) throw error
-  await upsertProfil(client, userId, { cv_url: path })
+  await upsertProfil(client, userId, { cv_url: path, cv_texte: null })
   return path
 }
 
