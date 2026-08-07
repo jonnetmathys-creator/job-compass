@@ -1,9 +1,10 @@
 'use client'
 import LikeBouton from './like-bouton'
 import type { OffreRow } from '@/lib/offres/types'
+import { couleurScore, estTopMatch } from '@/lib/scoring/palette'
 
 export default function OffreCard(props: {
-  offre: OffreRow & { plateformes?: string[] }; expanded: boolean; liked: boolean; hovered: boolean
+  offre: OffreRow & { plateformes?: string[]; score?: number; raison?: string | null }; expanded: boolean; liked: boolean; hovered: boolean
   onToggleExpand: () => void; onOpen: () => void; onToggleLike: () => void; onHover: (h: boolean) => void
 }) {
   const { offre } = props
@@ -13,6 +14,13 @@ export default function OffreCard(props: {
       onMouseEnter={() => props.onHover(true)} onMouseLeave={() => props.onHover(false)}
       onClick={(e) => { if ((e.target as HTMLElement).closest('.preview')) return; props.onToggleExpand() }}>
       <LikeBouton liked={props.liked} onToggle={props.onToggleLike} dataTour="like" />
+      {typeof offre.score === 'number' && (
+        <div className={`score-badge${estTopMatch(offre.score) ? ' match-top' : ''}`}
+          style={{ backgroundColor: couleurScore(offre.score) }}>
+          {offre.score}%
+          {offre.raison && <span className="score-raison">{offre.raison}</span>}
+        </div>
+      )}
       <h3>{offre.titre}</h3>
       <div className="emp"><b>{offre.entreprise ?? 'Employeur non précisé'}</b>{offre.ville ? ` · ${offre.ville}` : ''}</div>
       {offre.plateformes && offre.plateformes.length > 1 && (

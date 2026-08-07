@@ -3,7 +3,7 @@ import OffreCard from './offre-card'
 import type { OffreAffichee } from '@/lib/offres/dedup-affichage'
 
 export default function OffreListe(props: {
-  offres: OffreAffichee[]; expandedId: string | null; hoveredId: string | null; likes: Set<string>
+  offres: (OffreAffichee & { score?: number; raison?: string | null })[]; expandedId: string | null; hoveredId: string | null; likes: Set<string>
   onToggleExpand: (id: string) => void; onHover: (id: string | null) => void; onToggleLike: (id: string) => void
 }) {
   if (props.offres.length === 0) {

@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import type { OffreAffichee } from '@/lib/offres/dedup-affichage'
+
+type OffreScoree = OffreAffichee & { score?: number; raison?: string | null }
 import OffreListe from './offre-liste'
 import FiltresBarClient from './filtres-bar'
 import { toggleFavori } from '@/lib/favoris/actions'
@@ -13,7 +15,7 @@ export default function ResultatsShell(props: {
     id: string; intitule: string; localisation: string | null; rayon_km: number | null
     lieu_label: string | null; alertes_email?: boolean
   }
-  offres: OffreAffichee[]
+  offres: OffreScoree[]
   favoriIds: string[]
 }) {
   const [contrat, setContrat] = useState('')
@@ -22,15 +24,18 @@ export default function ResultatsShell(props: {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [likes, setLikes] = useState<Set<string>>(new Set(props.favoriIds))
+  const [triPertinence, setTriPertinence] = useState(false)
 
   const contrats = useMemo(
     () => Array.from(new Set(props.offres.map((o) => o.contrat).filter(Boolean))) as string[],
     [props.offres],
   )
-  const visibles = useMemo(
-    () => (contrat ? props.offres.filter((o) => o.contrat === contrat) : props.offres),
-    [props.offres, contrat],
-  )
+  const visibles = useMemo(() => {
+    const filtrees = contrat ? props.offres.filter((o) => o.contrat === contrat) : props.offres
+    if (!triPertinence) return filtrees
+    // Tri par pertinence : score décroissant, offres sans score en fin.
+    return [...filtrees].sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
+  }, [props.offres, contrat, triPertinence])
 
   // Quand on bascule sur la carte (mobile), Leaflet doit recalculer sa taille.
   useEffect(() => {
@@ -58,9 +63,17 @@ export default function ResultatsShell(props: {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <FiltresBarClient poste={props.recherche.intitule} contrats={contrats} contrat={contrat} onContrat={setContrat} rechercheId={props.recherche.id}
         initialLieu={props.recherche.lieu_label ?? ''} initialRayon={props.recherche.rayon_km} alertesEmail={props.recherche.alertes_email ?? false} />
-      <div className="segment-vue" role="tablist" aria-label="Affichage des résultats">
-        <button type="button" role="tab" aria-selected={vue === 'liste'} className={vue === 'liste' ? 'on' : ''} onClick={() => setVue('liste')}>Liste</button>
-        <button type="button" role="tab" aria-selected={vue === 'carte'} className={vue === 'carte' ? 'on' : ''} onClick={() => setVue('carte')}>Carte</button>
+      <div className="barre-affichage">
+        <div className="segment-vue" role="tablist" aria-label="Affichage des résultats">
+          <button type="button" role="tab" aria-selected={vue === 'liste'} className={vue === 'liste' ? 'on' : ''} onClick={() => setVue('liste')}>Liste</button>
+          <button type="button" role="tab" aria-selected={vue === 'carte'} className={vue === 'carte' ? 'on' : ''} onClick={() => setVue('carte')}>Carte</button>
+        </div>
+        {props.offres.some((o) => typeof o.score === 'number') && (
+          <button type="button" className={`tri-pertinence${triPertinence ? ' on' : ''}`}
+            aria-pressed={triPertinence} onClick={() => setTriPertinence((v) => !v)}>
+            Trier par pertinence
+          </button>
+        )}
       </div>
       <div className={`split vue-${vue}${collapsed ? ' collapsed' : ''}`} id="split">
         <div className="list-pane" id="list" data-tour="liste">
