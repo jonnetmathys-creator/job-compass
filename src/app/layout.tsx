@@ -4,6 +4,7 @@ import './globals.css'
 import CompteMenu from '@/components/compte-menu'
 import ClocheNotifs from '@/components/cloche-notifs'
 import OnboardingTour from '@/components/onboarding-tour'
+import PwaSetup from '@/components/pwa-setup'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -15,11 +16,18 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'JobCompass',
   description: 'Centralisez et envoyez vos candidatures en diététique.',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'JobCompass' },
+  icons: {
+    icon: '/icon-192.png',
+    apple: '/apple-icon.png',
+  },
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#248049',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         {children}
         <OnboardingTour />
+        <PwaSetup />
       </body>
     </html>
   )
