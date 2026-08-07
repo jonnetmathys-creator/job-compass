@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServiceClient } from '@/lib/supabase/service'
 import { rafraichirEtEnregistrer, type RechercheAref } from '@/lib/alertes/refresh'
 import { purgerVieillesOffres } from '@/lib/alertes/purge'
+import { scorerPourRecherche } from '@/lib/scoring/execution'
 
 const COLS = 'id, user_id, intitule, mots_cles, localisation, rayon_km, type_contrat, alertes_email'
 
@@ -18,15 +19,18 @@ async function traiter(recherches: RechercheAref[]) {
   const client = getServiceClient()
   let nouvelles = 0
   let emails = 0
+  let scores = 0
   for (const r of recherches) {
     const res = await rafraichirEtEnregistrer(client, r)
     nouvelles += res.nouvelles
     if (res.email) emails += 1
+    try { scores += await scorerPourRecherche(client, r) }
+    catch (e) { console.error('[refresh] scoring en échec :', e) }
   }
   let purgees = 0
   try { purgees = await purgerVieillesOffres(client) }
   catch (e) { console.error('[refresh] purge en échec :', e) }
-  return { recherches: recherches.length, nouvelles, emails, purgees }
+  return { recherches: recherches.length, nouvelles, emails, purgees, scores }
 }
 
 async function recherchesCibles(rechercheId?: string): Promise<RechercheAref[]> {
