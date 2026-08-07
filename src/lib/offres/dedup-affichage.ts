@@ -23,7 +23,7 @@ function norm(s: string | null | undefined): string {
     .trim()
 }
 
-function empreinte(o: OffreRow): string {
+export function empreinteOffre(o: Pick<OffreRow, 'titre' | 'ville' | 'entreprise'>): string {
   return `${norm(o.titre)}|${norm(o.ville)}|${norm(o.entreprise)}`
 }
 
@@ -43,7 +43,7 @@ export function dedupeAffichage(offres: OffreRow[]): OffreAffichee[] {
   const groupes = new Map<string, { rep: OffreRow; sources: string[] }>()
   const ordre: string[] = []
   for (const o of offres) {
-    const cle = empreinte(o)
+    const cle = empreinteOffre(o)
     const g = groupes.get(cle)
     if (!g) {
       groupes.set(cle, { rep: o, sources: [o.source] })
