@@ -1,4 +1,4 @@
-name: Scraping des offres
+name: Collecte quotidienne
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  scraper:
+  collecte:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,3 +20,13 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python -m scraper.run
+      # Après le scraping : l'app relie les offres, calcule les scores, envoie les alertes et purge.
+      # Tourne même si le scraper a échoué (les sources API et le scoring restent utiles).
+      - name: Rafraîchir l'application
+        if: always()
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          COLLECT_SECRET: ${{ secrets.COLLECT_SECRET }}
+        run: |
+          BASE="${APP_URL:-https://job-compass.onrender.com}"
+          curl -fsS --max-time 300 "$BASE/api/refresh" -H "Authorization: Bearer $COLLECT_SECRET"
