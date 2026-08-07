@@ -987,3 +987,6 @@ a.logo:hover { opacity: .78; }
      pour ne jamais recouvrir l'élément mis en évidence ; on borne juste la largeur. */
   .tour-bulle { width: calc(100vw - 24px); max-width: 340px; }
 }
+
+/* Badge « Aussi sur ... » : autres plateformes d'une offre dédoublonnée */
+.offre-plateformes { margin-top: 4px; font-size: .74rem; color: var(--muted); }

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import type { OffreRow } from '@/lib/offres/types'
+import type { OffreAffichee } from '@/lib/offres/dedup-affichage'
 import OffreListe from './offre-liste'
 import FiltresBarClient from './filtres-bar'
 import { toggleFavori } from '@/lib/favoris/actions'
@@ -13,7 +13,7 @@ export default function ResultatsShell(props: {
     id: string; intitule: string; localisation: string | null; rayon_km: number | null
     lieu_label: string | null; alertes_email?: boolean
   }
-  offres: OffreRow[]
+  offres: OffreAffichee[]
   favoriIds: string[]
 }) {
   const [contrat, setContrat] = useState('')

@@ -3,6 +3,7 @@ import { getServerClient } from '@/lib/supabase/server'
 import { getRecherche, getOffresForRecherche } from '@/lib/recherche/offres'
 import { getFavoriIds } from '@/lib/favoris/lecture'
 import { filtrerDansRayon } from '@/lib/geo/distance'
+import { dedupeAffichage } from '@/lib/offres/dedup-affichage'
 import ResultatsShell from '@/components/resultats-shell'
 
 export default async function RechercherPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,8 +17,10 @@ export default async function RechercherPage({ params }: { params: Promise<{ id:
     getOffresForRecherche(supabase, id),
     getFavoriIds(supabase, user.id),
   ])
-  const offres = recherche.latitude != null && recherche.longitude != null && recherche.rayon_km != null
-    ? filtrerDansRayon(offresBrutes, { lat: recherche.latitude, lng: recherche.longitude }, recherche.rayon_km)
-    : offresBrutes
+  const offres = dedupeAffichage(
+    recherche.latitude != null && recherche.longitude != null && recherche.rayon_km != null
+      ? filtrerDansRayon(offresBrutes, { lat: recherche.latitude, lng: recherche.longitude }, recherche.rayon_km)
+      : offresBrutes,
+  )
   return <ResultatsShell recherche={recherche} offres={offres} favoriIds={favoriIds} />
 }

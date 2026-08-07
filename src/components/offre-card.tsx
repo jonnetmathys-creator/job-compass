@@ -3,7 +3,7 @@ import LikeBouton from './like-bouton'
 import type { OffreRow } from '@/lib/offres/types'
 
 export default function OffreCard(props: {
-  offre: OffreRow; expanded: boolean; liked: boolean; hovered: boolean
+  offre: OffreRow & { plateformes?: string[] }; expanded: boolean; liked: boolean; hovered: boolean
   onToggleExpand: () => void; onOpen: () => void; onToggleLike: () => void; onHover: (h: boolean) => void
 }) {
   const { offre } = props
@@ -15,6 +15,9 @@ export default function OffreCard(props: {
       <LikeBouton liked={props.liked} onToggle={props.onToggleLike} dataTour="like" />
       <h3>{offre.titre}</h3>
       <div className="emp"><b>{offre.entreprise ?? 'Employeur non précisé'}</b>{offre.ville ? ` · ${offre.ville}` : ''}</div>
+      {offre.plateformes && offre.plateformes.length > 1 && (
+        <div className="offre-plateformes">Aussi sur {offre.plateformes.slice(1).join(', ')}</div>
+      )}
       <div className="tags">
         {offre.contrat && <span className="tag">{offre.contrat}</span>}
         {offre.salaire && <span className="tag salary">{offre.salaire}</span>}
