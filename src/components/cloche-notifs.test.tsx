@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { expect, test, vi } from 'vitest'
 import ClocheNotifs from './cloche-notifs'
+import { getRelances } from '@/lib/relances/actions'
 
 const { mockBoite } = vi.hoisted(() => ({
   mockBoite: [
@@ -20,6 +21,10 @@ vi.mock('@/lib/rappels/actions', () => ({
   getRappels: vi.fn().mockResolvedValue({ items: [], nonVus: 0 }),
   marquerRappelVu: vi.fn(),
 }))
+vi.mock('@/lib/relances/actions', () => ({
+  getRelances: vi.fn().mockResolvedValue({ items: [], nonVus: 0 }),
+  marquerRelanceVue: vi.fn(),
+}))
 
 test('affiche la pastille avec le nombre de non vues', async () => {
   render(<ClocheNotifs />)
@@ -29,4 +34,14 @@ test('affiche la pastille avec le nombre de non vues', async () => {
 test('le panneau liste les nouvelles offres', async () => {
   render(<ClocheNotifs />)
   await waitFor(() => expect(screen.getByText('Diététicien')).toBeInTheDocument())
+})
+
+test('affiche la section À relancer avec les candidatures dues', async () => {
+  vi.mocked(getRelances).mockResolvedValueOnce({
+    items: [{ offre: { id: 'x', titre: 'Diét à relancer' } as never, postulee_le: '2026-07-20', relance_le: '2026-08-01', nonVu: true }],
+    nonVus: 1,
+  })
+  render(<ClocheNotifs />)
+  await waitFor(() => expect(screen.getByText('À relancer')).toBeInTheDocument())
+  expect(screen.getByText('Diét à relancer')).toBeInTheDocument()
 })

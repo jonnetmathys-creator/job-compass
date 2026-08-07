@@ -4,6 +4,8 @@ import { getBrowserClient } from '@/lib/supabase/client'
 import { getBoite, compterNonVues, type NouvelleOffre } from '@/lib/alertes/boite'
 import { marquerVue } from '@/lib/alertes/actions'
 import { getRappels, marquerRappelVu, type RappelItem } from '@/lib/rappels/actions'
+import { getRelances, marquerRelanceVue } from '@/lib/relances/actions'
+import type { RelanceDue } from '@/lib/relances/lecture'
 import { formatEcoule } from '@/lib/rappels/dates'
 import { couleurScore } from '@/lib/scoring/palette'
 
@@ -11,8 +13,10 @@ export default function ClocheNotifs() {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState<NouvelleOffre[]>([])
   const [rappels, setRappels] = useState<RappelItem[]>([])
+  const [relances, setRelances] = useState<RelanceDue[]>([])
   const [nonVues, setNonVues] = useState(0)
   const [nonVusR, setNonVusR] = useState(0)
+  const [nonVusRel, setNonVusRel] = useState(0)
 
   useEffect(() => {
     let annule = false
@@ -21,12 +25,17 @@ export default function ClocheNotifs() {
       try {
         const { data: { user } } = await client.auth.getUser()
         if (!user || annule) return
-        const [b, n, r] = await Promise.all([
+        const [b, n, r, rel] = await Promise.all([
           getBoite(client, user.id),
           compterNonVues(client, user.id),
           getRappels(),
+          getRelances(),
         ])
-        if (!annule) { setItems(b); setNonVues(n); setRappels(r.items); setNonVusR(r.nonVus) }
+        if (!annule) {
+          setItems(b); setNonVues(n)
+          setRappels(r.items); setNonVusR(r.nonVus)
+          setRelances(rel.items); setNonVusRel(rel.nonVus)
+        }
       } catch { /* silencieux */ }
     })()
     return () => { annule = true }
@@ -38,7 +47,7 @@ export default function ClocheNotifs() {
     return () => document.removeEventListener('click', close)
   }, [])
 
-  const total = nonVues + nonVusR
+  const total = nonVues + nonVusR + nonVusRel
 
   async function consulter(offreId: string) {
     setItems((prev) => prev.map((n) => (n.offre.id === offreId ? { ...n, vue_le: 'vu' } : n)))
@@ -54,7 +63,14 @@ export default function ClocheNotifs() {
     window.location.href = `/offre/${offreId}`
   }
 
-  const vide = items.length === 0 && rappels.length === 0
+  async function consulterRelance(offreId: string, etaitNonVu: boolean) {
+    setRelances((prev) => prev.map((r) => (r.offre.id === offreId ? { ...r, nonVu: false } : r)))
+    if (etaitNonVu) setNonVusRel((v) => Math.max(0, v - 1))
+    try { await marquerRelanceVue(offreId) } catch { /* non bloquant */ }
+    window.location.href = '/suivi'
+  }
+
+  const vide = items.length === 0 && rappels.length === 0 && relances.length === 0
 
   return (
     <div className="cloche" id="cloche">
@@ -70,6 +86,19 @@ export default function ClocheNotifs() {
               Rien pour le moment.
               <small>Nouvelles offres et rappels de candidature apparaîtront ici.</small>
             </div>
+          </>
+        )}
+        {relances.length > 0 && (
+          <>
+            <div className="cloche-head">À relancer</div>
+            {relances.map((r) => (
+              <button key={`rel-${r.offre.id}`} type="button" className={`cloche-item relance${r.nonVu ? ' neuf' : ''}`} onClick={() => consulterRelance(r.offre.id, r.nonVu)}>
+                <span className="cloche-item-titre">{r.offre.titre}</span>
+                <span className="cloche-item-emp">
+                  {r.postulee_le ? `Postulé il y a ${formatEcoule(Date.now() - Date.parse(r.postulee_le))}` : 'Candidature envoyée'} · souhaites-tu relancer ?
+                </span>
+              </button>
+            ))}
           </>
         )}
         {rappels.length > 0 && (

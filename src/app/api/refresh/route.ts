@@ -3,6 +3,7 @@ import { getServiceClient } from '@/lib/supabase/service'
 import { rafraichirEtEnregistrer, envoyerAlerteSiActive, type RechercheAref } from '@/lib/alertes/refresh'
 import { purgerVieillesOffres } from '@/lib/alertes/purge'
 import { scorerPourRecherche } from '@/lib/scoring/execution'
+import { notifierRelances } from '@/lib/relances/notify'
 
 const COLS = 'id, user_id, intitule, mots_cles, localisation, rayon_km, type_contrat, alertes_email'
 
@@ -31,7 +32,10 @@ async function traiter(recherches: RechercheAref[]) {
   let purgees = 0
   try { purgees = await purgerVieillesOffres(client) }
   catch (e) { console.error('[refresh] purge en échec :', e) }
-  return { recherches: recherches.length, nouvelles, emails, purgees, scores }
+  let relances = 0
+  try { relances = await notifierRelances(client) }
+  catch (e) { console.error('[refresh] relances en échec :', e) }
+  return { recherches: recherches.length, nouvelles, emails, purgees, scores, relances }
 }
 
 async function recherchesCibles(rechercheId?: string): Promise<RechercheAref[]> {

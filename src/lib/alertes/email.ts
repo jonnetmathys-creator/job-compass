@@ -39,7 +39,7 @@ export type MessageMail = { from: string; to: string; subject: string; html: str
 export type EnvoiMail = (msg: MessageMail) => Promise<boolean>
 
 // Envoi réel via SMTP Gmail (compte dédié + mot de passe d'application).
-async function envoiGmail(msg: MessageMail): Promise<boolean> {
+export async function envoiGmail(msg: MessageMail): Promise<boolean> {
   const user = process.env.GMAIL_USER
   const pass = process.env.GMAIL_APP_PASSWORD
   if (!user || !pass) return false

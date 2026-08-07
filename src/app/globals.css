@@ -696,6 +696,9 @@ a.logo:hover { opacity: .78; }
 .cloche-item-emp { font-size: .8rem; color: var(--muted); }
 .cloche-item.rappel { border-left: 3px solid var(--accent); }
 .cloche-item.rappel.neuf { background: #f0f8f3; }
+.cloche-item.relance { border-left: 3px solid #e08a1e; }
+.cloche-item.relance.neuf { background: #fdf5ea; }
+.cloche-item.relance.neuf .cloche-item-titre::after { color: #e08a1e; }
 
 /* ── Fenêtre « Avez-vous postulé ? » ────────────────────────────────── */
 .pm-overlay {
