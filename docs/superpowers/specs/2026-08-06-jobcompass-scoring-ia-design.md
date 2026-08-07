@@ -19,7 +19,9 @@
 
 - Tri par défaut : **par date** (score en info) ; bouton pour trier **par pertinence**.
 - **Raison affichée** : une phrase courte, dans une box au survol du score.
-- Palier de couleur : vert `≥ 90` (Top match), bleu `70-89`, gris `< 70`.
+- Badge = **le pourcentage seul** (pas de texte "pour toi").
+- Couleur **continue rouge → vert** selon le score (rouge en bas, vert `≥ 90`), calculée depuis le score (teinte HSL), pour un rendu net et joli · pas de tendance vers le gris.
+- Score `≥ 90` : **aura animée** discrète (pulsation, dans l'esprit de l'animation de la cloche).
 - Le score est **par utilisateur** (dépend de son CV).
 
 ## Modèle de données · migration `0012_scores.sql`
@@ -79,7 +81,8 @@ Réutilisation de l'empreinte : extraire la normalisation de `dedup-affichage.ts
 
 - `src/lib/scoring/lecture.ts` : `getScores(client, userId, offreIds) => Promise<Map<string, { score: number; raison: string | null }>>` (clamp du score à 0-100).
 - `src/app/recherche/[id]/page.tsx` : après `dedupeAffichage`, charger les scores de l'utilisateur pour les `offre_id` affichés et fusionner (`{ ...offre, score, raison }`). Le type d'affichage devient `OffreAffichee & { score?: number; raison?: string | null }`.
-- `OffreCard` : si `score` défini, afficher un badge **"{score}% pour toi"** avec une classe de palier (`.match-fort` ≥90, `.match-moyen` 70-89, `.match-faible` <70). Au survol du badge, une **box** montre la `raison`.
+- `OffreCard` : si `score` défini, afficher un badge **"{score}%"**. Sa couleur est calculée depuis le score sur une échelle rouge → vert (teinte HSL `hue = score × 1.2`, soit 0 = rouge à 120 = vert), appliquée en style inline pour un dégradé continu. Un score `≥ 90` reçoit en plus la classe `.match-top` qui ajoute une **aura pulsée** (box-shadow animé, comme la cloche). Au survol du badge, une **box** affiche la `raison`.
+- Helper pur `couleurScore(score) => string` (teinte HSL) et `estTopMatch(score) => boolean` (≥ 90), testables.
 - Tri : dans `ResultatsShell`, un bouton **"Trier par pertinence"** (état local) réordonne `visibles` par `score` décroissant (offres sans score en fin) ; par défaut, tri par date (ordre serveur) inchangé.
 
 ## Gestion d'erreurs
@@ -95,7 +98,7 @@ Réutilisation de l'empreinte : extraire la normalisation de `dedup-affichage.ts
 - `assurerCvTexte` : cache présent → pas d'extraction ; cache absent + `cv_url` → extraction + écriture ; pas de CV → `null`.
 - `scorerPourRecherche` : dédoublonne avant notation (une offre par groupe envoyée), réétale le score sur tous les `offre_id` du groupe, upsert appelé avec les bonnes lignes (client + Gemini mockés).
 - `getScores` : clamp 0-100 ; map correcte.
-- Affichage : badge présent avec le bon palier selon le score (test du composant ou d'un helper `paliersMatch(score)`).
+- Affichage : `couleurScore(score)` renvoie une teinte rouge pour un score bas et verte pour un score haut ; `estTopMatch(score)` vrai `≥ 90`, faux en dessous.
 
 ## Hors périmètre (sous-projet 3b)
 
