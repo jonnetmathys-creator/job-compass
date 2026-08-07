@@ -1,29 +1,32 @@
 import { expect, test, vi } from 'vitest'
-import { rafraichirEtEnregistrer } from './refresh'
+import { rafraichirEtEnregistrer, envoyerAlerteSiActive } from './refresh'
 
-test('rafraichirEtEnregistrer détecte, enregistre et déclenche l\'email si opt-in', async () => {
+test('rafraichirEtEnregistrer détecte et enregistre (sans email)', async () => {
   const client = {} as any
   const rafraichir = vi.fn().mockResolvedValue({ nouvelles: ['c', 'd'] })
   const enregistrer = vi.fn().mockResolvedValue(2)
-  const envoyer = vi.fn().mockResolvedValue(true)
   const recherche = { id: 'r1', user_id: 'u1', mots_cles: ['x'], localisation: null, rayon_km: null, type_contrat: null, alertes_email: true }
 
-  const out = await rafraichirEtEnregistrer(client, recherche as any, { rafraichir, enregistrer, envoyer })
+  const out = await rafraichirEtEnregistrer(client, recherche as any, { rafraichir, enregistrer })
 
-  expect(rafraichir).toHaveBeenCalledTimes(1)
   expect(enregistrer).toHaveBeenCalledWith(client, 'u1', 'r1', ['c', 'd'])
-  expect(envoyer).toHaveBeenCalledTimes(1)
-  expect(out).toMatchObject({ nouvelles: 2, email: true })
+  expect(out).toEqual({ nouvelles: 2, ids: ['c', 'd'] })
 })
 
-test('pas d\'email si alertes_email est faux', async () => {
-  const client = {} as any
-  const rafraichir = vi.fn().mockResolvedValue({ nouvelles: ['c'] })
-  const enregistrer = vi.fn().mockResolvedValue(1)
-  const envoyer = vi.fn()
-  const recherche = { id: 'r1', user_id: 'u1', mots_cles: [], localisation: null, rayon_km: null, type_contrat: null, alertes_email: false }
+test('envoyerAlerteSiActive envoie si opt-in et ids non vides', async () => {
+  const envoyer = vi.fn().mockResolvedValue(true)
+  const client = { auth: { admin: { getUserById: vi.fn().mockResolvedValue({ data: { user: { email: 'a@b.fr' } } }) } } } as any
+  const recherche = { id: 'r1', user_id: 'u1', intitule: 'X', alertes_email: true } as any
+  const ok = await envoyerAlerteSiActive(client, recherche, ['c', 'd'], { envoyer })
+  expect(envoyer).toHaveBeenCalledTimes(1)
+  expect(envoyer.mock.calls[0][0]).toMatchObject({ to: 'a@b.fr', offreIds: ['c', 'd'] })
+  expect(ok).toBe(true)
+})
 
-  const out = await rafraichirEtEnregistrer(client, recherche as any, { rafraichir, enregistrer, envoyer })
+test('envoyerAlerteSiActive n\'envoie pas si opt-out ou aucune offre', async () => {
+  const envoyer = vi.fn()
+  const client = {} as any
+  expect(await envoyerAlerteSiActive(client, { alertes_email: false } as any, ['c'], { envoyer })).toBe(false)
+  expect(await envoyerAlerteSiActive(client, { alertes_email: true } as any, [], { envoyer })).toBe(false)
   expect(envoyer).not.toHaveBeenCalled()
-  expect(out).toMatchObject({ nouvelles: 1, email: false })
 })

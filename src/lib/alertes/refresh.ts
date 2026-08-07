@@ -16,34 +16,41 @@ export type RechercheAref = {
 type Deps = {
   rafraichir?: typeof rafraichirRecherche
   enregistrer?: typeof enregistrerNouvelles
-  envoyer?: typeof envoyerAlerte
 }
 
+// Collecte + enregistrement des nouvelles offres pour l'utilisateur. Ne fait PAS l'email :
+// le scoring doit tourner entre l'enregistrement et l'envoi (voir /api/refresh).
 export async function rafraichirEtEnregistrer(
   client: SupabaseClient,
   recherche: RechercheAref,
   deps: Deps = {},
-): Promise<{ nouvelles: number; email: boolean }> {
+): Promise<{ nouvelles: number; ids: string[] }> {
   const rafraichir = deps.rafraichir ?? rafraichirRecherche
   const enregistrer = deps.enregistrer ?? enregistrerNouvelles
-  const envoyer = deps.envoyer ?? envoyerAlerte
 
   const { nouvelles } = await rafraichir(client, recherche)
   const nb = await enregistrer(client, recherche.user_id, recherche.id, nouvelles)
+  return { nouvelles: nb, ids: nouvelles }
+}
 
-  let email = false
-  if (recherche.alertes_email && nb > 0) {
-    // Récupère l'email du propriétaire (service client) en best-effort : une erreur
-    // de lookup ne doit pas empêcher le hook email d'être invoqué (il gère lui-même
-    // l'absence de destinataire).
-    let to: string | null = null
-    try {
-      const { data } = await client.auth.admin.getUserById(recherche.user_id)
-      to = data?.user?.email ?? null
-    } catch {
-      to = null
-    }
-    email = await envoyer({ to, recherche, offreIds: nouvelles }, client)
+type EnvoiDeps = { envoyer?: typeof envoyerAlerte }
+
+// Envoie l'email d'alerte si l'utilisateur a opté et qu'il y a des offres. À appeler APRÈS le scoring.
+export async function envoyerAlerteSiActive(
+  client: SupabaseClient,
+  recherche: Pick<RechercheAref, 'id' | 'user_id' | 'intitule' | 'alertes_email'>,
+  ids: string[],
+  deps: EnvoiDeps = {},
+): Promise<boolean> {
+  const envoyer = deps.envoyer ?? envoyerAlerte
+  if (!recherche.alertes_email || ids.length === 0) return false
+  // Lookup du destinataire (best-effort) : une erreur ne bloque pas le hook email.
+  let to: string | null = null
+  try {
+    const { data } = await client.auth.admin.getUserById(recherche.user_id)
+    to = data?.user?.email ?? null
+  } catch {
+    to = null
   }
-  return { nouvelles: nb, email }
+  return envoyer({ to, recherche, offreIds: ids }, client)
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServiceClient } from '@/lib/supabase/service'
-import { rafraichirEtEnregistrer, type RechercheAref } from '@/lib/alertes/refresh'
+import { rafraichirEtEnregistrer, envoyerAlerteSiActive, type RechercheAref } from '@/lib/alertes/refresh'
 import { purgerVieillesOffres } from '@/lib/alertes/purge'
 import { scorerPourRecherche } from '@/lib/scoring/execution'
 
@@ -21,11 +21,12 @@ async function traiter(recherches: RechercheAref[]) {
   let emails = 0
   let scores = 0
   for (const r of recherches) {
-    const res = await rafraichirEtEnregistrer(client, r)
-    nouvelles += res.nouvelles
-    if (res.email) emails += 1
+    // Ordre : collecte -> scoring -> email (l'email peut ainsi afficher les scores).
+    const { nouvelles: nb, ids } = await rafraichirEtEnregistrer(client, r)
+    nouvelles += nb
     try { scores += await scorerPourRecherche(client, r) }
     catch (e) { console.error('[refresh] scoring en échec :', e) }
+    if (nb > 0 && await envoyerAlerteSiActive(client, r, ids)) emails += 1
   }
   let purgees = 0
   try { purgees = await purgerVieillesOffres(client) }
