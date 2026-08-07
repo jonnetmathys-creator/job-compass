@@ -28,5 +28,5 @@ jobs:
           APP_URL: ${{ vars.APP_URL }}
           COLLECT_SECRET: ${{ secrets.COLLECT_SECRET }}
         run: |
-          BASE="${APP_URL:-https://job-compass.onrender.com}"
+          BASE="${APP_URL:-https://job-compass-pldk.onrender.com}"
           curl -fsS --max-time 300 "$BASE/api/refresh" -H "Authorization: Bearer $COLLECT_SECRET"
