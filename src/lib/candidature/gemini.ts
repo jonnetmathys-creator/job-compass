@@ -100,6 +100,30 @@ export async function appelerGemini(
 
 // Appel Gemini générique texte -> JSON structuré (sans PDF), pour des usages
 // hors candidature complète (ex. mail de relance).
+// Transcrit un PDF (base64) en texte brut via Gemini. Usage : mise en cache du CV.
+export async function transcrirePdf(base64: string, deps: { fetchImpl?: typeof fetch } = {}): Promise<string> {
+  const fetchImpl = deps.fetchImpl ?? fetch
+  const body = {
+    contents: [{
+      role: 'user',
+      parts: [
+        { text: 'Transcris intégralement ce document en texte brut, sans commentaire ni mise en forme.' },
+        { inline_data: { mime_type: 'application/pdf', data: base64 } },
+      ],
+    }],
+  }
+  const res = await fetchImpl(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error(`Transcription CV échouée : HTTP ${res.status}`)
+  const json = await res.json()
+  const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text
+  if (!text) throw new Error('Transcription CV : réponse vide')
+  return text
+}
+
 export async function appelerGeminiJson<T>(
   prompt: string,
   schema: object,
