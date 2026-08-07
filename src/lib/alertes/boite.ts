@@ -1,7 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { OFFRE_COLUMNS, type OffreRow } from '@/lib/offres/types'
+import { getScores } from '@/lib/scoring/lecture'
+import { estTopMatch } from '@/lib/scoring/palette'
 
-export type NouvelleOffre = { offre: OffreRow; created_at: string; vue_le: string | null }
+export type NouvelleOffre = { offre: OffreRow; created_at: string; vue_le: string | null; score?: number; raison?: string | null }
 
 export const FENETRE_NOTIF_JOURS = 30
 
@@ -9,7 +11,9 @@ function cutoffFenetre(): string {
   return new Date(Date.now() - FENETRE_NOTIF_JOURS * 24 * 60 * 60 * 1000).toISOString()
 }
 
-export async function getBoite(client: SupabaseClient, userId: string): Promise<NouvelleOffre[]> {
+export async function getBoite(
+  client: SupabaseClient, userId: string, deps: { getScores?: typeof getScores } = {},
+): Promise<NouvelleOffre[]> {
   const { data, error } = await client
     .from('nouvelles_offres')
     .select(`created_at, vue_le, offres:offre_id (${OFFRE_COLUMNS})`)
@@ -22,10 +26,23 @@ export async function getBoite(client: SupabaseClient, userId: string): Promise<
     .map((r: any) => {
       const offre = (Array.isArray(r.offres) ? r.offres[0] : r.offres) as OffreRow | null
       if (!offre) return null
-      return { offre, created_at: r.created_at, vue_le: r.vue_le ?? null }
+      return { offre, created_at: r.created_at, vue_le: r.vue_le ?? null } as NouvelleOffre
     })
     .filter(Boolean) as NouvelleOffre[]
-  return items.sort((a, b) => b.created_at.localeCompare(a.created_at))
+
+  // Joint les scores et remonte les « top match » (>= 90) en tête, puis par date.
+  const lireScores = deps.getScores ?? getScores
+  const scores = await lireScores(client, userId, items.map((i) => i.offre.id))
+  for (const it of items) {
+    const s = scores.get(it.offre.id)
+    if (s) { it.score = s.score; it.raison = s.raison }
+  }
+  return items.sort((a, b) => {
+    const ta = estTopMatch(a.score ?? 0) ? 1 : 0
+    const tb = estTopMatch(b.score ?? 0) ? 1 : 0
+    if (ta !== tb) return tb - ta
+    return b.created_at.localeCompare(a.created_at)
+  })
 }
 
 export async function compterNonVues(client: SupabaseClient, userId: string): Promise<number> {

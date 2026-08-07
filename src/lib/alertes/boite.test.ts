@@ -12,7 +12,7 @@ test('getBoite ne renvoie que le non-vu sur la fenêtre, joint aux offres, trié
   const select = vi.fn(() => ({ eq }))
   const client = { from: vi.fn(() => ({ select })) } as any
 
-  const out = await getBoite(client, 'u1')
+  const out = await getBoite(client, 'u1', { getScores: async () => new Map() })
 
   expect(client.from).toHaveBeenCalledWith('nouvelles_offres')
   expect(eq).toHaveBeenCalledWith('user_id', 'u1')
@@ -20,6 +20,19 @@ test('getBoite ne renvoie que le non-vu sur la fenêtre, joint aux offres, trié
   // filtre de fenêtre appliqué sur created_at
   expect(gt).toHaveBeenCalledWith('created_at', expect.any(String))
   expect(out.map((n) => n.offre.id)).toEqual(['o2', 'o1'])
+})
+
+test('getBoite remonte les top match (≥90) en tête', async () => {
+  const rows = [
+    { created_at: '2026-07-29T10:00:00Z', vue_le: null, offres: { id: 'recent', titre: 'Récent' } },
+    { created_at: '2026-07-29T08:00:00Z', vue_le: null, offres: { id: 'top', titre: 'Top' } },
+  ]
+  const gt = vi.fn().mockResolvedValue({ data: rows, error: null })
+  const client = { from: vi.fn(() => ({ select: () => ({ eq: () => ({ is: () => ({ gt }) }) }) })) } as any
+  const getScores = async () => new Map([['top', { score: 95, raison: 'fort' }]])
+  const out = await getBoite(client, 'u1', { getScores })
+  expect(out[0].offre.id).toBe('top')      // top match d'abord, malgré une date plus ancienne
+  expect(out[0].score).toBe(95)
 })
 
 test('compterNonVues filtre vue_le null et la fenêtre', async () => {

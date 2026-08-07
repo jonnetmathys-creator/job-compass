@@ -5,6 +5,7 @@ import { getBoite, compterNonVues, type NouvelleOffre } from '@/lib/alertes/boit
 import { marquerVue } from '@/lib/alertes/actions'
 import { getRappels, marquerRappelVu, type RappelItem } from '@/lib/rappels/actions'
 import { formatEcoule } from '@/lib/rappels/dates'
+import { couleurScore } from '@/lib/scoring/palette'
 
 export default function ClocheNotifs() {
   const [open, setOpen] = useState(false)
@@ -86,9 +87,16 @@ export default function ClocheNotifs() {
           <>
             <div className="cloche-head">Nouvelles offres</div>
             {items.map((n) => (
-              <button key={n.offre.id} type="button" className={`cloche-item${n.vue_le ? '' : ' neuf'}`} onClick={() => consulter(n.offre.id)}>
-                <span className="cloche-item-titre">{n.offre.titre}</span>
-                <span className="cloche-item-emp">{n.offre.entreprise ?? 'Employeur non précisé'}{n.offre.ville ? ` · ${n.offre.ville}` : ''}</span>
+              <button key={n.offre.id} type="button" className={`cloche-item${n.vue_le ? '' : ' neuf'}${typeof n.score === 'number' && n.score >= 90 ? ' top-match' : ''}`} onClick={() => consulter(n.offre.id)}>
+                <span className="cloche-item-titre">
+                  {n.offre.titre}
+                  {typeof n.score === 'number' && (
+                    <span className="cloche-score" style={{ backgroundColor: couleurScore(n.score) }}>{n.score}%</span>
+                  )}
+                </span>
+                {typeof n.score === 'number' && n.score >= 90
+                  ? <span className="cloche-item-emp top">🎯 Correspond à {n.score}% à ton profil</span>
+                  : <span className="cloche-item-emp">{n.offre.entreprise ?? 'Employeur non précisé'}{n.offre.ville ? ` · ${n.offre.ville}` : ''}</span>}
               </button>
             ))}
           </>
