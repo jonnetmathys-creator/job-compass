@@ -17,6 +17,8 @@ export const ETAPES: Etape[] = [
     titre: 'Affine tes résultats', texte: 'Filtre par lieu, distance et type de contrat.' },
   { id: 'liste', page: /^\/recherche\//, cible: '[data-tour="liste"]', placement: 'droite',
     titre: 'Tes offres', texte: 'Toutes les offres trouvées s’affichent ici, du plus récent au plus ancien.' },
+  { id: 'score', page: /^\/recherche\//, cible: '[data-offre-id]', placement: 'droite',
+    titre: 'Le score IA', texte: 'Une fois ton CV analysé, chaque offre reçoit un score de 0 à 100 selon ton profil. Plus le pourcentage tire vers le vert, plus l’offre te correspond. Au-dessus de 90, on te prévient direct.' },
   { id: 'carte', page: /^\/recherche\//, cible: '[data-tour="carte"]', placement: 'gauche',
     titre: 'Sur la carte', texte: 'Chaque pin est une offre : clique dessus pour l’ouvrir.' },
   { id: 'like', page: /^\/recherche\//, cible: '[data-tour="like"]', placement: 'droite',

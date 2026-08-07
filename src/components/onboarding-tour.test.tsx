@@ -61,7 +61,7 @@ test('collecte vide -> étape « like » sautée vers « cloche » au lieu de re
   flag.termine = false
   pathnameState.valeur = '/recherche/abc'
   localStorage.clear()
-  localStorage.setItem('jc_tour_index', '4') // étape « like »
+  localStorage.setItem('jc_tour_index', '5') // étape « like »
   // Page de résultats vide : la cloche (toujours présente) existe, mais ni la carte « like »
   // ni aucune offre (`[data-offre-id]`) ne sont rendues.
   document.body.innerHTML = '<button data-tour="cloche"></button>'

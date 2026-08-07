@@ -1,16 +1,17 @@
 import { expect, test } from 'vitest'
 import { ETAPES, etapeSuivante, etapePrecedente, estDerniere, pageCorrespond } from './etapes'
 
-test('ETAPES couvre le parcours en 9 étapes ordonnées', () => {
-  expect(ETAPES).toHaveLength(9)
+test('ETAPES couvre le parcours en 10 étapes ordonnées', () => {
+  expect(ETAPES).toHaveLength(10)
   expect(ETAPES[0].action).toBe('recherche')
   expect(ETAPES.find((e) => e.action === 'offre')?.id).toBe('cloche')
+  expect(ETAPES.find((e) => e.id === 'score')).toBeTruthy()
   expect(ETAPES.every((e) => e.cible && e.titre && e.texte)).toBe(true)
 })
 
 test('etapeSuivante avance et sature à la dernière', () => {
-  expect(etapeSuivante(0, 9)).toBe(1)
-  expect(etapeSuivante(8, 9)).toBe(8)
+  expect(etapeSuivante(0, 10)).toBe(1)
+  expect(etapeSuivante(9, 10)).toBe(9)
 })
 
 test('etapePrecedente recule et sature à zéro', () => {
@@ -19,8 +20,8 @@ test('etapePrecedente recule et sature à zéro', () => {
 })
 
 test('estDerniere vraie seulement sur le dernier index', () => {
-  expect(estDerniere(8, 9)).toBe(true)
-  expect(estDerniere(7, 9)).toBe(false)
+  expect(estDerniere(9, 10)).toBe(true)
+  expect(estDerniere(8, 10)).toBe(false)
 })
 
 test('pageCorrespond confronte le pathname au motif de l’étape', () => {
