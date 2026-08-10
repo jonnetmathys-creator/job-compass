@@ -49,7 +49,14 @@ export default function OnboardingTour() {
         const idx = relance || !Number.isFinite(brut) ? 0 : Math.min(Math.max(brut, 0), ETAPES.length - 1)
         localStorage.removeItem(CLE_RELANCE)
         setIndex(idx)
-        setActif(true)
+        // Si le splash d'ouverture est encore à l'écran, on attend sa fin : sinon
+        // le tutoriel démarre par-dessus l'animation, ce qui est déroutant.
+        const w = window as Window & { __jcSplashActif?: boolean }
+        if (w.__jcSplashActif) {
+          window.addEventListener('jc-splash-done', () => { if (!annule) setActif(true) }, { once: true })
+        } else {
+          setActif(true)
+        }
       }
       demarre.current = true
       enCours.current = false

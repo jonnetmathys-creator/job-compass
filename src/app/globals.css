@@ -1107,20 +1107,6 @@ a.logo:hover { opacity: .78; }
   .s-ring2 { stroke-dashoffset: 0; }
 }
 
-/* ---------- transitions de navigation (fondu app) ---------- */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: .26s;
-  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
-}
-/* Le contenu entrant monte légèrement pendant qu'il apparaît : ressenti natif. */
-::view-transition-new(root) { animation-name: vt-fade-in, vt-rise; }
-@keyframes vt-fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes vt-rise { from { transform: translateY(8px); } to { transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0s !important; }
-}
-
 /* ---------- pull-to-refresh (liste résultats) ---------- */
 .list-pane { position: relative; }
 .ptr { position: absolute; top: 8px; left: 50%; width: 28px; height: 28px; margin-left: -14px;

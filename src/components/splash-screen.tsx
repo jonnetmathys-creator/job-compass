@@ -14,8 +14,14 @@ export default function SplashScreen() {
     try { deja = sessionStorage.getItem('jc-splash') === '1' } catch { /* ignore */ }
     if (deja) { setVisible(false); return } // déjà vu cette session : on masque aussitôt
     try { sessionStorage.setItem('jc-splash', '1') } catch { /* ignore */ }
+    // Le splash est actif : le tutoriel doit attendre sa fin pour ne pas démarrer par-dessus.
+    ;(window as Window & { __jcSplashActif?: boolean }).__jcSplashActif = true
     const t1 = setTimeout(() => setFadeOut(true), 1650)
-    const t2 = setTimeout(() => setVisible(false), 2100)
+    const t2 = setTimeout(() => {
+      setVisible(false)
+      ;(window as Window & { __jcSplashActif?: boolean }).__jcSplashActif = false
+      window.dispatchEvent(new Event('jc-splash-done'))
+    }, 2100)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
