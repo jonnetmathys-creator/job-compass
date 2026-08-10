@@ -16,6 +16,7 @@
   --shadow-lg: 0 18px 48px rgba(16, 24, 40, .16);
   --radius: 18px;
   --radius-lg: 26px;
+  --bottom-nav-h: 60px;
 }
 /* Fond app + verrouillage du rebond élastique (sinon on voit du blanc en overscroll
    sur mobile / PWA). tap-highlight transparent pour un ressenti plus natif au toucher. */
@@ -937,7 +938,8 @@ a.logo:hover { opacity: .78; }
   .map-toggle { display: none; }
 
   /* Liste et carte en pleine largeur, on n'en montre qu'une selon la vue */
-  .list-pane { width: 100%; }
+  .list-pane { width: 100%; padding: 12px 12px 0; }
+  .card { margin-bottom: 10px; }
   .split.vue-liste .map-pane { display: none; }
   .split.vue-carte .list-pane { display: none; }
   .split.collapsed .list-pane { transform: none; margin-left: 0; } /* neutralise le repli desktop */
@@ -1048,3 +1050,24 @@ a.logo:hover { opacity: .78; }
 .pwa-invite-ok { background: var(--accent-dark); color: #fff; border: 0; border-radius: 9px; padding: 8px 14px; font-weight: 600; font-size: .85rem; cursor: pointer; }
 .pwa-invite-ok:hover { background: var(--accent); }
 .pwa-invite-x { background: transparent; border: 0; color: var(--muted); font-size: .95rem; cursor: pointer; padding: 6px; line-height: 1; }
+
+/* ---------- barre d'onglets mobile (bottom nav) ---------- */
+.bottom-nav { display: none; }
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 1400;
+    height: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(255, 255, 255, .96); backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .bottom-nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    color: var(--muted); text-decoration: none; font-size: .66rem; font-weight: 600;
+  }
+  .bottom-nav-item svg { width: 23px; height: 23px; }
+  .bottom-nav-item.on { color: var(--accent-dark); }
+  .bottom-nav-item.on svg { stroke: var(--accent); }
+  .list-pane, .detail-scroll { padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px) + 8px); }
+  .home-main { padding-bottom: calc(24px + var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px)); }
+}

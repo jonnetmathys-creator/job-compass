@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google'
 import './globals.css'
 import OnboardingTour from '@/components/onboarding-tour'
 import PwaSetup from '@/components/pwa-setup'
+import BottomNav from '@/components/bottom-nav'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" className={montserrat.variable}>
       <body>
         {children}
+        <BottomNav />
         <OnboardingTour />
         <PwaSetup />
       </body>
