@@ -29,4 +29,11 @@ jobs:
           COLLECT_SECRET: ${{ secrets.COLLECT_SECRET }}
         run: |
           BASE="${APP_URL:-https://job-compass-pldk.onrender.com}"
-          curl -fsS --max-time 300 "$BASE/api/refresh" -H "Authorization: Bearer $COLLECT_SECRET"
+          # Réveil du service (free tier en veille) : le démarrage à froid ne doit pas
+          # manger le budget du refresh. On ignore le résultat de ce ping.
+          echo "Réveil du service…"
+          curl -s -o /dev/null --max-time 120 "$BASE/login" || true
+          # Refresh : collecte API + scoring Gemini + alertes + purge + relances, en synchrone.
+          # Le scoring de l'arriéré peut durer plusieurs minutes (mesuré ~510s), d'où 900s.
+          echo "Rafraîchissement…"
+          curl -fsS --max-time 900 "$BASE/api/refresh" -H "Authorization: Bearer $COLLECT_SECRET"
