@@ -22,12 +22,19 @@ async function traiter(recherches: RechercheAref[]) {
   let emails = 0
   let scores = 0
   for (const r of recherches) {
-    // Ordre : collecte -> scoring -> email (l'email peut ainsi afficher les scores).
-    const { nouvelles: nb, ids } = await rafraichirEtEnregistrer(client, r)
-    nouvelles += nb
-    try { scores += await scorerPourRecherche(client, r) }
-    catch (e) { console.error('[refresh] scoring en échec :', e) }
-    if (nb > 0 && await envoyerAlerteSiActive(client, r, ids)) emails += 1
+    // Chaque recherche est isolée : une erreur (collecte, scoring, email) est logguée
+    // mais ne fait pas échouer tout le refresh.
+    try {
+      // Ordre : collecte -> scoring -> email (l'email peut ainsi afficher les scores).
+      const { nouvelles: nb, ids } = await rafraichirEtEnregistrer(client, r)
+      nouvelles += nb
+      try { scores += await scorerPourRecherche(client, r) }
+      catch (e) { console.error('[refresh] scoring en échec :', e) }
+      try { if (nb > 0 && await envoyerAlerteSiActive(client, r, ids)) emails += 1 }
+      catch (e) { console.error('[refresh] email en échec :', e) }
+    } catch (e) {
+      console.error('[refresh] recherche en échec :', r.id, e)
+    }
   }
   let purgees = 0
   try { purgees = await purgerVieillesOffres(client) }
