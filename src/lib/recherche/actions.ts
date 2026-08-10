@@ -5,9 +5,17 @@ import { revalidatePath } from 'next/cache'
 import { getServerClient } from '@/lib/supabase/server'
 import { getServiceClient } from '@/lib/supabase/service'
 import { collectForRecherche } from '@/lib/collector/collect'
+import { scorerPourRecherche } from '@/lib/scoring/execution'
 import { geocodeCommune } from '@/lib/geo/adresse'
 import { buildRechercheInsert } from './build'
 import type { RechercheRow } from '@/lib/collector/types'
+
+// Note les offres fraîchement collectées, sans bloquer la recherche si le scoring
+// échoue (quota, réseau…). Sinon les offres n'obtiendraient un score qu'au cron quotidien.
+async function noterSansBloquer(client: ReturnType<typeof getServiceClient>, rechercheId: string, userId: string) {
+  try { await scorerPourRecherche(client, { id: rechercheId, user_id: userId }) }
+  catch (e) { console.error('[recherche] scoring en échec :', e) }
+}
 
 export async function lancerRecherche(poste: string): Promise<void> {
   const p = poste.trim()
@@ -38,6 +46,7 @@ export async function lancerRecherche(poste: string): Promise<void> {
   }
   const service = getServiceClient()
   await collectForRecherche(service, recherche)
+  await noterSansBloquer(service, recherche.id, user.id)
   redirect(`/recherche/${recherche.id}`)
 }
 
@@ -53,6 +62,7 @@ export async function rafraichirOffres(rechercheId: string): Promise<void> {
   if (!rech) return
   const service = getServiceClient()
   await collectForRecherche(service, rech as RechercheRow & { id: string })
+  await noterSansBloquer(service, rechercheId, user.id)
   revalidatePath(`/recherche/${rechercheId}`)
 }
 
@@ -79,6 +89,7 @@ export async function affinerLieu(
   if (!rech) return { ok: false, erreur: 'Recherche introuvable' }
   const service = getServiceClient()
   await collectForRecherche(service, rech as RechercheRow & { id: string })
+  await noterSansBloquer(service, rechercheId, user.id)
   revalidatePath(`/recherche/${rechercheId}`)
   return { ok: true }
 }
