@@ -29,7 +29,7 @@ export default function CompteMenu() {
     return () => { annule = true; sub.subscription.unsubscribe() }
   }, [])
 
-  if (pathname === '/login') return null
+  if (pathname === '/login' || pathname === '/signup') return null
 
   const initiale = (email.trim()[0] ?? '?').toUpperCase()
 

@@ -25,7 +25,7 @@ export default function SignupPage() {
   }
 
   return (
-    <main style={{ position: 'relative', minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, overflow: 'hidden', background: 'radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%)' }}>
+    <main style={{ position: 'relative', minHeight: 'calc(100vh - 56px)', display: 'grid', placeItems: 'center', padding: 24, overflow: 'hidden', background: 'radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%)' }}>
       <div className="decor" aria-hidden>
         <div className="blob b1" /><div className="blob b2" /><div className="blob b3" />
         <div className="ring r1" /><div className="ring r2" />

@@ -16,8 +16,9 @@
   --shadow-lg: 0 18px 48px rgba(16, 24, 40, .16);
   --radius: 18px;
   --radius-lg: 26px;
+  --header-h: 56px;
 }
-body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--ink); }
+body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--ink); padding-top: var(--header-h); }
 
 @theme inline {
   --color-background: var(--background);
@@ -42,7 +43,7 @@ a.logo:hover { opacity: .78; }
 
 /* ---------- accueil : héro + décor ---------- */
 .home-main {
-  position: relative; min-height: 100vh; display: grid; place-items: center; padding: 24px; overflow: hidden;
+  position: relative; min-height: calc(100vh - var(--header-h)); display: grid; place-items: center; padding: 24px; overflow: hidden;
   background: radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%);
 }
 .hero { position: relative; z-index: 1; width: 100%; max-width: 700px; text-align: center; animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
@@ -283,7 +284,17 @@ a.logo:hover { opacity: .78; }
 
 /* ---------- espace compte (fixe) ---------- */
 /* Conteneur commun cloche + compte (haut à droite, alignés) */
-.topnav-right { position: fixed; top: 13px; right: 20px; z-index: 1500; display: flex; align-items: center; gap: 10px; }
+/* ---------- barre d'en-tête fixe ---------- */
+.app-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0 clamp(12px, 3vw, 20px); z-index: 1500;
+  background: rgba(255, 255, 255, .85); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.app-brand { font-weight: 800; font-size: 1.05rem; color: var(--accent-dark); text-decoration: none; letter-spacing: -.02em; }
+.app-brand:hover { color: var(--accent); }
+.topnav-right { display: flex; align-items: center; gap: 10px; }
 .account { position: relative; }
 .avatar-btn {
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: #fff; cursor: pointer;
@@ -1023,7 +1034,7 @@ a.logo:hover { opacity: .78; }
 .cloche-item.top-match { background: linear-gradient(90deg, rgba(46,158,91,.10), transparent); }
 
 /* ---- PWA : page hors-ligne + invite d'installation ---- */
-.offline-page { min-height: 100dvh; display: grid; place-items: center; padding: 24px; background: var(--bg); }
+.offline-page { min-height: calc(100dvh - var(--header-h)); display: grid; place-items: center; padding: 24px; background: var(--bg); }
 .offline-card { max-width: 380px; text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 32px 26px; box-shadow: var(--shadow-sm); }
 .offline-logo { border-radius: 16px; margin-bottom: 14px; }
 .offline-card h1 { font-size: 1.3rem; color: var(--ink); margin: 0 0 8px; }

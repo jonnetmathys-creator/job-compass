@@ -34,10 +34,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={montserrat.variable}>
       <body>
-        <div className="topnav-right">
-          <ClocheNotifs />
-          <CompteMenu />
-        </div>
+        <header className="app-header">
+          <a href="/" className="app-brand">JobCompass</a>
+          <div className="topnav-right">
+            <ClocheNotifs />
+            <CompteMenu />
+          </div>
+        </header>
         {children}
         <OnboardingTour />
         <PwaSetup />
