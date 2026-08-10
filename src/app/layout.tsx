@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { ViewTransition } from 'react'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import OnboardingTour from '@/components/onboarding-tour'
@@ -35,7 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={montserrat.variable}>
       <body>
-        {children}
+        {/* Fondu enchaîné à chaque navigation (feel app). Le splash et la nav
+            restent hors de la transition pour ne pas clignoter. */}
+        <ViewTransition>{children}</ViewTransition>
         <SplashScreen />
         <BottomNav />
         <OnboardingTour />

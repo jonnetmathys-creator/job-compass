@@ -6,6 +6,7 @@ import type { OffreRow } from '@/lib/offres/types'
 import { positionEpingle } from '@/lib/geo/departements'
 import { toggleFavori } from '@/lib/favoris/actions'
 import { marquerVue } from '@/lib/alertes/actions'
+import { haptic } from '@/lib/haptics'
 import PostulerZone from './postuler-zone'
 import HeaderActions from './header-actions'
 
@@ -26,6 +27,7 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
   const position = positionEpingle(offre)
 
   const onToggleSave = () => {
+    haptic()
     setLiked((v) => !v)
     startTransition(async () => {
       try {

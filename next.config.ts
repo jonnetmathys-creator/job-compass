@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Transitions de vue React : fondu enchaîné automatique à chaque navigation.
+  experimental: { viewTransition: true },
   async headers() {
     return [
       {

@@ -9,6 +9,7 @@ import OffreListe from './offre-liste'
 import FiltresBarClient from './filtres-bar'
 import { toggleFavori } from '@/lib/favoris/actions'
 import { rafraichirOffres } from '@/lib/recherche/actions'
+import { haptic } from '@/lib/haptics'
 
 const PTR_SEUIL = 60 // px de tirage pour déclencher le rafraîchissement
 
@@ -65,6 +66,7 @@ export default function ResultatsShell(props: {
   }, [])
 
   const onToggleLike = async (id: string) => {
+    haptic()
     setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
     try { await toggleFavori(id) } catch { setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n }) }
   }
@@ -89,6 +91,7 @@ export default function ResultatsShell(props: {
     tirage.current.actif = false
     setDragging(false)
     if (pull >= PTR_SEUIL && !refreshing) {
+      haptic() // confirmation tactile du déclenchement
       setRefreshing(true); setPull(46)
       try { await rafraichirOffres(props.recherche.id); router.refresh() }
       catch { /* non bloquant */ }

@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { haptic } from '@/lib/haptics'
 
 const ICONS: Record<string, React.ReactNode> = {
   recherche: <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>,
@@ -25,7 +26,8 @@ export default function BottomNav() {
       {TABS.map((t) => {
         const actif = t.match(pathname)
         return (
-          <Link key={t.href} href={t.href} className={`bottom-nav-item${actif ? ' on' : ''}`} aria-current={actif ? 'page' : undefined}>
+          <Link key={t.href} href={t.href} className={`bottom-nav-item${actif ? ' on' : ''}`} aria-current={actif ? 'page' : undefined}
+            onClick={() => { if (!actif) haptic() }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               {ICONS[t.key]}
             </svg>
