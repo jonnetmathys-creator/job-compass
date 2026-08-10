@@ -100,7 +100,9 @@ a.logo:hover { opacity: .78; }
 .topbar {
   display: flex; align-items: center; gap: 14px;
   padding: calc(14px + env(safe-area-inset-top)) 22px 14px; background: var(--card);
-  border-bottom: 1px solid var(--line); z-index: 600; flex: 0 0 auto;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 6px 18px -12px rgba(20, 30, 25, .30); /* profondeur : démarque le header du contenu */
+  z-index: 600; flex: 0 0 auto;
 }
 .topbar .logo { font-size: 19px; margin-right: 6px; }
 .poste-chip {

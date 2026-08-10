@@ -98,7 +98,7 @@ export default function ResultatsShell(props: {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <FiltresBarClient poste={props.recherche.intitule} contrats={contrats} contrat={contrat} onContrat={setContrat} rechercheId={props.recherche.id}
         initialLieu={props.recherche.lieu_label ?? ''} initialRayon={props.recherche.rayon_km} alertesEmail={props.recherche.alertes_email ?? false} />
       <div className="barre-affichage">

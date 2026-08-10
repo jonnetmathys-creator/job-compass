@@ -4,15 +4,16 @@ import { useEffect, useState } from 'react'
 // Écran de lancement animé (une fois par session). Boussole qui se dessine +
 // aiguille qui pivote et se cale au nord, puis le nom apparaît, puis fondu.
 export default function SplashScreen() {
-  const [visible, setVisible] = useState(false)
+  // Visible dès le premier rendu (y compris SSR) : le splash recouvre l'écran
+  // avant même l'hydratation, sinon on aperçoit la page ~1s avant l'animation.
+  const [visible, setVisible] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
 
   useEffect(() => {
     let deja = false
     try { deja = sessionStorage.getItem('jc-splash') === '1' } catch { /* ignore */ }
-    if (deja) return
+    if (deja) { setVisible(false); return } // déjà vu cette session : on masque aussitôt
     try { sessionStorage.setItem('jc-splash', '1') } catch { /* ignore */ }
-    setVisible(true)
     const t1 = setTimeout(() => setFadeOut(true), 1650)
     const t2 = setTimeout(() => setVisible(false), 2100)
     return () => { clearTimeout(t1); clearTimeout(t2) }
