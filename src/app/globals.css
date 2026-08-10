@@ -17,7 +17,12 @@
   --radius: 18px;
   --radius-lg: 26px;
 }
-body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--ink); }
+/* Fond app + verrouillage du rebond élastique (sinon on voit du blanc en overscroll
+   sur mobile / PWA). tap-highlight transparent pour un ressenti plus natif au toucher. */
+html { background: var(--bg); }
+html, body { overscroll-behavior: none; }
+body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+* { -webkit-tap-highlight-color: transparent; }
 
 @theme inline {
   --color-background: var(--background);
