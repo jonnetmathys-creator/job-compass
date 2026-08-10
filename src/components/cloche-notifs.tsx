@@ -20,9 +20,9 @@ export default function ClocheNotifs() {
 
   useEffect(() => {
     let annule = false
-    const client = getBrowserClient()
     ;(async () => {
       try {
+        const client = getBrowserClient()
         const { data: { user } } = await client.auth.getUser()
         if (!user || annule) return
         const [b, n, r, rel] = await Promise.all([

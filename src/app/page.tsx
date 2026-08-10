@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerClient } from '@/lib/supabase/server'
 import SearchBar from '@/components/search-bar'
+import HeaderActions from '@/components/header-actions'
 
 export default async function Home() {
   const supabase = await getServerClient()
@@ -8,6 +9,7 @@ export default async function Home() {
   if (!user) redirect('/login')
   return (
     <main className="home-main">
+      <div className="home-actions"><HeaderActions /></div>
       <div className="decor" aria-hidden>
         <div className="blob b1" /><div className="blob b2" /><div className="blob b3" />
         <div className="ring r1" /><div className="ring r2" />

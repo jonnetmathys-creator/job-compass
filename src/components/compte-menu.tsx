@@ -18,15 +18,19 @@ export default function CompteMenu() {
 
   useEffect(() => {
     let annule = false
-    const client = getBrowserClient()
-    client.auth.getUser().then(({ data }) => {
-      if (!annule) setEmail(data.user?.email ?? '')
-    }).catch(() => {})
-    // Met à jour l'avatar immédiatement après connexion/déconnexion, sans refresh.
-    const { data: sub } = client.auth.onAuthStateChange((_event, session) => {
-      if (!annule) setEmail(session?.user?.email ?? '')
-    })
-    return () => { annule = true; sub.subscription.unsubscribe() }
+    let unsub = () => {}
+    try {
+      const client = getBrowserClient()
+      client.auth.getUser().then(({ data }) => {
+        if (!annule) setEmail(data.user?.email ?? '')
+      }).catch(() => {})
+      // Met à jour l'avatar immédiatement après connexion/déconnexion, sans refresh.
+      const { data: sub } = client.auth.onAuthStateChange((_event, session) => {
+        if (!annule) setEmail(session?.user?.email ?? '')
+      })
+      unsub = () => sub.subscription.unsubscribe()
+    } catch { /* config Supabase absente : composant inerte */ }
+    return () => { annule = true; unsub() }
   }, [])
 
   if (pathname === '/login' || pathname === '/signup') return null

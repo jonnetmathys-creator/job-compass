@@ -16,9 +16,8 @@
   --shadow-lg: 0 18px 48px rgba(16, 24, 40, .16);
   --radius: 18px;
   --radius-lg: 26px;
-  --header-h: 56px;
 }
-body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--ink); padding-top: var(--header-h); }
+body { font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--ink); }
 
 @theme inline {
   --color-background: var(--background);
@@ -43,9 +42,10 @@ a.logo:hover { opacity: .78; }
 
 /* ---------- accueil : héro + décor ---------- */
 .home-main {
-  position: relative; min-height: calc(100vh - var(--header-h)); display: grid; place-items: center; padding: 24px; overflow: hidden;
+  position: relative; min-height: 100vh; display: grid; place-items: center; padding: 24px; overflow: hidden;
   background: radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%);
 }
+.home-actions { position: absolute; top: 14px; right: 18px; z-index: 5; }
 .hero { position: relative; z-index: 1; width: 100%; max-width: 700px; text-align: center; animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
 .hero .logo { font-size: 27px; margin-bottom: 34px; opacity: .9; }
 .headline { min-height: 168px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
@@ -283,18 +283,8 @@ a.logo:hover { opacity: .78; }
 .list-pane::-webkit-scrollbar-thumb, .panel-body::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 8px; }
 
 /* ---------- espace compte (fixe) ---------- */
-/* Conteneur commun cloche + compte (haut à droite, alignés) */
-/* ---------- barre d'en-tête fixe ---------- */
-.app-header {
-  position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 0 clamp(12px, 3vw, 20px); z-index: 1500;
-  background: rgba(255, 255, 255, .85); backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-.app-brand { font-weight: 800; font-size: 1.05rem; color: var(--accent-dark); text-decoration: none; letter-spacing: -.02em; }
-.app-brand:hover { color: var(--accent); }
-.topnav-right { display: flex; align-items: center; gap: 10px; }
+/* Groupe cloche + compte, placé à droite d'une barre d'en-tête existante */
+.header-actions { display: flex; align-items: center; gap: 10px; }
 .account { position: relative; }
 .avatar-btn {
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: #fff; cursor: pointer;
@@ -760,7 +750,6 @@ a.logo:hover { opacity: .78; }
 .alerte-toggle:disabled { opacity: .6; cursor: default; }
 
 /* ── Barre résultats : bouton Filtres + panneau ─────────────────────── */
-.topbar { padding-right: 116px; } /* réserve l'espace du bloc cloche + compte flottant */
 .filtres { position: relative; }
 .filtres-btn {
   display: inline-flex; align-items: center; gap: 7px; font-family: inherit; font-size: 14px; font-weight: 600;
@@ -927,8 +916,8 @@ a.logo:hover { opacity: .78; }
 
 /* ── Responsive : page résultats sous 768px ─────────────────────────── */
 @media (max-width: 768px) {
-  /* En-tête compact : on réserve la place de la cloche + avatar (fixés en haut à droite) */
-  .topbar { gap: 8px; padding: 12px 14px; padding-right: 116px; }
+  /* En-tête compact */
+  .topbar { gap: 8px; padding: 12px 14px; }
   .topbar .logo { font-size: 17px; margin-right: 2px; }
   .poste-chip { display: none; } /* le mot-clé recherché encombre l'en-tête sur mobile */
   .filtres-btn .btn-label, .alerte-toggle .btn-label, .filtres-chevron { display: none; }
@@ -980,8 +969,7 @@ a.logo:hover { opacity: .78; }
   .searchbar { max-width: 100%; padding: 6px 6px 6px 16px; }
   .searchbar input { font-size: 16px; } /* >=16px : évite le zoom auto iOS */
 
-  /* Page offre : on retire le logo de l'en-tête (chevauchait la cloche + avatar) */
-  .detail-top { padding-right: 116px; }
+  /* Pages détail : on masque le logo pour laisser la place au retour + actions */
   .detail-top .logo { display: none; }
 }
 
@@ -1023,7 +1011,7 @@ a.logo:hover { opacity: .78; }
 
 /* Barre d'affichage : bascule Liste/Carte + tri par pertinence */
 .barre-affichage { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 18px 2px; }
-.tri-segment { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.tri-segment { display: inline-flex; align-items: center; gap: 8px; }
 .tri-label { font-size: .8rem; font-weight: 600; color: var(--muted); }
 .tri-toggle { display: inline-flex; background: #eef0ee; border-radius: 999px; padding: 3px; }
 .tri-toggle button { border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 5px 13px;
@@ -1037,7 +1025,7 @@ a.logo:hover { opacity: .78; }
 .cloche-item.top-match { background: linear-gradient(90deg, rgba(46,158,91,.10), transparent); }
 
 /* ---- PWA : page hors-ligne + invite d'installation ---- */
-.offline-page { min-height: calc(100dvh - var(--header-h)); display: grid; place-items: center; padding: 24px; background: var(--bg); }
+.offline-page { min-height: 100dvh; display: grid; place-items: center; padding: 24px; background: var(--bg); }
 .offline-card { max-width: 380px; text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 32px 26px; box-shadow: var(--shadow-sm); }
 .offline-logo { border-radius: 16px; margin-bottom: 14px; }
 .offline-card h1 { font-size: 1.3rem; color: var(--ink); margin: 0 0 8px; }

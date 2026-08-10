@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
-import CompteMenu from '@/components/compte-menu'
-import ClocheNotifs from '@/components/cloche-notifs'
 import OnboardingTour from '@/components/onboarding-tour'
 import PwaSetup from '@/components/pwa-setup'
 
@@ -34,13 +32,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={montserrat.variable}>
       <body>
-        <header className="app-header">
-          <a href="/" className="app-brand">JobCompass</a>
-          <div className="topnav-right">
-            <ClocheNotifs />
-            <CompteMenu />
-          </div>
-        </header>
         {children}
         <OnboardingTour />
         <PwaSetup />

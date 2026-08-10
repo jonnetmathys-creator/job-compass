@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import HeaderActions from './header-actions'
 
 export default function PageHeader({ titre = 'Retour' }: { titre?: string }) {
   return (
@@ -16,6 +17,8 @@ export default function PageHeader({ titre = 'Retour' }: { titre?: string }) {
         {titre}
       </button>
       <Link href="/" className="logo" aria-label="Retour à la recherche">Job<span>Compass</span></Link>
+      <div className="spacer" />
+      <HeaderActions />
     </div>
   )
 }

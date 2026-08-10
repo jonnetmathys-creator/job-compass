@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { affinerLieu } from '@/lib/recherche/actions'
 import VilleAutocomplete from './ville-autocomplete'
 import AlerteMailToggle from './alerte-mail-toggle'
+import HeaderActions from './header-actions'
 
 export default function FiltresBar(props: {
   poste: string
@@ -96,6 +97,7 @@ export default function FiltresBar(props: {
 
       <div className="spacer" />
       {pending && <span className="count">Actualisation…</span>}
+      <HeaderActions />
     </div>
   )
 }

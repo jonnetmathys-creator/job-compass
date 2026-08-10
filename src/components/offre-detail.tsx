@@ -7,6 +7,7 @@ import { positionEpingle } from '@/lib/geo/departements'
 import { toggleFavori } from '@/lib/favoris/actions'
 import { marquerVue } from '@/lib/alertes/actions'
 import PostulerZone from './postuler-zone'
+import HeaderActions from './header-actions'
 
 const PIN_SVG = '<svg width="28" height="38" viewBox="0 0 30 40" fill="currentColor"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 12.4 22.7 14.2 24.5a1.1 1.1 0 0 0 1.6 0C17.6 37.7 30 25.5 30 15 30 6.7 23.3 0 15 0Z" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="5.4" fill="#fff"/></svg>'
 
@@ -80,6 +81,8 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
           Retour aux résultats
         </button>
         <Link href="/" className="logo" aria-label="Retour à la recherche">Job<span>Compass</span></Link>
+        <div className="spacer" />
+        <HeaderActions />
       </div>
       <div className="detail-scroll">
         <div className="detail-hero">
