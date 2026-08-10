@@ -1,5 +1,6 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { OffreAffichee } from '@/lib/offres/dedup-affichage'
 
@@ -7,6 +8,9 @@ type OffreScoree = OffreAffichee & { score?: number; raison?: string | null }
 import OffreListe from './offre-liste'
 import FiltresBarClient from './filtres-bar'
 import { toggleFavori } from '@/lib/favoris/actions'
+import { rafraichirOffres } from '@/lib/recherche/actions'
+
+const PTR_SEUIL = 60 // px de tirage pour déclencher le rafraîchissement
 
 const CarteOffres = dynamic(() => import('./carte-offres'), { ssr: false })
 
@@ -25,6 +29,12 @@ export default function ResultatsShell(props: {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [likes, setLikes] = useState<Set<string>>(new Set(props.favoriIds))
   const [triPertinence, setTriPertinence] = useState(false)
+  const router = useRouter()
+  const paneRef = useRef<HTMLDivElement>(null)
+  const tirage = useRef({ startY: 0, actif: false })
+  const [pull, setPull] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const contrats = useMemo(
     () => Array.from(new Set(props.offres.map((o) => o.contrat).filter(Boolean))) as string[],
@@ -59,6 +69,34 @@ export default function ResultatsShell(props: {
     try { await toggleFavori(id) } catch { setLikes((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n }) }
   }
 
+  // Pull-to-refresh (mobile) : on ne l'arme qu'en vue liste, en haut du scroll.
+  // overscroll-behavior:none empêche déjà le rebond blanc ; on ne translate que le contenu.
+  function ptrStart(e: React.TouchEvent) {
+    const pane = paneRef.current
+    if (!pane || refreshing || vue !== 'liste' || pane.scrollTop > 0) return
+    tirage.current = { startY: e.touches[0].clientY, actif: true }
+    setDragging(true)
+  }
+  function ptrMove(e: React.TouchEvent) {
+    if (!tirage.current.actif) return
+    const pane = paneRef.current!
+    const dy = e.touches[0].clientY - tirage.current.startY
+    if (dy > 0 && pane.scrollTop <= 0) setPull(Math.min(dy * 0.5, 80))
+    else { tirage.current.actif = false; setDragging(false); setPull(0) }
+  }
+  async function ptrEnd() {
+    if (!tirage.current.actif) return
+    tirage.current.actif = false
+    setDragging(false)
+    if (pull >= PTR_SEUIL && !refreshing) {
+      setRefreshing(true); setPull(46)
+      try { await rafraichirOffres(props.recherche.id); router.refresh() }
+      catch { /* non bloquant */ }
+      setRefreshing(false)
+    }
+    setPull(0)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <FiltresBarClient poste={props.recherche.intitule} contrats={contrats} contrat={contrat} onContrat={setContrat} rechercheId={props.recherche.id}
@@ -79,10 +117,16 @@ export default function ResultatsShell(props: {
         )}
       </div>
       <div className={`split vue-${vue}${collapsed ? ' collapsed' : ''}`} id="split">
-        <div className="list-pane" id="list" data-tour="liste">
-          <OffreListe offres={visibles} expandedId={expandedId} hoveredId={hoveredId} likes={likes}
-            onToggleExpand={(id) => setExpandedId((cur) => (cur === id ? null : id))}
-            onHover={setHoveredId} onToggleLike={onToggleLike} />
+        <div className="list-pane" id="list" data-tour="liste" ref={paneRef}
+          onTouchStart={ptrStart} onTouchMove={ptrMove} onTouchEnd={ptrEnd}>
+          <div className={`ptr${refreshing ? ' spin' : ''}`} style={{ opacity: Math.min(pull / PTR_SEUIL, 1), transform: `translateY(${Math.max(0, pull - 34)}px) rotate(${pull * 3}deg)` }} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.5" /></svg>
+          </div>
+          <div style={{ transform: `translateY(${pull}px)`, transition: dragging ? 'none' : 'transform .3s ease' }}>
+            <OffreListe offres={visibles} expandedId={expandedId} hoveredId={hoveredId} likes={likes}
+              onToggleExpand={(id) => setExpandedId((cur) => (cur === id ? null : id))}
+              onHover={setHoveredId} onToggleLike={onToggleLike} />
+          </div>
         </div>
         <div className="map-pane" data-tour="carte">
           <button className="map-toggle" aria-label="Replier ou déplier la liste" onClick={() => setCollapsed((c) => !c)}>

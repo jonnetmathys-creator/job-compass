@@ -4,7 +4,8 @@ import { expect, test, vi } from 'vitest'
 import ResultatsShell from './resultats-shell'
 import type { OffreRow } from '@/lib/offres/types'
 
-vi.mock('@/lib/recherche/actions', () => ({ affinerLieu: vi.fn() }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }), usePathname: () => '/recherche/r1' }))
+vi.mock('@/lib/recherche/actions', () => ({ affinerLieu: vi.fn(), rafraichirOffres: vi.fn() }))
 vi.mock('@/lib/favoris/actions', () => ({ toggleFavori: vi.fn(async () => ({ liked: true })) }))
 vi.mock('./carte-offres', () => ({ default: () => <div data-testid="carte" /> }))
 

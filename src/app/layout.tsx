@@ -4,6 +4,7 @@ import './globals.css'
 import OnboardingTour from '@/components/onboarding-tour'
 import PwaSetup from '@/components/pwa-setup'
 import BottomNav from '@/components/bottom-nav'
+import SplashScreen from '@/components/splash-screen'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" className={montserrat.variable}>
       <body>
         {children}
+        <SplashScreen />
         <BottomNav />
         <OnboardingTour />
         <PwaSetup />

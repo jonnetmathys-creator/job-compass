@@ -41,6 +41,21 @@ export async function lancerRecherche(poste: string): Promise<void> {
   redirect(`/recherche/${recherche.id}`)
 }
 
+// Re-collecte les offres de la recherche (pull-to-refresh). Best-effort.
+export async function rafraichirOffres(rechercheId: string): Promise<void> {
+  const supabase = await getServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  const { data: rech } = await supabase
+    .from('recherches')
+    .select('id, mots_cles, localisation, rayon_km, type_contrat')
+    .eq('id', rechercheId).eq('user_id', user.id).single()
+  if (!rech) return
+  const service = getServiceClient()
+  await collectForRecherche(service, rech as RechercheRow & { id: string })
+  revalidatePath(`/recherche/${rechercheId}`)
+}
+
 export async function affinerLieu(
   rechercheId: string, ville: string, rayonKm: number | null,
 ): Promise<{ ok: boolean; erreur?: string }> {

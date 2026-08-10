@@ -1071,3 +1071,43 @@ a.logo:hover { opacity: .78; }
   .list-pane, .detail-scroll { padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px) + 8px); }
   .home-main { padding-bottom: calc(24px + var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ---------- écran de lancement animé (splash) ---------- */
+.splash {
+  position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center;
+  background: radial-gradient(820px 460px at 50% 34%, var(--accent-soft), #ffffff 72%);
+  transition: opacity .44s ease;
+}
+.splash.out { opacity: 0; }
+.splash-inner { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.splash-compass { width: 98px; height: 98px; overflow: visible; }
+.s-ring { fill: none; stroke: var(--line); stroke-width: 3; }
+.s-ring2 {
+  fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round;
+  stroke-dasharray: 264; stroke-dashoffset: 264; transform: rotate(-90deg); transform-origin: 50% 50%;
+  animation: s-draw .9s cubic-bezier(.3, .8, .3, 1) .1s forwards;
+}
+.s-needle { transform-origin: 50% 50%; animation: s-needle 1s cubic-bezier(.16, .9, .2, 1) .25s both; }
+.s-n { fill: var(--accent); }
+.s-s { fill: #bfe6cd; }
+.s-hub { fill: #fff; stroke: var(--accent); stroke-width: 2; transform-origin: 50% 50%; animation: s-pop .4s ease .55s both; }
+.splash-word { font-weight: 800; font-size: 1.65rem; letter-spacing: -.02em; color: var(--ink); animation: s-word .55s cubic-bezier(.2, .8, .2, 1) .8s both; }
+.splash-word span { color: var(--accent); }
+
+@keyframes s-draw { to { stroke-dashoffset: 0; } }
+@keyframes s-needle { from { transform: rotate(-290deg) scale(.7); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
+@keyframes s-pop { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes s-word { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .s-ring2, .s-needle, .s-hub, .splash-word { animation: none; }
+  .s-ring2 { stroke-dashoffset: 0; }
+}
+
+/* ---------- pull-to-refresh (liste résultats) ---------- */
+.list-pane { position: relative; }
+.ptr { position: absolute; top: 8px; left: 50%; width: 28px; height: 28px; margin-left: -14px;
+  color: var(--accent); pointer-events: none; z-index: 3; }
+.ptr svg { width: 28px; height: 28px; }
+.ptr.spin { animation: ptr-spin .7s linear infinite; }
+@keyframes ptr-spin { from { transform: translateY(12px) rotate(0); } to { transform: translateY(12px) rotate(360deg); } }
