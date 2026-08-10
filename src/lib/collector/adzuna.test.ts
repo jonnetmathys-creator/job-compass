@@ -1,5 +1,14 @@
 import { expect, test, beforeEach } from 'vitest'
-import { buildAdzunaUrl, normalizeAdzunaOffre, searchAdzuna } from './adzuna'
+import { buildAdzunaUrl, normalizeAdzunaOffre, searchAdzuna, estOffreSpam } from './adzuna'
+
+const offreBase = { source: 'adzuna' as const, source_id: '1', titre: 'Diététicien H/F', entreprise: 'Clinique', entreprise_logo: null, description: null, contrat: null, salaire: null, latitude: null, longitude: null, ville: null, url_postuler: null, email_contact: null, date_publication: null }
+
+test('estOffreSpam repère l\'employeur lead-gen et les titres templates', () => {
+  expect(estOffreSpam({ ...offreBase, entreprise: 'Ernesto' })).toBe(true)
+  expect(estOffreSpam({ ...offreBase, entreprise: 'ERNESTO' })).toBe(true)
+  expect(estOffreSpam({ ...offreBase, titre: 'Nos clients ont demandé diététiciens à Nantes' })).toBe(true)
+  expect(estOffreSpam(offreBase)).toBe(false)
+})
 
 beforeEach(() => {
   process.env.ADZUNA_APP_ID = 'id123'

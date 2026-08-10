@@ -36,6 +36,20 @@ export function normalizeAdzunaOffre(raw: any): NormalizedOffer {
   }
 }
 
+// Employeurs « lead-gen » qui spamment des annonces templates sur des dizaines de
+// villes (titre générique, même contenu). On les écarte à la collecte.
+const EMPLOYEURS_SPAM = new Set(['ernesto'])
+
+// Une offre Adzuna est du spam si l'employeur est sur la liste, ou si le titre
+// est une phrase marketing type « Nos clients ont demandé ... ».
+export function estOffreSpam(o: NormalizedOffer): boolean {
+  const emp = (o.entreprise ?? '').trim().toLowerCase()
+  if (EMPLOYEURS_SPAM.has(emp)) return true
+  const t = o.titre.trim().toLowerCase()
+  if (t.startsWith('nos clients ont demandé')) return true
+  return false
+}
+
 type Deps = { fetchImpl?: typeof fetch }
 
 export async function searchAdzuna(params: SearchParams, deps: Deps = {}): Promise<NormalizedOffer[]> {
@@ -51,6 +65,7 @@ export async function searchAdzuna(params: SearchParams, deps: Deps = {}): Promi
       const offres = (json.results ?? []) as any[]
       for (const raw of offres) {
         const o = normalizeAdzunaOffre(raw)
+        if (estOffreSpam(o)) continue // on écarte le spam lead-gen (Ernesto, titres templates)
         bySourceId.set(o.source_id, o)
       }
       if (offres.length < RESULTS_PER_PAGE) break // dernière page
