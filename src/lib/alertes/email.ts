@@ -1,5 +1,10 @@
+import { setDefaultResultOrder } from 'node:dns'
 import nodemailer from 'nodemailer'
 import type { SupabaseClient } from '@supabase/supabase-js'
+
+// Render n'a pas de route IPv6 vers le SMTP Gmail (ENETUNREACH sur l'AAAA) :
+// on privilégie l'IPv4 pour la résolution DNS de tout le process serveur.
+try { setDefaultResultOrder('ipv4first') } catch { /* environnement sans dns */ }
 import { getScores } from '@/lib/scoring/lecture'
 import { couleurScore, estTopMatch } from '@/lib/scoring/palette'
 
