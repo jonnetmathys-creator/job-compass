@@ -69,10 +69,13 @@ export default function ResultatsShell(props: {
           <button type="button" role="tab" aria-selected={vue === 'carte'} className={vue === 'carte' ? 'on' : ''} onClick={() => setVue('carte')}>Carte</button>
         </div>
         {props.offres.some((o) => typeof o.score === 'number') && (
-          <button type="button" className={`tri-pertinence${triPertinence ? ' on' : ''}`}
-            aria-pressed={triPertinence} onClick={() => setTriPertinence((v) => !v)}>
-            Trier par pertinence
-          </button>
+          <div className="tri-segment" role="group" aria-label="Tri des offres">
+            <span className="tri-label">Trier par</span>
+            <div className="tri-toggle">
+              <button type="button" className={!triPertinence ? 'on' : ''} aria-pressed={!triPertinence} onClick={() => setTriPertinence(false)}>Date</button>
+              <button type="button" className={triPertinence ? 'on' : ''} aria-pressed={triPertinence} onClick={() => setTriPertinence(true)}>Pertinence</button>
+            </div>
+          </div>
         )}
       </div>
       <div className={`split vue-${vue}${collapsed ? ' collapsed' : ''}`} id="split">
