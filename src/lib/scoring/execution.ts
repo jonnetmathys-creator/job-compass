@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { chunk } from '@/lib/chunk'
 import { empreinteOffre } from '@/lib/offres/dedup-affichage'
 import { getProfil } from '@/lib/profil'
 import { assurerCvTexte } from './cv'
@@ -59,10 +60,14 @@ export async function scorerPourRecherche(client: SupabaseClient, recherche: Rec
     .filter(Boolean) as OffreDb[]
   if (offres.length === 0) return 0
 
-  const { data: dejaData } = await client
-    .from('scores').select('offre_id').eq('user_id', recherche.user_id)
-    .in('offre_id', offres.map((o) => o.id))
-  const dejaNotes = new Set((dejaData ?? []).map((r: { offre_id: string }) => r.offre_id))
+  // Découpe le .in() en lots : une recherche peut lier des centaines d'offres, et
+  // une URL PostgREST trop longue (> ~16 Ko) fait échouer le fetch côté serveur.
+  const dejaNotes = new Set<string>()
+  for (const lot of chunk(offres.map((o) => o.id), 100)) {
+    const { data: dejaData } = await client
+      .from('scores').select('offre_id').eq('user_id', recherche.user_id).in('offre_id', lot)
+    for (const r of (dejaData ?? []) as { offre_id: string }[]) dejaNotes.add(r.offre_id)
+  }
 
   const { aNoter, membres } = preparerNotation(offres, dejaNotes)
   if (aNoter.length === 0) return 0

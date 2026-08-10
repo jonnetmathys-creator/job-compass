@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { chunk } from '@/lib/chunk'
 
 const JOURS_RETENTION = 30
 
@@ -45,7 +46,11 @@ export async function purgerVieillesOffres(client: SupabaseClient, jours = JOURS
   if (ids.length === 0) return 0
 
   // resultats et nouvelles_offres liées partent en cascade (données dérivées).
-  const { error: errDel } = await client.from('offres').delete().in('id', ids)
-  if (errDel) throw errDel
+  // Découpe en lots : supprimer des centaines d'ids via .in() dépasserait la
+  // taille d'URL PostgREST acceptée (fetch échoue au-delà de ~16 Ko).
+  for (const lot of chunk(ids, 100)) {
+    const { error: errDel } = await client.from('offres').delete().in('id', lot)
+    if (errDel) throw errDel
+  }
   return ids.length
 }
