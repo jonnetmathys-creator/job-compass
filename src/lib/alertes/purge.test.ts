@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest'
-import { offresAPurger, purgerVieillesOffres } from './purge'
+import { offresAPurger, purgerVieillesOffres, purgerVieillesNotifs } from './purge'
 
 const CUTOFF = '2026-07-06T00:00:00Z' // maintenant - 30 j
 
@@ -47,4 +47,16 @@ test('purgerVieillesOffres agrège les protégées et supprime les seuls ids att
 
   expect(deleteIn).toHaveBeenCalledWith('id', ['a']) // b et c protégées
   expect(n).toBe(1)
+})
+
+test('purgerVieillesNotifs supprime les notifications au-delà de la fenêtre', async () => {
+  const select = vi.fn().mockResolvedValue({ data: [{ offre_id: 'x' }, { offre_id: 'y' }], error: null })
+  const lt = vi.fn(() => ({ select }))
+  const del = vi.fn(() => ({ lt }))
+  const client = { from: vi.fn(() => ({ delete: del })) } as any
+
+  const n = await purgerVieillesNotifs(client, 30)
+  expect(client.from).toHaveBeenCalledWith('nouvelles_offres')
+  expect(lt).toHaveBeenCalledWith('created_at', expect.any(String))
+  expect(n).toBe(2)
 })

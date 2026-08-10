@@ -16,7 +16,7 @@ vi.mock('@/lib/alertes/boite', () => ({
 vi.mock('@/lib/supabase/client', () => ({
   getBrowserClient: () => ({ auth: { getUser: async () => ({ data: { user: { id: 'u1' } } }) } }),
 }))
-vi.mock('@/lib/alertes/actions', () => ({ marquerVue: vi.fn() }))
+vi.mock('@/lib/alertes/actions', () => ({ marquerVue: vi.fn(), marquerToutesOffresVues: vi.fn() }))
 vi.mock('@/lib/rappels/actions', () => ({
   getRappels: vi.fn().mockResolvedValue({ items: [], nonVus: 0 }),
   marquerRappelVu: vi.fn(),

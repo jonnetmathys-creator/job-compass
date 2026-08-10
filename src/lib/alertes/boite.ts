@@ -56,6 +56,16 @@ export async function compterNonVues(client: SupabaseClient, userId: string): Pr
   return (data ?? []).length
 }
 
+// Marque toutes les notifications non vues de l'utilisateur comme vues (vider la cloche).
+export async function marquerToutesVues(client: SupabaseClient, userId: string): Promise<void> {
+  const { error } = await client
+    .from('nouvelles_offres')
+    .update({ vue_le: new Date().toISOString() })
+    .eq('user_id', userId)
+    .is('vue_le', null)
+  if (error) throw error
+}
+
 export async function marquerOffreVue(client: SupabaseClient, userId: string, offreId: string): Promise<void> {
   const { error } = await client
     .from('nouvelles_offres')

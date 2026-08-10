@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest'
-import { getBoite, compterNonVues, marquerOffreVue } from './boite'
+import { getBoite, compterNonVues, marquerOffreVue, marquerToutesVues } from './boite'
 
 test('getBoite ne renvoie que le non-vu sur la fenêtre, joint aux offres, trié', async () => {
   const rows = [
@@ -45,6 +45,20 @@ test('compterNonVues filtre vue_le null et la fenêtre', async () => {
   const n = await compterNonVues(client, 'u1')
   expect(is).toHaveBeenCalledWith('vue_le', null)
   expect(n).toBe(2)
+})
+
+test('marquerToutesVues pose vue_le sur toutes les entrées non vues', async () => {
+  const is = vi.fn(() => Promise.resolve({ error: null }))
+  const eq = vi.fn(() => ({ is }))
+  const calls: any[] = []
+  const update = vi.fn((p: any) => { calls.push(p); return { eq } })
+  const client = { from: vi.fn(() => ({ update })) } as any
+
+  await marquerToutesVues(client, 'u1')
+  expect(client.from).toHaveBeenCalledWith('nouvelles_offres')
+  expect(eq).toHaveBeenCalledWith('user_id', 'u1')
+  expect(is).toHaveBeenCalledWith('vue_le', null)
+  expect(calls[0]).toHaveProperty('vue_le')
 })
 
 test('marquerOffreVue pose vue_le pour l\'entrée non vue', async () => {

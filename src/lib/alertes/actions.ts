@@ -2,13 +2,20 @@
 
 import { revalidatePath } from 'next/cache'
 import { getServerClient } from '@/lib/supabase/server'
-import { marquerOffreVue } from './boite'
+import { marquerOffreVue, marquerToutesVues } from './boite'
 
 export async function marquerVue(offreId: string): Promise<void> {
   const supabase = await getServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return
   await marquerOffreVue(supabase, user.id, offreId)
+}
+
+export async function marquerToutesOffresVues(): Promise<void> {
+  const supabase = await getServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  await marquerToutesVues(supabase, user.id)
 }
 
 export async function basculerAlertesEmail(rechercheId: string): Promise<{ actif: boolean }> {

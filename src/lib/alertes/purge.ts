@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { chunk } from '@/lib/chunk'
 
 const JOURS_RETENTION = 30
+const JOURS_RETENTION_NOTIFS = 30 // durée de vie d'une notification dans la cloche
 
 type OffreCandidate = { id: string; date_collecte: string | null; created_by: string | null }
 
@@ -53,4 +54,17 @@ export async function purgerVieillesOffres(client: SupabaseClient, jours = JOURS
     if (errDel) throw errDel
   }
   return ids.length
+}
+
+// Supprime les vieilles notifications de la cloche (au-delà de la fenêtre d'affichage),
+// pour ne pas laisser la table enfler indéfiniment. Retour : nombre supprimé.
+export async function purgerVieillesNotifs(client: SupabaseClient, jours = JOURS_RETENTION_NOTIFS): Promise<number> {
+  const cutoffISO = new Date(Date.now() - jours * 24 * 60 * 60 * 1000).toISOString()
+  const { data, error } = await client
+    .from('nouvelles_offres')
+    .delete()
+    .lt('created_at', cutoffISO)
+    .select('offre_id')
+  if (error) throw error
+  return (data ?? []).length
 }

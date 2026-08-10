@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { getBrowserClient } from '@/lib/supabase/client'
 import { getBoite, compterNonVues, type NouvelleOffre } from '@/lib/alertes/boite'
-import { marquerVue } from '@/lib/alertes/actions'
+import { marquerVue, marquerToutesOffresVues } from '@/lib/alertes/actions'
 import { getRappels, marquerRappelVu, type RappelItem } from '@/lib/rappels/actions'
 import { getRelances, marquerRelanceVue } from '@/lib/relances/actions'
 import type { RelanceDue } from '@/lib/relances/lecture'
@@ -63,6 +63,13 @@ export default function ClocheNotifs() {
     window.location.href = `/offre/${offreId}`
   }
 
+  async function toutMarquerLu() {
+    // Vide la liste des nouvelles offres et remet le compteur correspondant à zéro.
+    setItems([])
+    setNonVues(0)
+    try { await marquerToutesOffresVues() } catch { /* non bloquant */ }
+  }
+
   async function consulterRelance(offreId: string, etaitNonVu: boolean) {
     setRelances((prev) => prev.map((r) => (r.offre.id === offreId ? { ...r, nonVu: false } : r)))
     if (etaitNonVu) setNonVusRel((v) => Math.max(0, v - 1))
@@ -114,7 +121,10 @@ export default function ClocheNotifs() {
         )}
         {items.length > 0 && (
           <>
-            <div className="cloche-head">Nouvelles offres</div>
+            <div className="cloche-head cloche-head-actions">
+              <span>Nouvelles offres</span>
+              <button type="button" className="cloche-tout-lu" onClick={toutMarquerLu}>Tout marquer comme lu</button>
+            </div>
             {items.map((n) => (
               <button key={n.offre.id} type="button" className={`cloche-item${n.vue_le ? '' : ' neuf'}${typeof n.score === 'number' && n.score >= 90 ? ' top-match' : ''}`} onClick={() => consulter(n.offre.id)}>
                 <span className="cloche-item-titre">
