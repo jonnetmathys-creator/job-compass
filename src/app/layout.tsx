@@ -28,6 +28,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: '#248049',
+  viewportFit: 'cover', // le fond va jusqu'aux bords ; on gère les zones sûres en CSS (env safe-area)
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

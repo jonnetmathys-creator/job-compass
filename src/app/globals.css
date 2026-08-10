@@ -51,7 +51,7 @@ a.logo:hover { opacity: .78; }
   position: relative; min-height: 100vh; display: grid; place-items: center; padding: 24px; overflow: hidden;
   background: radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%);
 }
-.home-actions { position: absolute; top: 14px; right: 18px; z-index: 5; }
+.home-actions { position: fixed; top: calc(14px + env(safe-area-inset-top)); right: 18px; z-index: 20; }
 .hero { position: relative; z-index: 1; width: 100%; max-width: 700px; text-align: center; animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
 .hero .logo { font-size: 27px; margin-bottom: 34px; opacity: .9; }
 .headline { min-height: 168px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
@@ -98,7 +98,8 @@ a.logo:hover { opacity: .78; }
 
 /* ---------- résultats : barre du haut + filtres ---------- */
 .topbar {
-  display: flex; align-items: center; gap: 14px; padding: 14px 22px; background: var(--card);
+  display: flex; align-items: center; gap: 14px;
+  padding: calc(14px + env(safe-area-inset-top)) 22px 14px; background: var(--card);
   border-bottom: 1px solid var(--line); z-index: 600; flex: 0 0 auto;
 }
 .topbar .logo { font-size: 19px; margin-right: 6px; }
@@ -252,7 +253,7 @@ a.logo:hover { opacity: .78; }
 .btn-save.on svg { color: #e2565b; fill: #e2565b; }
 
 /* ---------- page détail offre ---------- */
-.detail-top { display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: 16px 26px; background: var(--card); border-bottom: 1px solid var(--line); flex: 0 0 auto; }
+.detail-top { display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: calc(16px + env(safe-area-inset-top)) 26px 16px; background: var(--card); border-bottom: 1px solid var(--line); flex: 0 0 auto; }
 .detail-top .logo { font-size: 18px; }
 .back { display: inline-flex; align-items: center; gap: 7px; background: transparent; border: 0; font-family: inherit; font-weight: 600; font-size: 14px; color: var(--muted); cursor: pointer; transition: .2s; padding: 8px 12px; border-radius: 10px; }
 .back:hover { color: var(--ink); background: #f4f5f4; }
@@ -437,7 +438,7 @@ a.logo:hover { opacity: .78; }
 
 /* ── Overlay de chargement (recherche + génération IA) ───────────────── */
 .lo-overlay {
-  position: fixed; inset: 0; z-index: 1000;
+  position: fixed; inset: 0; z-index: 2000; /* au-dessus de la bottom nav (1400) */
   display: flex; align-items: center; justify-content: center;
   background: rgba(16, 20, 17, 0.66);
   backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
@@ -923,7 +924,7 @@ a.logo:hover { opacity: .78; }
 /* ── Responsive : page résultats sous 768px ─────────────────────────── */
 @media (max-width: 768px) {
   /* En-tête compact */
-  .topbar { gap: 8px; padding: 12px 14px; }
+  .topbar { gap: 8px; padding: calc(12px + env(safe-area-inset-top)) 14px 12px; }
   .topbar .logo { font-size: 17px; margin-right: 2px; }
   .poste-chip { display: none; } /* le mot-clé recherché encombre l'en-tête sur mobile */
   .filtres-btn .btn-label, .alerte-toggle .btn-label, .filtres-chevron { display: none; }
@@ -949,7 +950,7 @@ a.logo:hover { opacity: .78; }
 @media (max-width: 768px) {
   /* Marges de contenu générales */
   .detail-wrap { padding-left: 16px; padding-right: 16px; }
-  .detail-top { padding: 12px 14px; }
+  .detail-top { padding: calc(12px + env(safe-area-inset-top)) 14px 12px; }
 
   /* Offre : une colonne (déjà proche), carte latérale et boutons pleine largeur */
   .detail-grid { grid-template-columns: 1fr; gap: 18px; }
@@ -968,7 +969,7 @@ a.logo:hover { opacity: .78; }
 
   /* Accueil : logo dans l'en-tête (haut à gauche), contenu (titre + barre) centré */
   .hero { animation: none; } /* le transform de l'animation casserait le position:fixed du logo */
-  .hero .logo { position: fixed; top: 16px; left: 16px; margin-bottom: 0; font-size: 20px; z-index: 20; }
+  .hero .logo { position: fixed; top: calc(16px + env(safe-area-inset-top)); left: 16px; margin-bottom: 0; font-size: 20px; z-index: 20; }
   /* Titre plus compact + hauteur réservée de 2 lignes : la phrase la plus longue tient
      en 2 lignes et la barre de recherche ne saute plus quand le texte change. */
   .headline { min-height: 78px; margin-bottom: 24px; }
@@ -1057,7 +1058,7 @@ a.logo:hover { opacity: .78; }
   .bottom-nav {
     display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 1400;
     height: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding: 0 8px env(safe-area-inset-bottom, 0px);
     background: rgba(255, 255, 255, .96); backdrop-filter: blur(12px);
     border-top: 1px solid var(--line);
   }
