@@ -22,8 +22,13 @@ export async function proxy(request: NextRequest) {
     },
   )
   const { data: { user } } = await supabase.auth.getUser()
-  const isProtected = ['/profil', '/offres', '/recherche', '/offre', '/parametres'].some((p) =>
-    request.nextUrl.pathname.startsWith(p))
+  const path = request.nextUrl.pathname
+  // La fiche offre /offre/[id] (et ses images d'aperçu OG) reste PUBLIQUE : les liens
+  // partagés s'ouvrent sans connexion. Seule la candidature IA (/offre/[id]/candidature)
+  // reste protégée. Le proxy tourne quand même sur /offre/* pour rafraîchir la session.
+  const offrePublique = path.startsWith('/offre/') && !path.endsWith('/candidature')
+  const isProtected = !offrePublique
+    && ['/profil', '/offres', '/recherche', '/offre', '/parametres'].some((p) => path.startsWith(p))
   if (isProtected && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
