@@ -1202,3 +1202,67 @@ a.logo:hover { opacity: .78; }
   .p-save { flex-wrap: wrap; }
   .p-save .btn-primary { width: 100%; }
 }
+
+/* ---------- page profil : ambiance vivante ---------- */
+/* Aurora verte douce en fond, qui dérive lentement derrière le contenu. */
+.profil-aura { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.profil-aura::before, .profil-aura::after {
+  content: ""; position: absolute; border-radius: 50%; filter: blur(72px); opacity: .55;
+}
+.profil-aura::before {
+  width: 460px; height: 460px; top: -150px; left: -90px;
+  background: radial-gradient(circle, rgba(46, 158, 91, .40), transparent 70%);
+  animation: aura-a 19s ease-in-out infinite;
+}
+.profil-aura::after {
+  width: 420px; height: 420px; top: 30%; right: -140px;
+  background: radial-gradient(circle, rgba(120, 210, 160, .34), transparent 70%);
+  animation: aura-b 24s ease-in-out infinite;
+}
+@keyframes aura-a { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(70px, 50px) scale(1.08); } }
+@keyframes aura-b { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-60px, 70px) scale(1.1); } }
+
+/* Le contenu passe au-dessus de l'aurora ; le fond du scroll devient transparent
+   pour que l'aurora respire dans les marges et entre les cartes. */
+.profil-screen .detail-scroll { position: relative; z-index: 1; background: transparent; }
+.profil-screen .detail-hero { background: radial-gradient(900px 380px at 20% -40%, var(--accent-soft), transparent 60%); border-bottom-color: transparent; }
+
+/* Avatar en dégradé plein dans l'en-tête. */
+.profil-screen .d-avatar {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(46, 158, 91, .65);
+}
+
+/* Tuiles : léger dégradé, survol qui soulève, entrée en fondu échelonnée. */
+.p-tile { background: linear-gradient(180deg, #ffffff, #fcfdfc); transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s, border-color .25s; }
+.p-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: #dcece3; }
+.p-pref { position: relative; overflow: hidden; background: linear-gradient(158deg, var(--accent-soft), var(--card) 62%); }
+.p-pref::after { content: ""; position: absolute; right: -40px; top: -40px; width: 170px; height: 170px;
+  background: radial-gradient(circle, rgba(46, 158, 91, .12), transparent 70%); pointer-events: none; }
+.p-pref > * { position: relative; }
+
+.profil-bento > * { animation: profil-rise .5s cubic-bezier(.2, .8, .2, 1) both; }
+.profil-bento > *:nth-child(1) { animation-delay: .04s; }
+.profil-bento > *:nth-child(2) { animation-delay: .10s; }
+.profil-bento > *:nth-child(3) { animation-delay: .16s; }
+.profil-bento > *:nth-child(4) { animation-delay: .22s; }
+.profil-bento > *:nth-child(5) { animation-delay: .28s; }
+.profil-bento > *:nth-child(6) { animation-delay: .34s; }
+@keyframes profil-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Chips vivantes : sélection en dégradé, petit pop au clic. */
+.pref-chip { transition: transform .14s cubic-bezier(.2, .8, .2, 1), background .15s, border-color .15s, color .15s, box-shadow .15s; }
+.pref-chip:hover { transform: translateY(-1px); }
+.pref-chip:active { transform: scale(.94); }
+.pref-chip.on { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-color: transparent; box-shadow: 0 5px 14px -5px rgba(36, 128, 73, .55); }
+
+/* Bouton Enregistrer en dégradé. */
+.profil-bento .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border: 0; box-shadow: 0 8px 18px -7px rgba(36, 128, 73, .5); transition: filter .2s, transform .15s; }
+.profil-bento .btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+.profil-bento .btn-primary:active:not(:disabled) { transform: scale(.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .profil-aura::before, .profil-aura::after,
+  .profil-bento > * { animation: none; }
+  .p-tile:hover { transform: none; }
+}

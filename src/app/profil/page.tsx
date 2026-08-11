@@ -20,7 +20,8 @@ export default async function ProfilPage() {
   const initiale = (initial.nom?.trim()[0] ?? user.email?.trim()[0] ?? '?').toUpperCase()
 
   return (
-    <section className="screen on">
+    <section className="screen on profil-screen">
+      <div className="profil-aura" aria-hidden="true"></div>
       <PageHeader titre="Retour" />
       <div className="detail-scroll">
         <div className="detail-hero">
