@@ -1203,6 +1203,26 @@ a.logo:hover { opacity: .78; }
   .p-save .btn-primary { width: 100%; }
 }
 
+/* ---------- overlay de chargement des filtres (affiner lieu/rayon) ---------- */
+.filtre-loading {
+  position: fixed; inset: 0; z-index: 1500; display: grid; place-items: center;
+  background: rgba(251, 251, 250, .58); backdrop-filter: blur(2px);
+  animation: filtre-fade .18s ease both;
+}
+.filtre-loading-card {
+  display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line);
+  border-radius: 14px; padding: 14px 18px; box-shadow: var(--shadow-md);
+  font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.filtre-spin {
+  width: 20px; height: 20px; border-radius: 50%; flex: 0 0 auto;
+  border: 2.5px solid var(--accent-soft); border-top-color: var(--accent);
+  animation: filtre-spin .7s linear infinite;
+}
+@keyframes filtre-spin { to { transform: rotate(360deg); } }
+@keyframes filtre-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .filtre-spin { animation-duration: 1.4s; } .filtre-loading { animation: none; } }
+
 /* ---------- page profil : ambiance vivante ---------- */
 /* Aurora verte douce en fond, qui dérive lentement derrière le contenu. */
 .profil-aura { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }

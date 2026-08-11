@@ -32,11 +32,11 @@ export default function FiltresBar(props: {
 
   function appliquer() {
     setErreur(null)
+    setOuvert(false) // on ferme tout de suite : l'overlay de chargement prend le relais
     const rayon = franceEntiere ? null : rayonKm
     startTransition(async () => {
       const res = await affinerLieu(props.rechercheId, ville, rayon)
-      if (!res.ok) setErreur(res.erreur ?? 'Erreur')
-      else setOuvert(false)
+      if (!res.ok) { setErreur(res.erreur ?? 'Erreur'); setOuvert(true) } // ré-ouvre pour montrer l'erreur
     })
   }
 
@@ -96,8 +96,17 @@ export default function FiltresBar(props: {
       <AlerteMailToggle rechercheId={props.rechercheId} actifInitial={props.alertesEmail} />
 
       <div className="spacer" />
-      {pending && <span className="count">Actualisation…</span>}
       <HeaderActions />
+
+      {/* Overlay de chargement bien visible pendant la collecte (affiner lieu/rayon). */}
+      {pending && (
+        <div className="filtre-loading" role="status" aria-live="polite">
+          <div className="filtre-loading-card">
+            <span className="filtre-spin" aria-hidden="true" />
+            <span>Actualisation des offres…</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
