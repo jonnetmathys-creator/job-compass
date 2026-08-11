@@ -272,6 +272,18 @@ a.logo:hover { opacity: .78; }
   border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; transition: .2s;
 }
 .d-share:hover { color: var(--accent-dark); border-color: #cfe6d8; background: #fafdfb; }
+/* En-tête visiteur non connecté : bouton « Se connecter » discret. */
+.btn-login-sm { display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 11px;
+  background: var(--accent-dark); color: #fff; font-weight: 600; font-size: 14px; text-decoration: none; transition: .2s; }
+.btn-login-sm:hover { background: var(--accent); }
+/* Encart d'invitation à s'inscrire (page offre publique). */
+.anon-invite { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; padding: 18px;
+  border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(160deg, var(--accent-soft), var(--card)); }
+.anon-invite b { color: var(--ink); font-size: 15px; }
+.anon-invite p { color: var(--muted); font-size: 13.5px; line-height: 1.5; margin: 0 0 6px; }
+.anon-invite .anon-cta { justify-content: center; text-align: center; }
+.anon-login { text-align: center; font-size: 13px; font-weight: 600; color: var(--accent-dark); text-decoration: none; padding: 6px; }
+.anon-login:hover { text-decoration: underline; }
 .d-share svg { width: 18px; height: 18px; }
 .d-share-toast {
   position: absolute; top: calc(100% + 8px); right: 0; z-index: 5; white-space: nowrap;

@@ -17,7 +17,7 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offre: OffreRow; likedInitial: boolean; statutSuivi: string }) {
+export default function OffreDetail({ offre, likedInitial, statutSuivi, anon = false }: { offre: OffreRow; likedInitial: boolean; statutSuivi: string; anon?: boolean }) {
   const [liked, setLiked] = useState(likedInitial)
   const [partageCopie, setPartageCopie] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -91,6 +91,7 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
   }, [offre.id])
 
   useEffect(() => {
+    if (anon) return // visiteur non connecté : pas de suivi « vu »
     marquerVue(offre.id).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offre.id])
@@ -98,13 +99,15 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
   return (
     <section className="screen on">
       <div className="detail-top">
-        <button type="button" className="back" onClick={() => history.back()}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-          Retour aux résultats
-        </button>
-        <Link href="/" className="logo" aria-label="Retour à la recherche">Job<span>Compass</span></Link>
+        {!anon && (
+          <button type="button" className="back" onClick={() => history.back()}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+            Retour aux résultats
+          </button>
+        )}
+        <Link href="/" className="logo" aria-label="Accueil JobCompass">Job<span>Compass</span></Link>
         <div className="spacer" />
-        <HeaderActions />
+        {anon ? <Link href="/login" className="btn-login-sm">Se connecter</Link> : <HeaderActions />}
       </div>
       <div className="detail-scroll">
         <div className="detail-hero">
@@ -169,14 +172,35 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
                 </div>
               </div>
               {position && <div ref={mapElRef} className="side-map" />}
-              <button type="button" className={`btn-save${liked ? ' on' : ''}`} onClick={onToggleSave} disabled={isPending} aria-pressed={liked}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" /></svg>
-                Sauvegarder l'offre
-              </button>
-              <PostulerZone offreId={offre.id} statutInitial={statutSuivi} label="Postuler" href={offre.url_postuler} />
-              <Link href={`/offre/${offre.id}/candidature`} className="btn-ia" data-tour="candidature-ia">
-                Candidater avec lettre IA
-              </Link>
+              {anon
+                ? (
+                  <>
+                    {offre.url_postuler && (
+                      <a className="btn-apply" href={offre.url_postuler} target="_blank" rel="noopener">
+                        Postuler
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17 17 7" /><path d="M7 7h10v10" /></svg>
+                      </a>
+                    )}
+                    <div className="anon-invite">
+                      <b>Postulez plus vite avec JobCompass</b>
+                      <p>Créez un compte gratuit pour sauvegarder cette offre, suivre vos candidatures et générer votre lettre de motivation par IA.</p>
+                      <Link href="/signup" className="btn-ia anon-cta">Créer un compte gratuit</Link>
+                      <Link href="/login" className="anon-login">J'ai déjà un compte</Link>
+                    </div>
+                  </>
+                )
+                : (
+                  <>
+                    <button type="button" className={`btn-save${liked ? ' on' : ''}`} onClick={onToggleSave} disabled={isPending} aria-pressed={liked}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" /></svg>
+                      Sauvegarder l'offre
+                    </button>
+                    <PostulerZone offreId={offre.id} statutInitial={statutSuivi} label="Postuler" href={offre.url_postuler} />
+                    <Link href={`/offre/${offre.id}/candidature`} className="btn-ia" data-tour="candidature-ia">
+                      Candidater avec lettre IA
+                    </Link>
+                  </>
+                )}
             </aside>
           </div>
         </div>

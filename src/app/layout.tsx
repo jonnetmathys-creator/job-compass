@@ -14,6 +14,7 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://job-compass-pldk.onrender.com'),
   title: 'JobCompass',
   description: 'Centralisez et envoyez vos candidatures en diététique.',
   manifest: '/manifest.webmanifest',
