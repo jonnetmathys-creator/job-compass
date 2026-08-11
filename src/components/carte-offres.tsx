@@ -66,16 +66,12 @@ export default function CarteOffres(props: {
         const m = L.marker([pt.lat, pt.lng], { icon })
         const o = pt.offre
         const sal = o.salaire ? `<span class="mp-s">${escapeHtml(o.salaire)}</span>` : '<span></span>'
+        // La bulle EST un lien : un vrai <a href> navigue de façon fiable (l'ancien
+        // listener sur popupopen ratait parfois car getElement() n'était pas prêt).
         m.bindPopup(
-          `<div class="mp-link"><div class="mp-t">${escapeHtml(o.titre)}</div><div class="mp-e">${escapeHtml(o.entreprise ?? '')}${o.ville ? ' · ' + escapeHtml(o.ville) : ''}</div><div class="mp-foot">${sal}<span class="mp-go">Voir l'offre <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></div></div>`,
+          `<a class="mp-link" href="/offre/${escapeHtml(o.id)}"><div class="mp-t">${escapeHtml(o.titre)}</div><div class="mp-e">${escapeHtml(o.entreprise ?? '')}${o.ville ? ' · ' + escapeHtml(o.ville) : ''}</div><div class="mp-foot">${sal}<span class="mp-go">Voir l'offre <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></div></a>`,
           { closeButton: false, offset: [0, -30] },
         )
-        m.on('popupopen', (e: any) => {
-          // Clic sur « Voir l'offre » dans la bulle -> page complète de l'offre.
-          e.popup.getElement()?.querySelector('.mp-link')?.addEventListener('click', () => {
-            window.location.href = `/offre/${o.id}`
-          })
-        })
         m.on('click', () => {
           selectRef.current(o.id)
           if (clusterRef.current.zoomToShowLayer) clusterRef.current.zoomToShowLayer(m, () => m.openPopup())

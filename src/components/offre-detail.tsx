@@ -19,12 +19,32 @@ function formatDate(iso: string): string {
 
 export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offre: OffreRow; likedInitial: boolean; statutSuivi: string }) {
   const [liked, setLiked] = useState(likedInitial)
+  const [partageCopie, setPartageCopie] = useState(false)
   const [isPending, startTransition] = useTransition()
   const mapElRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
   const initial = (offre.entreprise?.trim()[0] ?? '?').toUpperCase()
   const position = positionEpingle(offre)
+
+  // Partage natif (feuille de partage du téléphone / OS). Repli desktop : copie du lien.
+  const partager = async () => {
+    haptic()
+    const url = typeof window !== 'undefined' ? window.location.href : ''
+    const chez = offre.entreprise ? ` chez ${offre.entreprise}` : ''
+    const lieu = offre.ville ? ` (${offre.ville})` : ''
+    const texte = `J'ai trouvé un poste sur JobCompass qui pourrait te convenir : ${offre.titre}${chez}${lieu}. Jette un œil 👇`
+    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> }
+    if (typeof nav.share === 'function') {
+      try { await nav.share({ title: `${offre.titre} · JobCompass`, text: texte, url }) } catch { /* annulé */ }
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(`${texte}\n${url}`)
+      setPartageCopie(true)
+      setTimeout(() => setPartageCopie(false), 2200)
+    } catch { /* ignore */ }
+  }
 
   const onToggleSave = () => {
     haptic()
@@ -112,6 +132,12 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi }: { offr
                   <b>{offre.entreprise ?? 'Employeur non précisé'}</b>{offre.ville ? ` · ${offre.ville}` : ''}
                 </div>
               </div>
+              <button type="button" className="d-share" onClick={partager} aria-label="Partager cette offre">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" /><path d="M16 6l-4-4-4 4" /><path d="M12 2v13" />
+                </svg>
+                {partageCopie && <span className="d-share-toast">Lien copié</span>}
+              </button>
             </div>
           </header>
         </div>
