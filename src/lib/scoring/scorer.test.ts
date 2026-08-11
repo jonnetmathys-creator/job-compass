@@ -10,6 +10,18 @@ test('construirePromptScoring inclut le CV et chaque ref', () => {
   expect(p).toContain('b')
 })
 
+test('construirePromptScoring ajoute le bloc préférences quand elles existent', () => {
+  const p = construirePromptScoring('CV', [offre('a')], ['Libéral / cabinet', 'CDI'])
+  expect(p).toContain('Préférences du candidat')
+  expect(p).toContain('Libéral / cabinet, CDI')
+  expect(p).toContain('le CV reste le critère principal')
+})
+
+test('construirePromptScoring omet le bloc préférences si vide', () => {
+  const p = construirePromptScoring('CV', [offre('a')], [])
+  expect(p).not.toContain('Préférences du candidat')
+})
+
 test('scorerOffres découpe en lots et concatène', async () => {
   const appeler = vi.fn(async () => [{ ref: 'r', score: 80, raison: 'ok' }])
   const offres = Array.from({ length: 45 }, (_, i) => offre('o' + i)) // 3 lots (20+20+5)

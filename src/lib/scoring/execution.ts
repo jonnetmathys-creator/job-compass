@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { chunk } from '@/lib/chunk'
 import { empreinteOffre } from '@/lib/offres/dedup-affichage'
 import { getProfil } from '@/lib/profil'
+import { clesVersLabels } from '@/lib/preferences'
 import { assurerCvTexte } from './cv'
 import { scorerOffres, type OffreANoter, type Note } from './scorer'
 
@@ -72,7 +73,9 @@ export async function scorerPourRecherche(client: SupabaseClient, recherche: Rec
   const { aNoter, membres } = preparerNotation(offres, dejaNotes)
   if (aNoter.length === 0) return 0
 
-  const notesArr = await scorer(cvTexte, aNoter)
+  // Préférences de poste (libellés lisibles) : affinent le scoring par pondération douce.
+  const prefsLabels = clesVersLabels(profil.preferences ?? [])
+  const notesArr = await scorer(cvTexte, aNoter, {}, prefsLabels)
   const notes = new Map(notesArr.map((n) => [n.ref, n]))
   const rows = lignesScores(recherche.user_id, membres, notes)
   if (rows.length === 0) return 0

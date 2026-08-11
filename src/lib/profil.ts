@@ -8,6 +8,7 @@ export type Profil = {
   cv_texte: string | null
   lettre_base: string | null
   lettre_url: string | null
+  preferences: string[]
 }
 
 export async function getProfil(client: SupabaseClient, userId: string): Promise<Profil | null> {
