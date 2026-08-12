@@ -255,7 +255,7 @@ a.logo:hover { opacity: .78; }
 .btn-save.on svg { color: #e2565b; fill: #e2565b; }
 
 /* ---------- page détail offre ---------- */
-.detail-top { display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: calc(16px + env(safe-area-inset-top)) 26px 16px; background: var(--card); border-bottom: 1px solid var(--line); flex: 0 0 auto; }
+.detail-top { display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: calc(16px + env(safe-area-inset-top)) 26px 16px; background: var(--card); border-bottom: 1px solid var(--line); flex: 0 0 auto; position: relative; z-index: 700; }
 .detail-top .logo { font-size: 18px; }
 .back { display: inline-flex; align-items: center; gap: 7px; background: transparent; border: 0; font-family: inherit; font-weight: 600; font-size: 14px; color: var(--muted); cursor: pointer; transition: .2s; padding: 8px 12px; border-radius: 10px; }
 .back:hover { color: var(--ink); background: #f4f5f4; }
@@ -718,7 +718,7 @@ a.logo:hover { opacity: .78; }
 .cloche-btn:hover { background: #fafafa; }
 .cloche-btn svg { width: 19px; height: 19px; }
 .cloche-pastille { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: #e2565b; color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
-.cloche-menu { position: absolute; top: 50px; right: 0; width: 320px; max-height: 60vh; overflow-y: auto; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-lg); opacity: 0; transform: translateY(-6px); pointer-events: none; transition: .18s; }
+.cloche-menu { position: absolute; top: 50px; right: 0; z-index: 200; width: 320px; max-height: 60vh; overflow-y: auto; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-lg); opacity: 0; transform: translateY(-6px); pointer-events: none; transition: .18s; }
 .cloche-menu.on { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .cloche-head { padding: 14px 16px; font-weight: 700; border-bottom: 1px solid var(--line); }
 .cloche-head-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }

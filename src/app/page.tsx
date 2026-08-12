@@ -1,7 +1,19 @@
+import type { Viewport } from 'next'
 import { redirect } from 'next/navigation'
 import { getServerClient } from '@/lib/supabase/server'
 import SearchBar from '@/components/search-bar'
 import HeaderActions from '@/components/header-actions'
+
+// Accueil : on verrouille le zoom par pincement (ressenti app). Effectif en PWA
+// installée ; iOS Safari (onglet) ignore volontairement ce réglage pour l'accessibilité.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#248049',
+  viewportFit: 'cover',
+}
 
 export default async function Home() {
   const supabase = await getServerClient()
