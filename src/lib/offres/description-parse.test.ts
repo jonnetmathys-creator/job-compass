@@ -64,6 +64,24 @@ test('offre pauvre : peu de faits (En bref masquable) + paragraphe propre', () =
   expect(s.email).toBeNull()
 })
 
+test('intitulés variés (L\'ÉTABLISSEMENT, LE POSTE, Missions principales) + contrat brut nettoyé', () => {
+  const desc = "L'ÉTABLISSEMENT : Le centre hospitalier recherche à compter du 1er septembre un diététicien à temps partiel (70%). LE POSTE : Organisation de l'activité selon profil. Missions principales : -Élaboration du plan alimentaire. -Établissement des menus. -Réaliser les 4 étapes de la démarche diététique. Profil recherché : -Diplôme BTS diététique. -Rigueur et autonomie."
+  const s = structurerOffre(offre({ contrat: 'contract', ville: '44 - Châteaubriant', description: desc }))
+  // 'contract' générique est masqué
+  expect(s.enBref.map((f) => f.cle)).not.toContain('contrat')
+  expect(s.enBref.map((f) => f.cle)).toContain('lieu')
+  expect(s.enBref.find((f) => f.cle === 'temps')?.valeur).toBe('Temps partiel')
+
+  const titres = s.sections.map((x) => x.titre)
+  expect(titres).toContain("L'établissement")
+  expect(titres).toContain('Le poste')
+  expect(titres).toContain('Vos missions')
+  expect(titres).toContain('Profil recherché')
+  const missions = s.sections.find((x) => x.titre === 'Vos missions')
+  expect(missions?.type).toBe('liste')
+  if (missions?.type === 'liste') expect(missions.puces).toBe('check')
+})
+
 test('« non précisé » est ignoré dans En bref', () => {
   const s = structurerOffre(offre({ contrat: 'Non précisé', salaire: 'Non précisé', ville: 'Nantes', description: 'x' }))
   const cles = s.enBref.map((f) => f.cle)
