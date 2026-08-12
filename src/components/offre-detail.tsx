@@ -9,13 +9,9 @@ import { marquerVue } from '@/lib/alertes/actions'
 import { haptic } from '@/lib/haptics'
 import PostulerZone from './postuler-zone'
 import HeaderActions from './header-actions'
+import OffreDescription from './offre-description'
 
 const PIN_SVG = '<svg width="28" height="38" viewBox="0 0 30 40" fill="currentColor"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 12.4 22.7 14.2 24.5a1.1 1.1 0 0 0 1.6 0C17.6 37.7 30 25.5 30 15 30 6.7 23.3 0 15 0Z" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="5.4" fill="#fff"/></svg>'
-
-function formatDate(iso: string): string {
-  const d = new Date(iso)
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-}
 
 export default function OffreDetail({ offre, likedInitial, statutSuivi, anon = false }: { offre: OffreRow; likedInitial: boolean; statutSuivi: string; anon?: boolean }) {
   const [liked, setLiked] = useState(likedInitial)
@@ -112,11 +108,6 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi, anon = f
       <div className="detail-scroll">
         <div className="detail-hero">
           <header className="detail-head">
-            <div className="tags">
-              {offre.contrat && <span className="tag">{offre.contrat}</span>}
-              {offre.salaire && <span className="tag salary">{offre.salaire}</span>}
-              {offre.date_publication && <span className="tag date">{formatDate(offre.date_publication)}</span>}
-            </div>
             <div className="d-titlewrap">
               <div className="d-avatar">
                 {offre.entreprise_logo
@@ -147,30 +138,9 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi, anon = f
         <div className="detail-wrap">
           <div className="detail-grid">
             <div className="detail-main">
-              <section className="d-block">
-                <h4>Description du poste</h4>
-                <p>{offre.description ?? 'Aucune description fournie.'}</p>
-              </section>
+              <OffreDescription offre={offre} />
             </div>
             <aside className="detail-side">
-              <div className="side-card">
-                <div className="side-row">
-                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" /></svg>Contrat</span>
-                  <b>{offre.contrat ?? 'Non précisé'}</b>
-                </div>
-                <div className="side-row">
-                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>Lieu</span>
-                  <b>{offre.ville ?? 'Non précisé'}</b>
-                </div>
-                <div className="side-row">
-                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h12" /><path d="M4 14h9" /><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7 7 0 0 0 7 12a7 7 0 0 0 6.8 8 7.7 7.7 0 0 0 5.2-2" /></svg>Salaire</span>
-                  <b className="hl">{offre.salaire ?? 'Non précisé'}</b>
-                </div>
-                <div className="side-row">
-                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>Publiée</span>
-                  <b>{offre.date_publication ? formatDate(offre.date_publication) : 'Non précisée'}</b>
-                </div>
-              </div>
               {position && <div ref={mapElRef} className="side-map" />}
               {anon
                 ? (
