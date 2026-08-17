@@ -1,10 +1,52 @@
 import { requireEnv } from '@/lib/env'
 import type { OffreInfo, ProfilInfo, GeminiParams, CandidatureContenu } from './types'
 
-// gemini-flash-latest : seul modèle flash avec du quota gratuit sur notre clé
-// (gemini-2.0-flash renvoie limit=0 en free tier). Alias suivi par Google.
+// gemini-flash-latest a du quota gratuit mais est régulièrement surchargé (503).
+// On réessaie, puis on bascule sur gemini-flash-lite-latest, stable et disponible.
 const MODEL = 'gemini-flash-latest'
-const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
+const MODEL_REPLI = 'gemini-flash-lite-latest'
+const PAUSES_DEFAUT = [500, 1200, 600, 1500] // ms avant les tentatives 2..5
+const TRANSITOIRE = new Set([429, 500, 502, 503, 504])
+
+function endpoint(model: string): string {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+}
+
+type GenDeps = { fetchImpl?: typeof fetch; pauses?: number[] }
+
+// Envoie une requête generateContent avec reprises + modèle de repli, et renvoie
+// le texte de la réponse. Ne réessaie que sur les erreurs transitoires.
+async function genererTexte(body: unknown, deps: GenDeps = {}): Promise<string> {
+  const fetchImpl = deps.fetchImpl ?? fetch
+  const pauses = deps.pauses ?? PAUSES_DEFAUT
+  const modeles = [MODEL, MODEL, MODEL, MODEL_REPLI, MODEL_REPLI]
+  let dernier = 'erreur inconnue'
+  for (let i = 0; i < modeles.length; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, pauses[i - 1] ?? 0))
+    let res: Response
+    try {
+      res = await fetchImpl(endpoint(modeles[i]), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
+        body: JSON.stringify(body),
+      })
+    } catch (e) {
+      dernier = `réseau : ${(e as Error).message}`
+      continue
+    }
+    if (res.ok) {
+      const json = await res.json()
+      const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text
+      if (text) return text
+      dernier = 'réponse vide'
+      continue
+    }
+    const detail = await res.text().catch(() => '')
+    dernier = `HTTP ${res.status} ${detail}`.trim().slice(0, 300)
+    if (!TRANSITOIRE.has(res.status)) break // 400/401/403 : inutile de réessayer
+  }
+  throw new Error(`Appel Gemini échoué : ${dernier}`)
+}
 
 export function buildPrompt(offre: OffreInfo, profil: ProfilInfo): string {
   return [
@@ -51,11 +93,7 @@ export function parseReponse(text: string): CandidatureContenu {
   return { email_objet: o.email_objet as string, email_corps: o.email_corps as string, lettre: o.lettre as string }
 }
 
-export async function appelerGemini(
-  params: GeminiParams,
-  deps: { fetchImpl?: typeof fetch } = {},
-): Promise<CandidatureContenu> {
-  const fetchImpl = deps.fetchImpl ?? fetch
+export async function appelerGemini(params: GeminiParams, deps: GenDeps = {}): Promise<CandidatureContenu> {
   const body = {
     contents: [
       {
@@ -80,29 +118,12 @@ export async function appelerGemini(
       },
     },
   }
-  const res = await fetchImpl(ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': requireEnv('GEMINI_API_KEY'),
-    },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) {
-    const detail = await res.text().catch(() => '')
-    throw new Error(`Appel Gemini échoué : HTTP ${res.status} ${detail}`.trim())
-  }
-  const json = await res.json()
-  const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) throw new Error('Appel Gemini : réponse vide')
+  const text = await genererTexte(body, deps)
   return parseReponse(text)
 }
 
-// Appel Gemini générique texte -> JSON structuré (sans PDF), pour des usages
-// hors candidature complète (ex. mail de relance).
 // Transcrit un PDF (base64) en texte brut via Gemini. Usage : mise en cache du CV.
-export async function transcrirePdf(base64: string, deps: { fetchImpl?: typeof fetch } = {}): Promise<string> {
-  const fetchImpl = deps.fetchImpl ?? fetch
+export async function transcrirePdf(base64: string, deps: GenDeps = {}): Promise<string> {
   const body = {
     contents: [{
       role: 'user',
@@ -112,40 +133,17 @@ export async function transcrirePdf(base64: string, deps: { fetchImpl?: typeof f
       ],
     }],
   }
-  const res = await fetchImpl(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`Transcription CV échouée : HTTP ${res.status}`)
-  const json = await res.json()
-  const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) throw new Error('Transcription CV : réponse vide')
-  return text
+  return genererTexte(body, deps)
 }
 
-export async function appelerGeminiJson<T>(
-  prompt: string,
-  schema: object,
-  deps: { fetchImpl?: typeof fetch } = {},
-): Promise<T> {
-  const fetchImpl = deps.fetchImpl ?? fetch
+// Appel Gemini générique texte -> JSON structuré (sans PDF), pour des usages
+// hors candidature complète (ex. mail de relance).
+export async function appelerGeminiJson<T>(prompt: string, schema: object, deps: GenDeps = {}): Promise<T> {
   const body = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: { response_mime_type: 'application/json', response_schema: schema },
   }
-  const res = await fetchImpl(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) {
-    const detail = await res.text().catch(() => '')
-    throw new Error(`Appel Gemini échoué : HTTP ${res.status} ${detail}`.trim())
-  }
-  const json = await res.json()
-  const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) throw new Error('Appel Gemini : réponse vide')
+  const text = await genererTexte(body, deps)
   try {
     return JSON.parse(text) as T
   } catch {

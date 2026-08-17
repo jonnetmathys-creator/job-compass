@@ -56,10 +56,22 @@ test('appelerGemini poste sur l\'endpoint avec deux PDF inline et le schéma JSO
   )
 })
 
-test('appelerGemini lève une erreur claire sur réponse HTTP non ok', async () => {
+test('appelerGemini lève une erreur claire après épuisement des reprises (HTTP non ok)', async () => {
   const fetchImpl = vi.fn().mockResolvedValue({ ok: false, status: 429, text: async () => 'quota' })
   const params: GeminiParams = { offre, profil, cvBase64: 'A', lettreBase64: 'B' }
-  await expect(appelerGemini(params, { fetchImpl: fetchImpl as any })).rejects.toThrow(/Gemini/i)
+  // pauses: [] -> pas d'attente entre les tentatives (test rapide)
+  await expect(appelerGemini(params, { fetchImpl: fetchImpl as any, pauses: [] })).rejects.toThrow(/Gemini/i)
+  expect(fetchImpl).toHaveBeenCalledTimes(5) // 3 essais modèle principal + 2 repli
+})
+
+test('appelerGemini bascule sur le modèle de repli après un 503 transitoire', async () => {
+  const fetchImpl = vi.fn()
+    .mockResolvedValueOnce({ ok: false, status: 503, text: async () => 'overloaded' })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{"email_objet":"O","email_corps":"C","lettre":"L"}' }] } }] }) })
+  const params: GeminiParams = { offre, profil, cvBase64: 'A', lettreBase64: 'B' }
+  const out = await appelerGemini(params, { fetchImpl: fetchImpl as any, pauses: [] })
+  expect(out).toEqual({ email_objet: 'O', email_corps: 'C', lettre: 'L' })
+  expect(fetchImpl).toHaveBeenCalledTimes(2)
 })
 
 test('appelerGeminiJson poste le prompt + schéma et parse le JSON', async () => {
