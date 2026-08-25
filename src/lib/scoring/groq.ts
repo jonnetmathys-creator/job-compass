@@ -2,8 +2,11 @@ import { requireEnv } from '@/lib/env'
 
 // Groq : API gratuite compatible OpenAI, limites bien plus hautes que le palier
 // gratuit Gemini. Utilisé pour le scoring (gros volume). Modèle surchargeable via env.
+// llama-3.3-70b-versatile a été retiré par Groq (404) : tous les lots de scoring
+// échouaient. openai/gpt-oss-120b le remplace (dispo, mode JSON, couverture complète
+// des lots de 20, raisons en français correctes).
 const ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions'
-const MODEL = process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile'
+const MODEL = process.env.GROQ_MODEL ?? 'openai/gpt-oss-120b'
 
 // Appel Groq texte -> JSON. Le mode JSON d'OpenAI/Groq impose un OBJET racine
 // (pas un tableau nu) : le prompt doit demander un objet, on renvoie l'objet parsé.
