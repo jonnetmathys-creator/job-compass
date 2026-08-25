@@ -55,7 +55,7 @@ test('searchJooble pagine puis s’arrête sur une page vide', async () => {
   const mockFetch = vi.fn(async () => {
     calls++
     const jobs = calls <= 2
-      ? Array.from({ length: 3 }, (_, i) => ({ id: `p${calls}-${i}`, title: 'T', location: 'Nantes' }))
+      ? Array.from({ length: 3 }, (_, i) => ({ id: `p${calls}-${i}`, title: 'Diététicien', location: 'Nantes' }))
       : []
     return new Response(JSON.stringify({ jobs }), { status: 200 })
   })
@@ -78,9 +78,9 @@ test('searchJooble s’arrête sans exception si la réponse n’est pas ok', as
 
 test('searchJooble géocode chaque ville distincte une seule fois', async () => {
   const jobs = [
-    { id: '1', title: 'A', location: 'Nantes' },
-    { id: '2', title: 'B', location: 'Nantes' },
-    { id: '3', title: 'C', location: 'Rennes' },
+    { id: '1', title: 'Diététicien A', location: 'Nantes' },
+    { id: '2', title: 'Diététicien B', location: 'Nantes' },
+    { id: '3', title: 'Diététicien C', location: 'Rennes' },
   ]
   let page = 0
   const mockFetch = vi.fn(async () => {

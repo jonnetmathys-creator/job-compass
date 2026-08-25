@@ -1,5 +1,6 @@
 import { requireEnv } from '@/lib/env'
 import { geocodeCommune } from '@/lib/geo/adresse'
+import { estPertinenteDietetique } from './pertinence'
 import type { NormalizedOffer, SearchParams } from './types'
 
 const MAX_OFFRES = 300
@@ -62,6 +63,7 @@ export async function searchJooble(params: SearchParams, deps: Deps = {}): Promi
       if (jobs.length === 0) break // plus de résultats
       for (const raw of jobs) {
         const o = normalizeJoobleOffre(raw)
+        if (!estPertinenteDietetique(o)) continue // hors diététique (plein texte sans code métier)
         bySourceId.set(o.source_id, o)
       }
     }

@@ -58,7 +58,7 @@ test('searchAdzuna applique un plafond strict de 300 offres', async () => {
     // Return 50 unique offers per page (simulating full pages)
     const results = Array.from({ length: 50 }, (_, i) => ({
       id: `AZ${pageCount}-${i}`,
-      title: `Job ${pageCount}-${i}`,
+      title: `Diététicien ${pageCount}-${i}`,
       company: { display_name: 'Company' },
       description: 'Desc',
       contract_time: 'full_time',

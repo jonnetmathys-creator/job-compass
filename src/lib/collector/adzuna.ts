@@ -1,4 +1,5 @@
 import { requireEnv } from '@/lib/env'
+import { estPertinenteDietetique } from './pertinence'
 import type { NormalizedOffer, SearchParams } from './types'
 
 const RESULTS_PER_PAGE = 50
@@ -66,6 +67,7 @@ export async function searchAdzuna(params: SearchParams, deps: Deps = {}): Promi
       for (const raw of offres) {
         const o = normalizeAdzunaOffre(raw)
         if (estOffreSpam(o)) continue // on écarte le spam lead-gen (Ernesto, titres templates)
+        if (!estPertinenteDietetique(o)) continue // hors diététique (nutrition animale, médecin, infirmier…)
         bySourceId.set(o.source_id, o)
       }
       if (offres.length < RESULTS_PER_PAGE) break // dernière page
