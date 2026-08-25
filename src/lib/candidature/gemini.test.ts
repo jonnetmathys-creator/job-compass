@@ -44,7 +44,7 @@ test('appelerGemini poste sur l\'endpoint avec deux PDF inline et le schéma JSO
 
   expect(out).toEqual({ email_objet: 'O', email_corps: 'C', lettre: 'L' })
   const [url, init] = fetchImpl.mock.calls[0]
-  expect(String(url)).toContain('gemini-flash-latest')
+  expect(String(url)).toContain('gemini-flash-lite-latest')
   expect(init.method).toBe('POST')
   const body = JSON.parse(init.body)
   const parts = body.contents[0].parts
@@ -61,7 +61,7 @@ test('appelerGemini lève une erreur claire après épuisement des reprises (HTT
   const params: GeminiParams = { offre, profil, cvBase64: 'A', lettreBase64: 'B' }
   // pauses: [] -> pas d'attente entre les tentatives (test rapide)
   await expect(appelerGemini(params, { fetchImpl: fetchImpl as any, pauses: [] })).rejects.toThrow(/Gemini/i)
-  expect(fetchImpl).toHaveBeenCalledTimes(5) // 3 essais modèle principal + 2 repli
+  expect(fetchImpl).toHaveBeenCalledTimes(3) // 2 essais modèle principal + 1 repli
 })
 
 test('appelerGemini bascule sur le modèle de repli après un 503 transitoire', async () => {
@@ -70,6 +70,17 @@ test('appelerGemini bascule sur le modèle de repli après un 503 transitoire', 
     .mockResolvedValueOnce({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{"email_objet":"O","email_corps":"C","lettre":"L"}' }] } }] }) })
   const params: GeminiParams = { offre, profil, cvBase64: 'A', lettreBase64: 'B' }
   const out = await appelerGemini(params, { fetchImpl: fetchImpl as any, pauses: [] })
+  expect(out).toEqual({ email_objet: 'O', email_corps: 'C', lettre: 'L' })
+  expect(fetchImpl).toHaveBeenCalledTimes(2)
+})
+
+test('appelerGemini réessaie quand une tentative dépasse le délai (pend)', async () => {
+  const abort = () => { const e = new Error('aborted'); e.name = 'AbortError'; return Promise.reject(e) }
+  const fetchImpl = vi.fn()
+    .mockImplementationOnce(abort) // modèle principal qui « pend » -> abort
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{"email_objet":"O","email_corps":"C","lettre":"L"}' }] } }] }) })
+  const params: GeminiParams = { offre, profil, cvBase64: 'A', lettreBase64: 'B' }
+  const out = await appelerGemini(params, { fetchImpl: fetchImpl as any, pauses: [], timeoutMs: 10 })
   expect(out).toEqual({ email_objet: 'O', email_corps: 'C', lettre: 'L' })
   expect(fetchImpl).toHaveBeenCalledTimes(2)
 })
@@ -84,7 +95,7 @@ test('appelerGeminiJson poste le prompt + schéma et parse le JSON', async () =>
 
   expect(out).toEqual({ objet: 'O', corps: 'C' })
   const [url, init] = fetchImpl.mock.calls[0]
-  expect(String(url)).toContain('gemini-flash-latest')
+  expect(String(url)).toContain('gemini-flash-lite-latest')
   const body = JSON.parse(init.body)
   expect(body.contents[0].parts[0].text).toBe('un prompt')
   expect(body.generationConfig.response_schema).toEqual(schema)

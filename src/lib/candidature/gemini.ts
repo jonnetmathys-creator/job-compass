@@ -1,38 +1,50 @@
 import { requireEnv } from '@/lib/env'
 import type { OffreInfo, ProfilInfo, GeminiParams, CandidatureContenu } from './types'
 
-// gemini-flash-latest a du quota gratuit mais est régulièrement surchargé (503).
-// On réessaie, puis on bascule sur gemini-flash-lite-latest, stable et disponible.
-const MODEL = 'gemini-flash-latest'
-const MODEL_REPLI = 'gemini-flash-lite-latest'
-const PAUSES_DEFAUT = [500, 1200, 600, 1500] // ms avant les tentatives 2..5
+// gemini-flash-latest est régulièrement surchargé : il ne renvoie même plus de
+// 503, il « pend » (aucune réponse), ce qui bloquait toute la requête candidature
+// jusqu'au timeout de la route. gemini-flash-lite-latest est stable, rapide et
+// gère le multimodal (PDF) + response_schema. On en fait donc le modèle principal,
+// avec flash-latest en dernier recours seulement, et surtout un TIMEOUT par
+// tentative pour qu'un modèle qui pend ne bloque plus jamais l'ensemble.
+const MODEL = 'gemini-flash-lite-latest'
+const MODEL_REPLI = 'gemini-flash-latest'
+const PAUSES_DEFAUT = [400, 800] // ms avant les tentatives 2..3
+const TIMEOUT_DEFAUT = 30000 // ms max par tentative (borne un modèle qui pend)
 const TRANSITOIRE = new Set([429, 500, 502, 503, 504])
 
 function endpoint(model: string): string {
   return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
 }
 
-type GenDeps = { fetchImpl?: typeof fetch; pauses?: number[] }
+type GenDeps = { fetchImpl?: typeof fetch; pauses?: number[]; timeoutMs?: number }
 
 // Envoie une requête generateContent avec reprises + modèle de repli, et renvoie
-// le texte de la réponse. Ne réessaie que sur les erreurs transitoires.
+// le texte de la réponse. Chaque tentative est bornée par un timeout ; on réessaie
+// sur timeout, erreur réseau et erreurs HTTP transitoires.
 async function genererTexte(body: unknown, deps: GenDeps = {}): Promise<string> {
   const fetchImpl = deps.fetchImpl ?? fetch
   const pauses = deps.pauses ?? PAUSES_DEFAUT
-  const modeles = [MODEL, MODEL, MODEL, MODEL_REPLI, MODEL_REPLI]
+  const timeoutMs = deps.timeoutMs ?? TIMEOUT_DEFAUT
+  const modeles = [MODEL, MODEL, MODEL_REPLI]
   let dernier = 'erreur inconnue'
   for (let i = 0; i < modeles.length; i++) {
     if (i > 0) await new Promise((r) => setTimeout(r, pauses[i - 1] ?? 0))
+    const ctrl = new AbortController()
+    const minuteur = setTimeout(() => ctrl.abort(), timeoutMs)
     let res: Response
     try {
       res = await fetchImpl(endpoint(modeles[i]), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
         body: JSON.stringify(body),
+        signal: ctrl.signal,
       })
     } catch (e) {
-      dernier = `réseau : ${(e as Error).message}`
+      dernier = (e as Error).name === 'AbortError' ? `délai dépassé (${timeoutMs} ms)` : `réseau : ${(e as Error).message}`
       continue
+    } finally {
+      clearTimeout(minuteur)
     }
     if (res.ok) {
       const json = await res.json()
