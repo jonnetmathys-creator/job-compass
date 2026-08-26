@@ -42,7 +42,8 @@ export function lignesScores(
 }
 
 type Recherche = { id: string; user_id: string }
-type Deps = { scorer?: typeof scorerOffres }
+// deadline (ms epoch, optionnel) : propagé au scorer pour borner le temps de notation.
+type Deps = { scorer?: typeof scorerOffres; deadline?: number }
 
 // Note les offres non encore notées d'une recherche pour son propriétaire. Retour : nombre de scores écrits.
 export async function scorerPourRecherche(client: SupabaseClient, recherche: Recherche, deps: Deps = {}): Promise<number> {
@@ -75,7 +76,7 @@ export async function scorerPourRecherche(client: SupabaseClient, recherche: Rec
 
   // Préférences de poste (libellés lisibles) : affinent le scoring par pondération douce.
   const prefsLabels = clesVersLabels(profil.preferences ?? [])
-  const notesArr = await scorer(cvTexte, aNoter, {}, prefsLabels)
+  const notesArr = await scorer(cvTexte, aNoter, { deadline: deps.deadline }, prefsLabels)
   const notes = new Map(notesArr.map((n) => [n.ref, n]))
   const rows = lignesScores(recherche.user_id, membres, notes)
   if (rows.length === 0) return 0

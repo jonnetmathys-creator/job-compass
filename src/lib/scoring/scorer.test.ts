@@ -30,6 +30,15 @@ test('scorerOffres découpe en lots et concatène', async () => {
   expect(notes.length).toBe(3) // 1 note simulée par lot
 })
 
+test('scorerOffres s\'arrête quand le budget de temps (deadline) est dépassé', async () => {
+  const appeler = vi.fn(async () => [{ ref: 'r', score: 80, raison: 'ok' }])
+  const offres = Array.from({ length: 100 }, (_, i) => offre('o' + i)) // 5 lots possibles
+  // deadline déjà passée : aucun lot ne doit démarrer.
+  const notes = await scorerOffres('cv', offres, { appeler: appeler as any, deadline: Date.now() - 1 })
+  expect(appeler).not.toHaveBeenCalled()
+  expect(notes.length).toBe(0)
+})
+
 test('scorerOffres ignore un lot en échec', async () => {
   let n = 0
   const appeler = vi.fn(async () => { n++; if (n === 1) throw new Error('boom'); return [{ ref: 'x', score: 90, raison: 'ok' }] })

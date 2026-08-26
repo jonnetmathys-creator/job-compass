@@ -45,7 +45,9 @@ async function noterViaGroq(prompt: string): Promise<Note[]> {
   return res.notes ?? []
 }
 
-type Deps = { appeler?: (prompt: string) => Promise<Note[]> }
+// deadline (ms epoch, optionnel) : borne temps globale. On arrête de démarrer de
+// nouveaux lots une fois dépassée, pour ne pas faire exploser le budget du refresh.
+type Deps = { appeler?: (prompt: string) => Promise<Note[]>; deadline?: number }
 
 export async function scorerOffres(
   cvTexte: string, offres: OffreANoter[], deps: Deps = {}, preferences: string[] = [],
@@ -53,6 +55,7 @@ export async function scorerOffres(
   const appeler = deps.appeler ?? noterViaGroq
   const notes: Note[] = []
   for (let i = 0; i < offres.length; i += TAILLE_LOT) {
+    if (deps.deadline && Date.now() >= deps.deadline) break // budget de temps atteint : le reste sera noté au prochain passage
     const lot = offres.slice(i, i + TAILLE_LOT)
     try {
       const res = await appeler(construirePromptScoring(cvTexte, lot, preferences))
