@@ -48,10 +48,14 @@ export default function CarteOffres(props: {
       if (cancelled || !elRef.current) return
       if (!mapRef.current) {
         mapRef.current = L.map(elRef.current, { zoomControl: true }).setView([47.35, -1.2], 6)
-        L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-          maxZoom: 20,
-          attribution: '© OpenStreetMap France, © contributeurs OpenStreetMap',
+        // Fond gris clair minimal (Esri Light Gray), sans clé. Deux couches :
+        // le fond sans texte, puis les libellés par-dessus.
+        const esriOpts = { maxZoom: 20, maxNativeZoom: 16 }
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+          ...esriOpts,
+          attribution: 'Tiles © Esri — Esri, HERE, Garmin, © contributeurs OpenStreetMap',
         }).addTo(mapRef.current)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', esriOpts).addTo(mapRef.current)
       }
       if (clusterRef.current) mapRef.current.removeLayer(clusterRef.current)
       markersRef.current = {}
