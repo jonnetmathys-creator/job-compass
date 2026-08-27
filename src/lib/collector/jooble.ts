@@ -46,6 +46,10 @@ export function normalizeJoobleOffre(raw: any): NormalizedOffer {
 type Deps = { fetchImpl?: typeof fetch; geocode?: typeof geocodeCommune }
 
 export async function searchJooble(params: SearchParams, deps: Deps = {}): Promise<NormalizedOffer[]> {
+  // Source écartée : ~0 offre en France (voir .env.local). Inactive tant qu'aucune
+  // clé n'est configurée, sans lever d'erreur ni polluer les logs de collecte.
+  if (!process.env.JOOBLE_API_KEY) return []
+
   const fetchImpl = deps.fetchImpl ?? fetch
   const geocode = deps.geocode ?? geocodeCommune
   const bySourceId = new Map<string, NormalizedOffer>()

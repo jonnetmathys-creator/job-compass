@@ -3,6 +3,16 @@ import { buildJoobleRequest, normalizeJoobleOffre, searchJooble } from './jooble
 
 beforeEach(() => { process.env.JOOBLE_API_KEY = 'jk123' })
 
+test('searchJooble est inactif (retourne [] sans appeler fetch) si aucune clé', async () => {
+  delete process.env.JOOBLE_API_KEY
+  const mockFetch = vi.fn()
+  const offres = await searchJooble(
+    { motsCles: ['diététicien'], codeRome: 'J1402' },
+    { fetchImpl: mockFetch as any, geocode: vi.fn() as any })
+  expect(offres).toEqual([])
+  expect(mockFetch).not.toHaveBeenCalled()
+})
+
 test('buildJoobleRequest cible l’API avec la clé et le corps attendu', () => {
   const { url, body } = buildJoobleRequest(
     { motsCles: [], codeRome: 'J1402', commune: 'Nantes', distance: 25 }, 'diététicien', 2)
