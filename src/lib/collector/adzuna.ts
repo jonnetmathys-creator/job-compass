@@ -1,4 +1,5 @@
 import { requireEnv } from '@/lib/env'
+import { fetchAvecDelai } from '@/lib/http'
 import { estPertinenteDietetique } from './pertinence'
 import type { NormalizedOffer, SearchParams } from './types'
 
@@ -60,8 +61,8 @@ export async function searchAdzuna(params: SearchParams, deps: Deps = {}): Promi
   for (const mot of params.motsCles) {
     let page = 1
     while (bySourceId.size < MAX_OFFRES) {
-      const res = await fetchImpl(buildAdzunaUrl(params, mot, page))
-      if (!res.ok) break // erreur : on arrête ce mot-clé sans planter
+      const res = await fetchAvecDelai(fetchImpl, buildAdzunaUrl(params, mot, page)).catch(() => null)
+      if (!res || !res.ok) break // erreur ou délai dépassé : on garde ce qui est déjà collecté
       const json = await res.json()
       const offres = (json.results ?? []) as any[]
       for (const raw of offres) {

@@ -82,3 +82,22 @@ test('searchAdzuna applique un plafond strict de 300 offres', async () => {
   expect(offers.length).toBe(300)
   expect(offers.every(o => o.source === 'adzuna')).toBe(true)
 })
+
+test('searchAdzuna ne plante pas et garde le partiel si un fetch pend (timeout)', async () => {
+  let call = 0
+  const mockFetch = async () => {
+    call++
+    if (call === 1) {
+      // page pleine (50) → la pagination continue vers la page 2
+      const results = Array.from({ length: 50 }, (_, i) => ({ id: `AZ1-${i}`, title: 'Diététicien', company: { display_name: 'X' } }))
+      return new Response(JSON.stringify({ results }), { status: 200 })
+    }
+    // 2e page : simule un AbortSignal.timeout → la promesse fetch est rejetée
+    throw new Error('The operation was aborted due to timeout')
+  }
+  const offers = await searchAdzuna(
+    { motsCles: ['test'], codeRome: 'J1402' },
+    { fetchImpl: mockFetch as any },
+  )
+  expect(offers.length).toBe(50) // 1re page conservée, pas d'exception malgré le timeout page 2
+})

@@ -48,9 +48,9 @@ export default function CarteOffres(props: {
       if (cancelled || !elRef.current) return
       if (!mapRef.current) {
         mapRef.current = L.map(elRef.current, { zoomControl: true }).setView([47.35, -1.2], 6)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap, © CARTO',
+        L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+          maxZoom: 20,
+          attribution: '© OpenStreetMap France, © contributeurs OpenStreetMap',
         }).addTo(mapRef.current)
       }
       if (clusterRef.current) mapRef.current.removeLayer(clusterRef.current)

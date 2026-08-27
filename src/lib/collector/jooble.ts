@@ -1,4 +1,5 @@
 import { requireEnv } from '@/lib/env'
+import { fetchAvecDelai } from '@/lib/http'
 import { geocodeCommune } from '@/lib/geo/adresse'
 import { estPertinenteDietetique } from './pertinence'
 import type { NormalizedOffer, SearchParams } from './types'
@@ -52,12 +53,12 @@ export async function searchJooble(params: SearchParams, deps: Deps = {}): Promi
   for (const mot of params.motsCles) {
     for (let page = 1; page <= MAX_PAGES && bySourceId.size < MAX_OFFRES; page++) {
       const { url, body } = buildJoobleRequest(params, mot, page)
-      const res = await fetchImpl(url, {
+      const res = await fetchAvecDelai(fetchImpl, url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-      })
-      if (!res.ok) break // erreur : on arrête ce mot-clé sans planter
+      }).catch(() => null)
+      if (!res || !res.ok) break // erreur ou délai dépassé : on garde ce qui est déjà collecté
       const json = await res.json()
       const jobs = (json.jobs ?? []) as any[]
       if (jobs.length === 0) break // plus de résultats

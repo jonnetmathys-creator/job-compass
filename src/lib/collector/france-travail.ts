@@ -1,4 +1,5 @@
 import { requireEnv } from '@/lib/env'
+import { fetchAvecDelai } from '@/lib/http'
 import type { NormalizedOffer, SearchParams } from './types'
 
 const TOKEN_URL = 'https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=%2Fpartenaire'
@@ -42,7 +43,7 @@ export async function fetchFtToken(fetchImpl: typeof fetch = fetch): Promise<str
     client_secret: requireEnv('FT_SECRET'),
     scope: 'api_offresdemploiv2 o2dsoffre',
   })
-  const res = await fetchImpl(TOKEN_URL, {
+  const res = await fetchAvecDelai(fetchImpl, TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
@@ -65,9 +66,10 @@ export async function searchFranceTravail(params: SearchParams, deps: Deps = {})
     let start = 0
     while (start < MAX_OFFRES) {
       const end = Math.min(start + PAGE_SIZE, MAX_OFFRES) - 1
-      const res = await fetchImpl(`${SEARCH_URL}?${base}&range=${start}-${end}`, {
+      const res = await fetchAvecDelai(fetchImpl, `${SEARCH_URL}?${base}&range=${start}-${end}`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
+      }).catch(() => null)
+      if (!res) break // délai dépassé ou réseau : on garde ce qui est déjà collecté
       if (res.status === 204) break // aucune offre
       if (!res.ok) break // erreur : on arrête ce mot-clé sans planter
       const json = await res.json()

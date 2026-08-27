@@ -65,7 +65,7 @@ export default function OffreDetail({ offre, likedInitial, statutSuivi, anon = f
         if (cancelled || !mapElRef.current) return
         mapRef.current = L.map(mapElRef.current, { zoomControl: false, scrollWheelZoom: false, dragging: false })
           .setView([position.lat, position.lng], 11)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(mapRef.current)
+        L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { maxZoom: 20 }).addTo(mapRef.current)
         const icon = L.divIcon({ className: '', html: `<div class="pin">${PIN_SVG}</div>`, iconSize: [28, 38], iconAnchor: [14, 38] })
         L.marker([position.lat, position.lng], { icon }).addTo(mapRef.current)
         mapRef.current.invalidateSize()
