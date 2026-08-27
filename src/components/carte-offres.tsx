@@ -45,17 +45,36 @@ export default function CarteOffres(props: {
       const Lmod = await import('leaflet')
       const L = ((Lmod as any).default ?? Lmod) as typeof import('leaflet')
       await import('leaflet.markercluster')
+      // Importé AVANT la section critique : plus aucun await entre la création de
+      // la carte, l'ajout du fond et celui des marqueurs (sinon, quand l'effet se
+      // relance, deux exécutions se chevauchent sur l'await et les pins sautent).
+      const { fondProtomaps } = await import('@/lib/carte-theme')
       if (cancelled || !elRef.current) return
       if (!mapRef.current) {
-        mapRef.current = L.map(elRef.current, { zoomControl: true }).setView([47.35, -1.2], 6)
-        // Fond gris clair minimal (Esri Light Gray), sans clé. Deux couches :
-        // le fond sans texte, puis les libellés par-dessus.
-        const esriOpts = { maxZoom: 20, maxNativeZoom: 16 }
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-          ...esriOpts,
-          attribution: 'Tiles © Esri — Esri, HERE, Garmin, © contributeurs OpenStreetMap',
-        }).addTo(mapRef.current)
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', esriOpts).addTo(mapRef.current)
+        // maxZoom fini OBLIGATOIRE : markercluster s'appuie sur map.getMaxZoom()
+        // pour construire ses clusters. Le fond vectoriel Protomaps n'en impose
+        // pas (sur-zoomable), donc sans ça getMaxZoom() = Infinity et aucun pin
+        // ne s'affiche. On le pose sur la carte, indépendamment du fond.
+        mapRef.current = L.map(elRef.current, { zoomControl: true, maxZoom: 19 }).setView([47.35, -1.2], 6)
+        // Fond de carte : Protomaps vectoriel stylé à la charte JobCompass si une
+        // clé est configurée, sinon (ou en cas d'erreur) repli sur Esri Light Gray.
+        // Le try/catch garantit que les marqueurs sont ajoutés quoi qu'il arrive.
+        const esriFond = () => {
+          const o = { maxZoom: 20, maxNativeZoom: 16 }
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            ...o, attribution: 'Tiles © Esri — Esri, HERE, Garmin, © contributeurs OpenStreetMap',
+          }).addTo(mapRef.current!)
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', o).addTo(mapRef.current!)
+        }
+        try {
+          const famille = getComputedStyle(document.body).fontFamily
+          const fond = fondProtomaps(famille)
+          if (fond) fond.addTo(mapRef.current)
+          else esriFond()
+        } catch (e) {
+          console.error('[carte] fond Protomaps KO, repli Esri :', e)
+          esriFond()
+        }
       }
       if (clusterRef.current) mapRef.current.removeLayer(clusterRef.current)
       markersRef.current = {}
