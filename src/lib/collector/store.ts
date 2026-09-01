@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { NormalizedOffer } from './types'
+import { urlPostulerSure } from '@/lib/offres/url'
 
 export type StoredOffre = { id: string; source: string; source_id: string }
 
@@ -9,7 +10,8 @@ export async function storeOffres(
 ): Promise<StoredOffre[]> {
   if (offres.length === 0) return []
   const now = new Date().toISOString()
-  const rows = offres.map((o) => ({ ...o, date_collecte: now }))
+  // url_postuler vient d'une source externe : on n'accepte que http(s) (anti-XSS stocké).
+  const rows = offres.map((o) => ({ ...o, url_postuler: urlPostulerSure(o.url_postuler), date_collecte: now }))
   const { data, error } = await client
     .from('offres')
     .upsert(rows, { onConflict: 'source,source_id' })

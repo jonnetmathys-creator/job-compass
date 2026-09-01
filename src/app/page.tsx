@@ -4,13 +4,10 @@ import { getServerClient } from '@/lib/supabase/server'
 import SearchBar from '@/components/search-bar'
 import HeaderActions from '@/components/header-actions'
 
-// Accueil : on verrouille le zoom par pincement (ressenti app). Effectif en PWA
-// installée ; iOS Safari (onglet) ignore volontairement ce réglage pour l'accessibilité.
+// Accueil : on laisse le zoom par pincement actif (accessibilité, WCAG 1.4.4).
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: '#248049',
   viewportFit: 'cover',
 }

@@ -13,7 +13,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   let contrat = ''
   try {
     const service = getServiceClient()
-    const { data } = await service.from('offres').select('titre, entreprise, ville, contrat').eq('id', id).single()
+    const { data } = await service.from('offres').select('titre, entreprise, ville, contrat').eq('id', id).neq('source', 'manuelle').single()
     if (data) {
       titre = data.titre ?? titre
       emp = [data.entreprise, data.ville].filter(Boolean).join(' · ')

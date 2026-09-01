@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params
   const service = getServiceClient()
   const { data: offre } = await service
-    .from('offres').select('titre, entreprise, ville, description').eq('id', id).single()
+    .from('offres').select('titre, entreprise, ville, description').eq('id', id).neq('source', 'manuelle').single()
   if (!offre) return { title: 'Offre introuvable · JobCompass' }
   const lieu = offre.ville ? ` · ${offre.ville}` : ''
   const titre = `${offre.titre}${offre.entreprise ? ` · ${offre.entreprise}` : ''}${lieu}`
@@ -54,8 +54,10 @@ export default async function OffrePage({ params }: { params: Promise<{ id: stri
 
   // Visiteur non connecté : lecture publique (les offres sont des annonces publiques).
   // Le service bypass RLS ; la page affiche l'offre complète + une invite à s'inscrire.
+  // .neq('source','manuelle') : les offres manuelles sont privées à leur créateur
+  // (RLS migration 0008) ; le service role bypasse la RLS, on remet donc le filtre à la main.
   const service = getServiceClient()
-  const { data: offre } = await service.from('offres').select(OFFRE_COLUMNS).eq('id', id).single()
+  const { data: offre } = await service.from('offres').select(OFFRE_COLUMNS).eq('id', id).neq('source', 'manuelle').single()
   if (!offre) notFound()
   return <OffreDetail offre={offre as OffreRow} likedInitial={false} statutSuivi="brouillon" anon />
 }

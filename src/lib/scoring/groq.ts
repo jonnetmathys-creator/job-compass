@@ -1,4 +1,10 @@
 import { requireEnv } from '@/lib/env'
+import { fetchAvecDelai } from '@/lib/http'
+
+// Le scoring est le plus gros volume du refresh et son seul appel réseau : sans
+// borne de temps, un Groq qui pend gèle toute la collecte (cf. incident 700 s).
+// Timeout généreux (une complétion de 20 offres peut être lente) mais fini.
+const TIMEOUT_GROQ_MS = 60000
 
 // Groq : API gratuite compatible OpenAI, limites bien plus hautes que le palier
 // gratuit Gemini. Utilisé pour le scoring (gros volume). Modèle surchargeable via env.
@@ -21,14 +27,14 @@ export async function appelerGroqJson<T>(
     response_format: { type: 'json_object' },
     temperature: 0.2,
   }
-  const res = await fetchImpl(ENDPOINT, {
+  const res = await fetchAvecDelai(fetchImpl, ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${requireEnv('GROQ_API_KEY')}`,
     },
     body: JSON.stringify(body),
-  })
+  }, TIMEOUT_GROQ_MS)
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
     throw new Error(`Appel Groq échoué : HTTP ${res.status} ${detail}`.trim())

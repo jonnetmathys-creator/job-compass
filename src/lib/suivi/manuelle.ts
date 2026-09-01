@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { ajouterJours } from './dates'
+import { urlPostulerSure } from '@/lib/offres/url'
 
 export type FormManuelle = {
   titre: string
@@ -20,10 +21,10 @@ export async function creerCandidatureManuelle(
       source: 'manuelle',
       source_id: crypto.randomUUID(),
       created_by: userId,
-      titre: form.titre,
-      entreprise: form.entreprise || null,
-      ville: form.ville || null,
-      url_postuler: form.url || null,
+      titre: form.titre.slice(0, 200),
+      entreprise: form.entreprise ? form.entreprise.slice(0, 200) : null,
+      ville: form.ville ? form.ville.slice(0, 120) : null,
+      url_postuler: urlPostulerSure(form.url),
     })
     .select('id')
     .single()
