@@ -2,7 +2,9 @@ name: Collecte quotidienne
 
 on:
   schedule:
-    - cron: "0 6 * * *"   # tous les jours à 06:00 UTC
+    # Minute impaire + heure creuse : les crons calés pile à l'heure ronde sont
+    # fortement retardés en file d'attente (tier gratuit). 04:37 UTC ≈ 06:37 Paris.
+    - cron: "37 4 * * *"
   workflow_dispatch: {}
 
 jobs:
