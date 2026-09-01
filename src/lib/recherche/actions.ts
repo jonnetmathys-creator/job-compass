@@ -66,6 +66,22 @@ export async function rafraichirOffres(rechercheId: string): Promise<void> {
   revalidatePath(`/recherche/${rechercheId}`)
 }
 
+// Supprime une recherche enregistrée (et ses liens resultats, via cascade SQL).
+// Les offres mutualisées et les favoris/candidatures ne sont pas touchés.
+export async function supprimerRecherche(rechercheId: string): Promise<{ ok: boolean }> {
+  const supabase = await getServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+  const { error } = await supabase
+    .from('recherches')
+    .delete()
+    .eq('id', rechercheId)
+    .eq('user_id', user.id)
+  if (error) throw error
+  revalidatePath('/')
+  return { ok: true }
+}
+
 export async function affinerLieu(
   rechercheId: string, ville: string, rayonKm: number | null,
 ): Promise<{ ok: boolean; erreur?: string }> {

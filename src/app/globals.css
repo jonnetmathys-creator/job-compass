@@ -47,9 +47,16 @@ a.logo:hover { opacity: .78; }
 .logo span { color: var(--accent); }
 
 /* ---------- accueil : héro + décor ---------- */
+/* .home-main : conteneur scrollable (hero + tiroir). Le gradient et le décor
+   couvrent TOUTE la page (pas seulement le hero) pour que le fond s'étende sous
+   le tiroir sans coupure. overflow:hidden rogne le débord horizontal du décor. */
 .home-main {
-  position: relative; min-height: 100vh; display: grid; place-items: center; padding: 24px; overflow: hidden;
-  background: radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%);
+  position: relative; overflow: hidden; background-color: var(--bg);
+  background-image: radial-gradient(1100px 620px at 50% -12%, var(--accent-soft), transparent 62%);
+  background-repeat: no-repeat;
+}
+.home-hero {
+  position: relative; z-index: 1; min-height: 100vh; display: grid; place-items: center; padding: 24px;
 }
 .home-actions { position: fixed; top: calc(14px + env(safe-area-inset-top)); right: 18px; z-index: 20; }
 .hero { position: relative; z-index: 1; width: 100%; max-width: 700px; text-align: center; animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
@@ -95,6 +102,72 @@ a.logo:hover { opacity: .78; }
 .ring.r2 { width: 300px; height: 300px; bottom: -90px; left: -70px; border-color: rgba(46, 158, 91, .08); }
 .compass { position: absolute; left: 8%; top: 22%; opacity: .06; color: var(--accent); }
 .dotgrid { position: absolute; right: 9%; bottom: 16%; opacity: .5; color: #dfe6e1; }
+
+/* ---------- accueil : poignée + tiroir « Mes recherches » ---------- */
+.acc-poignee {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2;
+  display: inline-flex; align-items: center; gap: 10px; padding: 9px 11px 9px 18px;
+  border-radius: 999px; border: 1px solid #e4e8e4; background: rgba(255, 255, 255, .82);
+  backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(16, 24, 40, .12); cursor: pointer;
+  font-family: inherit; transition: transform .2s ease, box-shadow .2s ease; animation: poigneeIn .5s .3s both;
+}
+.acc-poignee:hover { transform: translateX(-50%) translateY(-2px); box-shadow: 0 10px 26px rgba(16, 24, 40, .16); }
+.acc-poignee-txt { font-size: 14px; font-weight: 700; color: var(--ink); }
+.acc-poignee-nb { font-size: 12px; font-weight: 700; color: var(--accent-dark); background: var(--accent-soft); border-radius: 999px; padding: 2px 9px; }
+.acc-poignee-rond { position: relative; width: 26px; height: 26px; display: grid; place-items: center; color: var(--accent-dark); }
+.acc-poignee-jauge { position: absolute; inset: 0; }
+.acc-poignee-jauge circle:last-child { transition: stroke-dashoffset .12s linear; }
+.acc-poignee-chevron { position: relative; transition: transform .4s cubic-bezier(.2, .8, .2, 1); }
+.acc-poignee.ouvert .acc-poignee-chevron { transform: rotate(180deg); }
+@keyframes poigneeIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+.acc-drawer { position: relative; z-index: 1; display: grid; grid-template-rows: 0fr; transition: grid-template-rows .52s cubic-bezier(.22, .61, .36, 1); }
+.acc-drawer.open { grid-template-rows: 1fr; }
+.acc-drawer-inner { overflow: hidden; min-height: 0; }
+/* Replié : contenu non focusable au clavier (le tiroir est masqué). */
+.acc-drawer:not(.open) .acc-drawer-wrap { visibility: hidden; }
+.acc-drawer.open .acc-drawer-wrap { visibility: visible; }
+.acc-drawer-wrap { max-width: 1200px; margin: 0 auto; padding: 26px 22px 60px; }
+.acc-drawer-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
+.acc-drawer-head h2 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.acc-drawer-sub { font-size: 13px; color: #9aa0a6; font-weight: 500; }
+.acc-drawer-reduire { align-self: center; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--muted); display: grid; place-items: center; cursor: pointer; }
+.acc-drawer-reduire:hover { color: var(--ink); background: #fafafa; }
+
+.rech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.rech-carte {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  padding: 15px 16px; display: flex; flex-direction: column; gap: 11px; cursor: pointer;
+  transition: transform .2s cubic-bezier(.2, .8, .2, 1), box-shadow .2s, border-color .2s;
+}
+.rech-carte:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: #e4e4e4; }
+.rech-carte:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rech-carte-haut { display: flex; align-items: flex-start; gap: 10px; }
+.rech-carte-tete { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+.rech-carte-titre { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.rech-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.rech-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: #f4f5f4; color: #4b5563; }
+.rech-tag.contrat { background: var(--accent-soft); color: var(--accent-dark); }
+.rech-alerte {
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px;
+  border-radius: 999px; border: 1px solid #e4e6e4; background: #fff; color: #9aa0a6;
+  font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: .2s;
+}
+.rech-alerte.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
+.rech-carte-sep { height: 1px; background: #f1f1f0; }
+.rech-carte-bas { display: flex; align-items: center; gap: 8px; }
+.rech-nb { font-size: 13px; font-weight: 700; color: var(--accent-dark); }
+.rech-fraich { font-size: 12.5px; color: #9aa0a6; font-weight: 500; }
+.rech-spacer { flex: 1; }
+.rech-suppr { width: 30px; height: 30px; border-radius: 8px; border: 0; background: transparent; color: #b6bbc2; display: grid; place-items: center; cursor: pointer; transition: .2s; }
+.rech-suppr:hover { color: #e2565b; background: #fdecec; }
+.rech-chevron { color: #c3c8cf; flex-shrink: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .acc-poignee { animation: none; }
+  .acc-drawer { transition: none; }
+  .acc-poignee-chevron, .rech-carte, .acc-poignee-jauge circle:last-child { transition: none; }
+}
 
 /* ---------- résultats : barre du haut + filtres ---------- */
 .topbar {
