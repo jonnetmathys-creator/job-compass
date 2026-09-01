@@ -58,12 +58,25 @@ export default function PostulerZone({
 
   if (postule) {
     return (
-      <div className="postuler-toggle done">
-        <span className="postuler-badge">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-          Postulé
-        </span>
-        <Link href="/suivi" className="postuler-link">Voir le suivi</Link>
+      <div className="postuler-done">
+        <div className="postuler-done-head">
+          <span className="postuler-done-ico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+          </span>
+          <div className="postuler-done-txt">
+            <b>Candidature envoyée</b>
+            <span>Cette offre est dans ton suivi.</span>
+          </div>
+        </div>
+        <div className="postuler-done-actions">
+          {href && (
+            <a className="postuler-done-link" href={href} target="_blank" rel="noopener">
+              Revoir l'annonce
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17 17 7" /><path d="M7 7h10v10" /></svg>
+            </a>
+          )}
+          <Link href="/suivi" className="postuler-done-link">Voir le suivi</Link>
+        </div>
       </div>
     )
   }

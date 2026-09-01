@@ -15,6 +15,7 @@ export default async function ProfilPage() {
   ])
   const initial: Profil = existing ?? {
     user_id: user.id, nom: null, titre_recherche: null, cv_url: null, cv_texte: null,
+    adresse: null, code_postal: null, ville: null, telephone: null, email: null,
     lettre_base: null, lettre_url: null, preferences: [],
   }
   const initiale = (initial.nom?.trim()[0] ?? user.email?.trim()[0] ?? '?').toUpperCase()
@@ -36,7 +37,7 @@ export default async function ProfilPage() {
           </header>
         </div>
         <div className="detail-wrap">
-          <ProfilBento initial={initial} alertes={alertes} />
+          <ProfilBento initial={initial} alertes={alertes} emailCompte={user.email ?? ''} />
         </div>
       </div>
     </section>

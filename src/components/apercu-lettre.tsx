@@ -1,11 +1,9 @@
 import type { OffreRow } from '@/lib/offres/types'
 import { ContenuLettre, type Expediteur } from './lettre-contenu'
 
-export type { Expediteur }
-
-// Vue imprimable de la lettre : masquée à l'écran, seule visible à l'impression
-// (voir @media print dans globals.css).
-export default function LettreImprimable({
+// Aperçu écran de la lettre, stylé comme une feuille de papier. Se met à jour en
+// direct pendant l'édition (le contenu est la même structure que le PDF imprimé).
+export default function ApercuLettre({
   lettre, offre, expediteur, dateFr,
 }: {
   lettre: string
@@ -14,7 +12,7 @@ export default function LettreImprimable({
   dateFr: string
 }) {
   return (
-    <div className="lettre-imprimable" data-testid="lettre-imprimable" aria-hidden="true">
+    <div className="lettre-apercu" aria-label="Aperçu de la lettre de motivation">
       <ContenuLettre lettre={lettre} offre={offre} expediteur={expediteur} dateFr={dateFr} />
     </div>
   )

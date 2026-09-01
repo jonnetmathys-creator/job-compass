@@ -4,6 +4,11 @@ export type Profil = {
   user_id: string
   nom: string | null
   titre_recherche: string | null
+  adresse: string | null
+  code_postal: string | null
+  ville: string | null
+  telephone: string | null
+  email: string | null
   cv_url: string | null
   cv_texte: string | null
   lettre_base: string | null

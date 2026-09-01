@@ -84,6 +84,10 @@ export function buildPrompt(offre: OffreInfo, profil: ProfilInfo): string {
     "- Ton naturel et humain, sobre, sans tournures robotiques ni formules génériques creuses.",
     "- Interdiction d'inventer un fait absent du CV ou de la lettre de base.",
     "- Rédige en français.",
+    "- Le champ `lettre` ne contient QUE le corps de la lettre : de la formule d'appel",
+    "  (« Madame, Monsieur, ») jusqu'à la formule de politesse finale et la signature (nom du",
+    "  candidat). N'inclus NI bloc d'adresses (expéditeur ou destinataire), NI date, NI ligne",
+    "  « Objet : » : ces éléments sont ajoutés automatiquement par la mise en page.",
     '- Réponds STRICTEMENT au format JSON : { email_objet, email_corps, lettre }.',
   ].join('\n')
 }

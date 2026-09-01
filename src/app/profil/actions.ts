@@ -18,6 +18,8 @@ function preferencesDifferentes(a: string[], b: string[]): boolean {
 // scores de l'utilisateur pour qu'ils se recalculent (au prochain rafraîchissement).
 export async function enregistrerProfil(patch: {
   nom: string | null; titre_recherche: string | null; preferences: string[]
+  adresse?: string | null; code_postal?: string | null; ville?: string | null
+  telephone?: string | null; email?: string | null
 }): Promise<{ ok: boolean; erreur?: string }> {
   const supabase = await getServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -30,6 +32,8 @@ export async function enregistrerProfil(patch: {
   try {
     await upsertProfil(supabase, user.id, {
       nom: patch.nom, titre_recherche: patch.titre_recherche, preferences,
+      adresse: patch.adresse ?? null, code_postal: patch.code_postal ?? null,
+      ville: patch.ville ?? null, telephone: patch.telephone ?? null, email: patch.email ?? null,
     })
   } catch {
     return { ok: false, erreur: "Échec de l'enregistrement, réessayez." }

@@ -22,6 +22,17 @@ export default async function CandidaturePage({ params }: { params: Promise<{ id
   const profilComplet = Boolean(profil?.cv_url && profil?.lettre_url)
   const o = offre as OffreRow
 
+  // En-tête de la lettre : coordonnées de l'expéditeur + date du jour.
+  const expediteur = {
+    nom: profil?.nom ?? '',
+    adresse: profil?.adresse ?? '',
+    codePostal: profil?.code_postal ?? '',
+    ville: profil?.ville ?? '',
+    telephone: profil?.telephone ?? '',
+    email: profil?.email ?? user.email ?? '',
+  }
+  const dateFr = new Date().toLocaleDateString('fr-FR')
+
   return (
     <section className="screen on">
       <PageHeader titre="Retour" />
@@ -41,7 +52,7 @@ export default async function CandidaturePage({ params }: { params: Promise<{ id
           </header>
         </div>
         <div className="detail-wrap">
-          <CandidatureEditor offre={o} profilComplet={profilComplet} candidatureInitiale={candidature} />
+          <CandidatureEditor offre={o} profilComplet={profilComplet} candidatureInitiale={candidature} expediteur={expediteur} dateFr={dateFr} />
         </div>
       </div>
     </section>

@@ -17,9 +17,14 @@ const IconHeart = () => <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2
 // Extrait un nom de fichier lisible depuis un chemin storage (ex. "userid/cv.pdf" -> "cv.pdf").
 const nomFichier = (path: string | null) => (path ? path.split('/').pop() ?? path : null)
 
-export default function ProfilBento({ initial, alertes }: { initial: Profil; alertes: Alerte[] }) {
+export default function ProfilBento({ initial, alertes, emailCompte = '' }: { initial: Profil; alertes: Alerte[]; emailCompte?: string }) {
   const [nom, setNom] = useState(initial.nom ?? '')
   const [titre, setTitre] = useState(initial.titre_recherche ?? '')
+  const [adresse, setAdresse] = useState(initial.adresse ?? '')
+  const [codePostal, setCodePostal] = useState(initial.code_postal ?? '')
+  const [ville, setVille] = useState(initial.ville ?? '')
+  const [telephone, setTelephone] = useState(initial.telephone ?? '')
+  const [email, setEmail] = useState(initial.email ?? emailCompte)
   const [preferences, setPreferences] = useState<string[]>(initial.preferences ?? [])
   const [cvUrl, setCvUrl] = useState(initial.cv_url)
   const [lettreUrl, setLettreUrl] = useState(initial.lettre_url)
@@ -31,7 +36,11 @@ export default function ProfilBento({ initial, alertes }: { initial: Profil; ale
     e.preventDefault()
     setErreur(null); setSaved(false)
     startTransition(async () => {
-      const res = await enregistrerProfil({ nom: nom.trim() || null, titre_recherche: titre.trim() || null, preferences })
+      const res = await enregistrerProfil({
+        nom: nom.trim() || null, titre_recherche: titre.trim() || null, preferences,
+        adresse: adresse.trim() || null, code_postal: codePostal.trim() || null,
+        ville: ville.trim() || null, telephone: telephone.trim() || null, email: email.trim() || null,
+      })
       if (res.ok) setSaved(true)
       else setErreur(res.erreur ?? "Échec de l'enregistrement, réessayez.")
     })
@@ -57,6 +66,24 @@ export default function ProfilBento({ initial, alertes }: { initial: Profil; ale
         <input id="pb-nom" className="p-field" value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Votre nom" />
         <label className="p-field-lbl" htmlFor="pb-titre">Titre recherché</label>
         <input id="pb-titre" className="p-field" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Ex. Diététicien" />
+
+        <label className="p-field-lbl" htmlFor="pb-adresse">Adresse</label>
+        <input id="pb-adresse" className="p-field" value={adresse} onChange={(e) => setAdresse(e.target.value)} placeholder="Ex. 12 rue des Lilas" />
+        <div className="p-field-row">
+          <div>
+            <label className="p-field-lbl" htmlFor="pb-cp">Code postal</label>
+            <input id="pb-cp" className="p-field" value={codePostal} onChange={(e) => setCodePostal(e.target.value)} placeholder="44000" />
+          </div>
+          <div>
+            <label className="p-field-lbl" htmlFor="pb-ville">Ville</label>
+            <input id="pb-ville" className="p-field" value={ville} onChange={(e) => setVille(e.target.value)} placeholder="Nantes" />
+          </div>
+        </div>
+        <label className="p-field-lbl" htmlFor="pb-tel">Téléphone</label>
+        <input id="pb-tel" className="p-field" type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} placeholder="06 12 34 56 78" />
+        <label className="p-field-lbl" htmlFor="pb-email">Email de contact</label>
+        <input id="pb-email" className="p-field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="prenom.nom@email.com" />
+        <p className="p-hint">Ces coordonnées apparaissent en en-tête de tes lettres de motivation.</p>
       </section>
 
       {/* Documents */}
